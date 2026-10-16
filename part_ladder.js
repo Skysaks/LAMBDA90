@@ -96,7 +96,7 @@ function lintBlock() {
   const fmtT = ms => new Date(ms).toLocaleString("fr-FR", { weekday: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
   const par = [1, 2, 3, 4].map(k => ({ k, p: last ? 1 - Math.pow(1 - last.reach, k) : 0, mise: cap / k, gain: last ? cap / k * (last.stake / cap) : 0 }));
   const ev = last ? last.reach * last.stake : 0;
-  S._lintPlan = plan;
+  S._lintPlan = plan; S._lintRows = rows; S._lintCap = cap;
   return `<div class="panel"><header><h2>Montante intégrale</h2><span class="note">100 % du capital remis en jeu à chaque palier</span></header>
     <div class="chips" role="group" aria-label="Nombre de paliers">${[5, 6, 7, 8, 9, 10].map(n => `<button class="chip" data-lint="steps" data-v="${n}" aria-pressed="${L.steps === n}">${n} paliers</button>`).join("")}</div>
     <div class="chips" style="margin-top:8px" role="group" aria-label="Profil de cote">${Object.entries(LINT_PROF).map(([k, v]) => `<button class="chip" data-lint="prof" data-v="${k}" aria-pressed="${L.prof === k}">${v.lab}</button>`).join("")}
@@ -109,6 +109,7 @@ function lintBlock() {
         <div class="ro"><span>Soit</span><b>1 sur ${nf(1 / last.reach)}</b></div>
         <div class="ro"><span>Chance de tout perdre</span><b>${pct(1 - last.reach, 1)}</b></div>
         <div class="ro"><span>Ce que tu récupères en moyenne</span><b>${eur(ev)}</b></div></div>
+      <div style="margin-top:12px">${b3Panel("lad3d")}<p class="note">Escalier de la montante : au fond, le capital après chaque palier (échelle logarithmique) ; devant, la chance d'y arriver. L'un monte pendant que l'autre fond.</p></div>
       <div class="scroll" style="margin-top:12px"><table><thead><tr><th>Palier</th><th>Quand</th><th>Sélection</th><th class="r">Cote</th><th class="r">Proba</th><th class="r">Capital après</th><th class="r">Chance d'y arriver</th></tr></thead><tbody>
       ${rows.map(({ c, k, reach, stake }) => `<tr><td class="num">${k + 1}</td><td class="faint" style="white-space:nowrap">${fmtT(c.start)}</td><td>${c.p.legs.map(lg => `<strong>${esc(lg.lab)}</strong> <span class="faint">${esc(short(lg.f.home))} – ${esc(short(lg.f.away))}</span>`).join("<br>")}</td>
         <td class="r num">${odd(c.p.o)}${c.p.real ? `<br><span class="faint">${esc((c.p.book || "").replace(" (FR)", ""))}</span>` : ' <span class="pill ghost">est.</span>'}</td><td class="r num">${pct(c.p.pr)}</td><td class="r num">${eur(stake)}</td><td class="r num"><strong>${pct(reach, reach < 0.1 ? 1 : 0)}</strong></td></tr>`).join("")}</tbody></table></div>
@@ -237,6 +238,7 @@ function renderLadder() {
     ${S.ladHist.length ? `<div class="panel"><header><h2>Historique</h2><span class="note">${S.ladHist.filter(x => x.status === "won").length} réussie(s) sur ${S.ladHist.length}</span></header><div class="scroll"><table><thead><tr><th>Début</th><th class="r">Paliers passés</th><th class="r">Départ</th><th class="r">Fin</th><th>Issue</th></tr></thead><tbody>
       ${S.ladHist.slice(-10).reverse().map(x => `<tr><td>${new Date(x.ts).toLocaleDateString("fr-FR")}</td><td class="r num">${x.steps.filter(s => s.result === "won").length} / ${x.target}</td><td class="r num">${eur(x.cap)}</td><td class="r num">${eur(x.final)}</td><td><span class="pill ${x.status === "won" ? "good" : x.status === "lost" ? "bad" : "ghost"}">${x.status === "won" ? "Objectif atteint" : x.status === "lost" ? "Perdue" : "Arrêtée"}</span></td></tr>`).join("")}</tbody></table></div></div>` : ""}
   </div>`;
+  if (S._lintRows?.length && $("#lad3d-stage")) b3Mount("lad3d", stairSpec(S._lintRows, S._lintCap));
 }
 function ladderRunBlock() {
   const r = S.ladRun;

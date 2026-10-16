@@ -2,6 +2,11 @@
 
 Plateforme de probabilités football : moteur Dixon-Coles + tirs cadrés + pi-ratings, live minute par minute, value betting, arbitrage, bankroll, défis entre amis, stories 3D.
 
+Onglet Outils (cotes réelles de Bet365, Winamax, Betclic, Unibet face au prix juste Pinnacle) : relief 3D de la valeur, marges 3D par championnat,
+cote boostée rentable ou pas, conversion de freebets et de paris remboursés en gain garanti, couverture et cash-out, dutching.
+Onglet Objectif ×2 : montante intégrale 5 à 10 paliers, enchaînée dans le temps, avec son escalier 3D (capital et chance d'y arriver).
+Onglet Match : créateur de paris avec matrice des scores recalée sur Pinnacle et marge du bookmaker.
+
 ## Mise à jour automatique (coût : 0 € au départ)
 
 Chaque matin, GitHub Actions récupère les résultats et les cotes, ré-entraîne le moteur et reconstruit `lambda-90.html`. Le lundi, il relance aussi le réglage complet et le backtest.
@@ -44,7 +49,7 @@ Vérifie les conditions d'usage commercial de chaque source avant le lancement p
 git clone --depth 1 https://github.com/xgabora/Club-Football-Match-Data-2000-2025.git /tmp/xg
 git clone --depth 1 https://github.com/openfootball/football.json.git /tmp/of
 python engine3_final.py /tmp/xg/data /tmp/of out
-./mk.sh            # assemble app_full.js et écrit lambda-90.html
+bash mk.sh         # assemble app_full.js et écrit lambda-90.html
 ```
 
 Ne mets jamais une clé API dans un fichier du dépôt : seulement dans les secrets.

@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Lambda 90</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -255,6 +256,19 @@ td.num,th.num,.r.num{white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.pf-toast{animation:none}}
 .notice-inline{margin:12px 0 0;padding:10px 12px;border-radius:10px;font-size:13px;line-height:1.5;background:rgba(255,200,87,.08);border:1px solid rgba(255,200,87,.35);color:var(--ink)}
 .mybooks .chip .faint{font-size:11px}
+.b3{margin-top:4px}
+.b3-stage{position:relative;border-radius:16px;overflow:hidden;background:radial-gradient(120% 90% at 50% 15%,#141d31 0%,#0a0f1b 62%,#070b14 100%);min-height:260px}
+.b3-c{display:block;width:100%;cursor:grab}.b3-c:active{cursor:grabbing}
+.b3-labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.b3-l{position:absolute;left:0;top:0;font-size:11px;color:var(--ink2);white-space:nowrap;letter-spacing:.02em;will-change:transform}
+.b3-l.col{font:500 12px var(--f-display);color:var(--ink)}
+.b3-l.row{max-width:150px;overflow:hidden;text-overflow:ellipsis;padding-right:4px}
+.b3-tip{position:absolute;z-index:3;pointer-events:none;background:rgba(18,27,48,.94);border:1px solid var(--line2);border-radius:8px;padding:8px 10px;font-size:12.5px;line-height:1.45;box-shadow:0 8px 24px rgba(0,0,0,.45);max-width:240px}
+.b3-tip b.pos,.ro b.pos{color:var(--good)}
+.b3-legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:12.5px;color:var(--ink2)}
+.b3-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.b3-legend b{color:var(--ink);margin-left:4px}
+@media (max-width:520px){.b3-l{font-size:10px}.b3-l.col{font-size:11px}.b3-l.row{max-width:96px}}
 </style>
 
 <header class="top">
@@ -267,6 +281,7 @@ td.num,th.num,.r.num{white-space:nowrap}
       <button class="tab" role="tab" data-tab="fan">Défis</button>
       <button class="tab quantonly" role="tab" data-tab="value">Value et arbitrage</button>
       <button class="tab quantonly" role="tab" data-tab="ladder">Objectif ×2</button>
+      <button class="tab quantonly" role="tab" data-tab="tools">Outils</button>
       <button class="tab quantonly" role="tab" data-tab="bank">Bankroll</button>
       <button class="tab" role="tab" data-tab="proof">Registre</button>
     </nav>
@@ -285,6 +300,7 @@ td.num,th.num,.r.num{white-space:nowrap}
   <section class="view" id="v-fan" hidden></section>
   <section class="view" id="v-value" hidden></section>
   <section class="view" id="v-ladder" hidden></section>
+  <section class="view" id="v-tools" hidden></section>
   <section class="view" id="v-bank" hidden></section>
   <section class="view" id="v-proof" hidden></section>
 </main>

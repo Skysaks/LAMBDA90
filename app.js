@@ -769,15 +769,15 @@ function md(t) {
 // ---------- Rendu général et événements ----------
 function render() {
   document.body.classList.toggle("fan", S.mode === "fan");
-  if (S.mode === "fan" && (S.tab === "value" || S.tab === "bank" || S.tab === "ladder")) S.tab = "radar";
+  if (S.mode === "fan" && ["value", "bank", "ladder", "tools"].includes(S.tab)) S.tab = "radar";
   if (S.tab === "fan") S.fan.joinCode = S.fan.joinCode || "";
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.tab === S.tab));
   document.querySelectorAll(".mode button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === S.mode));
   for (const v of VIEWS) $("#v-" + v).hidden = v !== S.tab;
   renderNotice();
-  ({ radar: renderRadar, match: renderMatch, season: renderSeason, fan: renderFan, value: renderValue, ladder: renderLadder, bank: renderBank, proof: renderProof })[S.tab]();
+  ({ radar: renderRadar, match: renderMatch, season: renderSeason, fan: renderFan, value: renderValue, ladder: renderLadder, tools: renderTools, bank: renderBank, proof: renderProof })[S.tab]();
 }
-const VIEWS = ["radar", "match", "season", "fan", "value", "ladder", "bank", "proof"];
+const VIEWS = ["radar", "match", "season", "fan", "value", "ladder", "tools", "bank", "proof"];
 function go(tab) { S.tab = tab; try { history.replaceState(null, "", "#" + tab); } catch {} render(); scrollTo({ top: 0 }); }
 
 document.addEventListener("click", e => {

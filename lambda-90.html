@@ -1,3 +1,4 @@
+<meta charset="utf-8">
 <title>Lambda 90</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -255,6 +256,19 @@ td.num,th.num,.r.num{white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.pf-toast{animation:none}}
 .notice-inline{margin:12px 0 0;padding:10px 12px;border-radius:10px;font-size:13px;line-height:1.5;background:rgba(255,200,87,.08);border:1px solid rgba(255,200,87,.35);color:var(--ink)}
 .mybooks .chip .faint{font-size:11px}
+.b3{margin-top:4px}
+.b3-stage{position:relative;border-radius:16px;overflow:hidden;background:radial-gradient(120% 90% at 50% 15%,#141d31 0%,#0a0f1b 62%,#070b14 100%);min-height:260px}
+.b3-c{display:block;width:100%;cursor:grab}.b3-c:active{cursor:grabbing}
+.b3-labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.b3-l{position:absolute;left:0;top:0;font-size:11px;color:var(--ink2);white-space:nowrap;letter-spacing:.02em;will-change:transform}
+.b3-l.col{font:500 12px var(--f-display);color:var(--ink)}
+.b3-l.row{max-width:150px;overflow:hidden;text-overflow:ellipsis;padding-right:4px}
+.b3-tip{position:absolute;z-index:3;pointer-events:none;background:rgba(18,27,48,.94);border:1px solid var(--line2);border-radius:8px;padding:8px 10px;font-size:12.5px;line-height:1.45;box-shadow:0 8px 24px rgba(0,0,0,.45);max-width:240px}
+.b3-tip b.pos,.ro b.pos{color:var(--good)}
+.b3-legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:10px;font-size:12.5px;color:var(--ink2)}
+.b3-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+.b3-legend b{color:var(--ink);margin-left:4px}
+@media (max-width:520px){.b3-l{font-size:10px}.b3-l.col{font-size:11px}.b3-l.row{max-width:96px}}
 </style>
 
 <header class="top">
@@ -267,6 +281,7 @@ td.num,th.num,.r.num{white-space:nowrap}
       <button class="tab" role="tab" data-tab="fan">Défis</button>
       <button class="tab quantonly" role="tab" data-tab="value">Value et arbitrage</button>
       <button class="tab quantonly" role="tab" data-tab="ladder">Objectif ×2</button>
+      <button class="tab quantonly" role="tab" data-tab="tools">Outils</button>
       <button class="tab quantonly" role="tab" data-tab="bank">Bankroll</button>
       <button class="tab" role="tab" data-tab="proof">Registre</button>
     </nav>
@@ -285,6 +300,7 @@ td.num,th.num,.r.num{white-space:nowrap}
   <section class="view" id="v-fan" hidden></section>
   <section class="view" id="v-value" hidden></section>
   <section class="view" id="v-ladder" hidden></section>
+  <section class="view" id="v-tools" hidden></section>
   <section class="view" id="v-bank" hidden></section>
   <section class="view" id="v-proof" hidden></section>
 </main>
@@ -1552,6 +1568,12 @@ function comboBlock(f) {
   return `<div class="chips wrap">${list.map(([id, lab, fn]) => `<button class="chip" data-combo="${id}" aria-pressed="${sel.includes(id)}">${esc(lab)} <span class="faint num">${pct(L90.joint(M, [fn]))}</span></button>`).join("")}</div>
     ${chosen.length ? `<div class="readouts" style="margin-top:12px"><div class="ro"><span>Probabilité exacte du combiné</span><b>${pct(pj, 1)}</b></div><div class="ro"><span>Cote juste</span><b>${odd(1 / pj)}</b></div>
       ${chosen.length > 1 ? `<div class="ro"><span>Si on multipliait les cotes séparées</span><b>${odd(1 / naive)}</b></div><div class="ro"><span>Corrélation</span><b style="font-size:17px">${pj > naive * 1.03 ? `liées : ×${nf(pj / naive, 2)}` : pj < naive * 0.97 ? `opposées : ×${nf(pj / naive, 2)}` : "quasi indépendantes"}</b></div>` : ""}</div>
+      ${(() => { const MMk = mktMatrix(f); if (!MMk || !pj) return "";
+        const pm = L90.joint(MMk, chosen.map(x => x[2])), ck = chosen.map(x => x[0]).sort().join("+"), oo = numv((S.cbo ??= {})[f.key + "|" + ck]), e = oo > 1 ? pm * oo - 1 : null;
+        return `<div class="readouts" style="margin-top:10px"><div class="ro"><span>Probabilité recalée sur Pinnacle</span><b>${pct(pm, 1)}</b></div><div class="ro"><span>Cote juste (marché)</span><b>${odd(1 / pm)}</b></div>
+          <div class="ro"><span>Cote proposée par ton bookmaker</span><input type="number" step="0.01" id="cbo-in" data-cbo="${esc(f.key + "|" + ck)}" value="${oo > 1 ? oo : ""}" placeholder="créateur de paris" style="margin-top:4px;width:100%"></div>
+          <div class="ro"><span>${e == null ? "Espérance" : e >= 0 ? "Espérance" : "Marge prélevée"}</span><b class="${e > 0 ? "pos" : ""}">${e == null ? "–" : e >= 0 ? sgn(e) : pct(-e, 1)}</b></div></div>
+          <p class="note" style="margin-top:6px">La matrice des scores du modèle est ajustée pour reproduire exactement les probabilités Pinnacle sans marge (1X2 et ±2,5 buts) ; la corrélation entre sélections reste celle du modèle. Les créateurs de paris prélèvent souvent 15 à 30 % : compare avant de jouer.</p>`; })()}
       <p class="note" style="margin-top:6px">${pj === 0 ? "Combinaison impossible." : chosen.length > 1 ? "Les sélections d'un même match ne sont pas indépendantes : la probabilité vient directement de la matrice des scores. Compare la cote juste à celle proposée par ton bookmaker sur son « créateur de paris »." : "Ajoute une deuxième sélection pour voir l'effet de corrélation."}</p>`
       : `<p class="note" style="margin-top:8px">Choisis jusqu'à 4 sélections sur ce match.</p>`}`;
 }
@@ -2294,7 +2316,7 @@ function lintBlock() {
   const fmtT = ms => new Date(ms).toLocaleString("fr-FR", { weekday: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
   const par = [1, 2, 3, 4].map(k => ({ k, p: last ? 1 - Math.pow(1 - last.reach, k) : 0, mise: cap / k, gain: last ? cap / k * (last.stake / cap) : 0 }));
   const ev = last ? last.reach * last.stake : 0;
-  S._lintPlan = plan;
+  S._lintPlan = plan; S._lintRows = rows; S._lintCap = cap;
   return `<div class="panel"><header><h2>Montante intégrale</h2><span class="note">100 % du capital remis en jeu à chaque palier</span></header>
     <div class="chips" role="group" aria-label="Nombre de paliers">${[5, 6, 7, 8, 9, 10].map(n => `<button class="chip" data-lint="steps" data-v="${n}" aria-pressed="${L.steps === n}">${n} paliers</button>`).join("")}</div>
     <div class="chips" style="margin-top:8px" role="group" aria-label="Profil de cote">${Object.entries(LINT_PROF).map(([k, v]) => `<button class="chip" data-lint="prof" data-v="${k}" aria-pressed="${L.prof === k}">${v.lab}</button>`).join("")}
@@ -2307,6 +2329,7 @@ function lintBlock() {
         <div class="ro"><span>Soit</span><b>1 sur ${nf(1 / last.reach)}</b></div>
         <div class="ro"><span>Chance de tout perdre</span><b>${pct(1 - last.reach, 1)}</b></div>
         <div class="ro"><span>Ce que tu récupères en moyenne</span><b>${eur(ev)}</b></div></div>
+      <div style="margin-top:12px">${b3Panel("lad3d")}<p class="note">Escalier de la montante : au fond, le capital après chaque palier (échelle logarithmique) ; devant, la chance d'y arriver. L'un monte pendant que l'autre fond.</p></div>
       <div class="scroll" style="margin-top:12px"><table><thead><tr><th>Palier</th><th>Quand</th><th>Sélection</th><th class="r">Cote</th><th class="r">Proba</th><th class="r">Capital après</th><th class="r">Chance d'y arriver</th></tr></thead><tbody>
       ${rows.map(({ c, k, reach, stake }) => `<tr><td class="num">${k + 1}</td><td class="faint" style="white-space:nowrap">${fmtT(c.start)}</td><td>${c.p.legs.map(lg => `<strong>${esc(lg.lab)}</strong> <span class="faint">${esc(short(lg.f.home))} – ${esc(short(lg.f.away))}</span>`).join("<br>")}</td>
         <td class="r num">${odd(c.p.o)}${c.p.real ? `<br><span class="faint">${esc((c.p.book || "").replace(" (FR)", ""))}</span>` : ' <span class="pill ghost">est.</span>'}</td><td class="r num">${pct(c.p.pr)}</td><td class="r num">${eur(stake)}</td><td class="r num"><strong>${pct(reach, reach < 0.1 ? 1 : 0)}</strong></td></tr>`).join("")}</tbody></table></div>
@@ -2435,6 +2458,7 @@ function renderLadder() {
     ${S.ladHist.length ? `<div class="panel"><header><h2>Historique</h2><span class="note">${S.ladHist.filter(x => x.status === "won").length} réussie(s) sur ${S.ladHist.length}</span></header><div class="scroll"><table><thead><tr><th>Début</th><th class="r">Paliers passés</th><th class="r">Départ</th><th class="r">Fin</th><th>Issue</th></tr></thead><tbody>
       ${S.ladHist.slice(-10).reverse().map(x => `<tr><td>${new Date(x.ts).toLocaleDateString("fr-FR")}</td><td class="r num">${x.steps.filter(s => s.result === "won").length} / ${x.target}</td><td class="r num">${eur(x.cap)}</td><td class="r num">${eur(x.final)}</td><td><span class="pill ${x.status === "won" ? "good" : x.status === "lost" ? "bad" : "ghost"}">${x.status === "won" ? "Objectif atteint" : x.status === "lost" ? "Perdue" : "Arrêtée"}</span></td></tr>`).join("")}</tbody></table></div></div>` : ""}
   </div>`;
+  if (S._lintRows?.length && $("#lad3d-stage")) b3Mount("lad3d", stairSpec(S._lintRows, S._lintCap));
 }
 function ladderRunBlock() {
   const r = S.ladRun;
@@ -2725,18 +2749,348 @@ function pfEvents(el) {
 }
 document.addEventListener("click", e => { const b = e.target.closest("[data-l3v]"); if (!b) return; S.l3v = b.dataset.l3v; render(); });
 
+// ---------- Barres 3D : moteur commun (une seule scène visible à la fois, un seul contexte WebGL) ----------
+// spec = { rows:[libellé], cols:[libellé], bars:[{r, c, h, color, dim, glow, tip}], plane, bw, bd, gapZ, sig }
+const B3 = { r: null, inst: null, raf: 0, rot: 0, drag: null, moved: 0, hover: null, sig: "", t0: 0 };
+const B3_BOOK = { "Bet365": 0xFFC857, "Winamax (FR)": 0xE5484D, "Betclic (FR)": 0xF08A3C, "Unibet (FR)": 0x3DDC97, "Pinnacle": 0x9FE7F5 };
+const b3Color = b => B3_BOOK[b] ?? 0x8569D1;
+const b3Hex = n => "#" + n.toString(16).padStart(6, "0");
+function b3Panel(id) {
+  return `<div class="b3" id="${id}"><div class="b3-stage" id="${id}-stage"><div class="b3-labels" id="${id}-lab"></div><div class="b3-tip" id="${id}-tip" hidden></div></div></div>`;
+}
+function b3Dispose(o) { o?.traverse?.(x => { x.geometry?.dispose?.(); const m = x.material; (Array.isArray(m) ? m : [m]).forEach(mm => mm?.dispose?.()); }); }
+function b3Build(T, spec) {
+  const scene = new T.Scene(), g = new T.Group(); scene.add(g);
+  scene.add(new T.HemisphereLight(0xdfe7ff, 0x05070d, 0.7));
+  const key = new T.DirectionalLight(0xffffff, 0.85); key.position.set(-5, 10, 7); scene.add(key);
+  const rim = new T.DirectionalLight(0x9fe7f5, 0.3); rim.position.set(6, 3, -8); scene.add(rim);
+  const nR = spec.rows.length, nC = spec.cols.length, sx = spec.sx || 1, sz = spec.sz || 1;
+  const W = nC * sx, D = nR * sz, x0 = -W / 2 + sx / 2, z0 = -D / 2 + sz / 2;
+  const X = c => x0 + c * sx, Z = r => z0 + r * sz;
+  // socle et grille fine
+  const lo = Math.min(0, ...spec.bars.map(b => b.h)), hi = Math.max(0, ...spec.bars.map(b => b.h));
+  const grid = [];
+  for (let r = 0; r <= nR; r++) grid.push(-W / 2, 0, -D / 2 + r * sz, W / 2, 0, -D / 2 + r * sz);
+  for (let c = 0; c <= nC; c++) grid.push(-W / 2 + c * sx, 0, -D / 2, -W / 2 + c * sx, 0, D / 2);
+  const gg = new T.BufferGeometry(); gg.setAttribute("position", new T.Float32BufferAttribute(grid, 3));
+  g.add(new T.LineSegments(gg, new T.LineBasicMaterial({ color: 0x2b3a5d, transparent: true, opacity: 0.55 })));
+  if (spec.plane) {  // plan de la valeur nulle : ce qui dépasse bat la cote juste
+    const pl = new T.Mesh(new T.PlaneGeometry(W + 0.5, D + 0.5), new T.MeshBasicMaterial({ color: 0x9fe7f5, transparent: true, opacity: 0.075, side: T.DoubleSide, depthWrite: false }));
+    pl.rotation.x = -Math.PI / 2; pl.renderOrder = 2; g.add(pl);
+    const eg = new T.EdgesGeometry(new T.PlaneGeometry(W + 0.5, D + 0.5)); const el = new T.LineSegments(eg, new T.LineBasicMaterial({ color: 0x9fe7f5, transparent: true, opacity: 0.35 }));
+    el.rotation.x = -Math.PI / 2; g.add(el);
+  }
+  const box = new T.BoxGeometry(1, 1, 1), bars = [];
+  for (const b of spec.bars) {
+    const col = new T.Color(b.color ?? 0x8569D1);
+    const m = new T.MeshStandardMaterial({ color: col, roughness: 0.45, metalness: 0.08, transparent: true, opacity: b.dim ? 0.38 : 0.96,
+      emissive: col.clone().multiplyScalar(b.glow ? 0.45 : 0.06) });
+    const mesh = new T.Mesh(box, m); mesh.scale.set((spec.bw || 0.6) * sx, Math.max(0.012, Math.abs(b.h)), (spec.bd || 0.6) * sz);
+    mesh.position.set(X(b.c), b.h / 2, Z(b.r)); mesh.userData = { b, h: b.h, base: m.emissive.clone() };
+    if (b.glow) { const eg = new T.LineSegments(new T.EdgesGeometry(box), new T.LineBasicMaterial({ color: 0xffffff, transparent: true, opacity: 0.55 })); mesh.add(eg); }
+    g.add(mesh); bars.push(mesh);
+  }
+  const span = Math.max(W, D * 0.9, hi - lo + 1);
+  return { scene, g, bars, W, D, lo, hi, X, Z, nR, nC, span };
+}
+function b3Mount(id, spec) {
+  const stage = $(`#${id}-stage`); if (!stage) return;
+  if (!window.THREE) { stage.innerHTML = `<div class="empty">La vue 3D demande WebGL, indisponible sur cet appareil.</div>`; return; }
+  try { if (!B3.r) { B3.r = new THREE.WebGLRenderer({ antialias: true, alpha: true }); B3.r.setPixelRatio(Math.min(2, devicePixelRatio || 1)); b3Events(B3.r.domElement); } }
+  catch { stage.innerHTML = `<div class="empty">WebGL indisponible.</div>`; return; }
+  const sig = id + "|" + (spec.sig || JSON.stringify(spec.bars.map(b => [b.r, b.c, +b.h.toFixed(3)])));
+  if (B3.sig !== sig) { if (B3.inst) b3Dispose(B3.inst.scene); B3.inst = b3Build(THREE, spec); B3.sig = sig; B3.t0 = performance.now(); B3.rot = 0; }
+  B3.inst.spec = spec; B3.id = id;
+  stage.prepend(B3.r.domElement); B3.r.domElement.className = "b3-c";
+  const w = stage.clientWidth || 600, narrow = w < 560, h = narrow ? Math.round(w * (spec.tallMobile || 1.05)) : Math.round(Math.min(spec.maxH || 520, Math.max(300, w * (spec.ratio || 0.55))));
+  const I = B3.inst, cam = I.cam || (I.cam = new THREE.PerspectiveCamera(30, 1, 0.1, 400));
+  const el = spec.elev ?? 0.62, az = spec.az ?? -0.55, cy = (I.lo + I.hi) / 2;
+  cam.fov = narrow ? 34 : 30; B3.r.setSize(w, h); cam.aspect = w / h;
+  // cadrage : on recule jusqu'à ce que tout le socle et toutes les barres (avec la place des étiquettes) tiennent dans l'image
+  const mx = narrow ? 0.9 : 0.86, showRows = spec.rows.some(Boolean) && (!narrow || spec.rows.length <= 4 || spec.mobileRows), padL = showRows ? (narrow ? 2.8 : 2.4) : 0.4, pts = [];
+  // points réellement occupés : sommets des barres, coins du socle, ancres des étiquettes
+  for (const b of spec.bars) pts.push(new THREE.Vector3(I.X(b.c), b.h, I.Z(b.r)));
+  for (const x of [-I.W / 2, I.W / 2]) for (const z of [-I.D / 2, I.D / 2 + 0.6]) pts.push(new THREE.Vector3(x, 0, z));
+  for (const z of [-I.D / 2, I.D / 2]) pts.push(new THREE.Vector3(-I.W / 2 - padL, 0, z));
+  const v = new THREE.Vector3();
+  cam.clearViewOffset(); let box = null;
+  for (let d = 3; d < 200; d *= 1.03) {
+    cam.position.set(Math.sin(az) * Math.cos(el) * d, cy + Math.sin(el) * d, Math.cos(az) * Math.cos(el) * d); cam.lookAt(0, cy, 0); cam.updateProjectionMatrix(); cam.updateMatrixWorld();
+    let x0 = 9, x1 = -9, y0 = 9, y1 = -9, ok = true;
+    for (const p of pts) { v.copy(p).project(cam); if (v.z >= 1) { ok = false; break; } x0 = Math.min(x0, v.x); x1 = Math.max(x1, v.x); y0 = Math.min(y0, v.y); y1 = Math.max(y1, v.y); }
+    if (ok && x1 - x0 < 2 * mx && y1 - y0 < 2 * mx) { box = [x0, x1, y0, y1]; break; }
+  }
+  // décalage de l'image pour centrer le contenu (le socle et les étiquettes ne sont pas symétriques autour de la cible)
+  if (box) { cam.setViewOffset(w, h, (box[0] + box[1]) / 2 * w / 2, -(box[2] + box[3]) / 2 * h / 2, w, h); cam.updateProjectionMatrix(); }
+  // étiquettes HTML (lignes, colonnes), recalées à chaque image
+  const lab = $(`#${id}-lab`);
+  lab.innerHTML = spec.cols.map((c, i) => `<span class="b3-l col" data-c="${i}">${esc(c)}</span>`).join("") + (!showRows ? "" : spec.rows.map((r, i) => r ? `<span class="b3-l row" data-r="${i}">${esc(r)}</span>` : "").join(""));
+  B3.labs = [...lab.children].map(e => ({ e, p: e.dataset.c != null ? new THREE.Vector3(I.X(+e.dataset.c), 0, I.D / 2 + 0.45) : new THREE.Vector3(-I.W / 2 - 0.25, 0, I.Z(+e.dataset.r)), row: e.dataset.r != null }));
+  B3.tip = $(`#${id}-tip`); B3.stage = stage;
+  if (!B3.raf) { const loop = now => { if (!document.body.contains(B3.r.domElement)) { B3.raf = 0; return; } b3Frame(now); B3.raf = requestAnimationFrame(loop); }; B3.raf = requestAnimationFrame(loop); }
+}
+function b3Frame(now) {
+  const I = B3.inst; if (!I) return;
+  const rm = matchMedia("(prefers-reduced-motion: reduce)").matches, k = rm ? 1 : Math.min(1, (now - B3.t0) / 900), e = 1 - Math.pow(1 - k, 3);
+  for (const [i, m] of I.bars.entries()) { const kk = rm ? 1 : Math.max(0, Math.min(1, (now - B3.t0 - i * 6) / 700)), ee = 1 - Math.pow(1 - kk, 3), h = m.userData.h * ee;
+    m.scale.y = Math.max(0.012, Math.abs(h)); m.position.y = h / 2; }
+  I.g.rotation.y = B3.rot + (B3.drag || rm ? 0 : Math.sin(now / 6000) * 0.04 * e);
+  B3.r.render(I.scene, I.cam);
+  const w = B3.r.domElement.clientWidth, h = B3.r.domElement.clientHeight, v = new THREE.Vector3();
+  for (const L of B3.labs || []) { v.copy(L.p).applyMatrix4(I.g.matrixWorld).project(I.cam); const x = (v.x + 1) / 2 * w, y = (1 - v.y) / 2 * h;
+    L.e.style.transform = `translate(${x}px,${y}px) translate(${L.row ? "-100%" : "-50%"},-50%)`; }
+}
+function b3Pick(ev) {
+  const I = B3.inst; if (!I) return null; const r = B3.r.domElement.getBoundingClientRect();
+  const m = new THREE.Vector2((ev.clientX - r.left) / r.width * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1);
+  const rc = new THREE.Raycaster(); rc.setFromCamera(m, I.cam); const hit = rc.intersectObjects(I.bars, false)[0];
+  return hit ? hit.object : null;
+}
+function b3Hover(ev, sticky) {
+  const o = b3Pick(ev), I = B3.inst;
+  if (B3.hover && B3.hover !== o) B3.hover.material.emissive.copy(B3.hover.userData.base);
+  B3.hover = o; const tip = B3.tip; if (!tip) return;
+  if (!o) { if (!sticky) tip.hidden = true; return; }
+  o.material.emissive.copy(o.userData.base).addScalar(0.18);
+  const r = B3.stage.getBoundingClientRect(); tip.innerHTML = o.userData.b.tip; tip.hidden = false;
+  const x = Math.min(r.width - tip.offsetWidth - 8, Math.max(8, ev.clientX - r.left + 12)), y = Math.max(8, Math.min(r.height - tip.offsetHeight - 8, ev.clientY - r.top - tip.offsetHeight - 10));
+  tip.style.left = x + "px"; tip.style.top = y + "px";
+}
+function b3Events(el) {
+  el.style.touchAction = "pan-y";
+  el.addEventListener("pointerdown", e => { B3.drag = { x: e.clientX, r: B3.rot }; B3.moved = 0; });
+  el.addEventListener("pointermove", e => { if (B3.drag && (e.buttons || e.pointerType !== "mouse")) { const dx = e.clientX - B3.drag.x; B3.moved = Math.max(B3.moved, Math.abs(dx)); if (B3.moved > 4) B3.rot = Math.max(-1, Math.min(1, B3.drag.r + dx / 240)); } else if (e.pointerType === "mouse") b3Hover(e); });
+  const up = e => { if (B3.drag && B3.moved <= 4) b3Hover(e, false); B3.drag = null; };
+  el.addEventListener("pointerup", up); el.addEventListener("pointercancel", () => B3.drag = null);
+  el.addEventListener("pointerleave", e => { if (e.pointerType === "mouse") { B3.tip && (B3.tip.hidden = true); if (B3.hover) B3.hover.material.emissive.copy(B3.hover.userData.base); B3.hover = null; } });
+}
+
+// ---------- Vue 1 : relief de la valeur (meilleure cote de tes bookmakers face au prix juste Pinnacle) ----------
+const B3_SEL = ["H", "D", "A", "O25", "U25"];
+function fairOf(f) {
+  const books = S.odds[f.key] || {}, sh = Object.keys(books).find(isSharp);
+  if (!sh) return null;
+  const p1 = bookProbs(books[sh], "1X2"), p2 = bookProbs(books[sh], "OU25");
+  if (!p1) return null;
+  return { H: p1[0], D: p1[1], A: p1[2], O25: p2?.[0], U25: p2?.[1] };
+}
+function bestMine(f, k, okBook = bookOK) {
+  let o = 0, book = null; for (const [b, v] of Object.entries(S.odds[f.key] || {})) { if (!okBook(b)) continue; if (v[k] > o) { o = v[k]; book = b; } }
+  return o > 1 ? { o, book } : null;
+}
+function valueGrid(n) {
+  const list = FX.filter(f => !started(f) && fairOf(f)).slice(0, n), rows = [], cells = [];
+  list.forEach((f, r) => {
+    const fair = fairOf(f); rows.push(`${pfShort(f.home)} – ${pfShort(f.away)}`);
+    B3_SEL.forEach((k, c) => { const p = fair[k], b = p && bestMine(f, k); if (!b) return; cells.push({ f, k, r, c, p, ...b, ev: p * b.o - 1 }); });
+  });
+  return { list, rows, cells };
+}
+function value3dSpec(narrow) {
+  const G = valueGrid(narrow ? 8 : 12), H = 14;
+  return { rows: G.rows, cols: ["1", "N", "2", "+2,5", "−2,5"], plane: true, sx: 1, sz: 0.7, bw: 0.56, bd: 0.66, ratio: 0.58, tallMobile: 0.95, elev: 0.55, az: -0.45, G,
+    bars: G.cells.map(x => ({ r: x.r, c: x.c, h: Math.max(-2.6, Math.min(1.4, x.ev * H)), color: b3Color(x.book), dim: x.ev < 0, glow: x.ev >= 0,
+      tip: `<strong>${esc(short(x.f.home))} – ${esc(short(x.f.away))}</strong><br>${esc(SEL[x.k])} · ${esc(x.book)} <b class="num">${odd(x.o)}</b><br>Cote juste ${odd(1 / x.p)} · <b class="${x.ev >= 0 ? "pos" : ""}">${sgn(x.ev)}</b>` })) };
+}
+// ---------- Vue 2 : marge moyenne par championnat et par bookmaker ----------
+function margin3dSpec() {
+  const books = ["Pinnacle", ...S.cfg.myBooks], lgs = Object.keys(LG), acc = {};
+  for (const f of FX) { if (started(f)) continue; for (const [b, o] of Object.entries(S.odds[f.key] || {})) { if (!books.includes(b) || !["H", "D", "A"].every(x => o[x] > 1)) continue; ((acc[f.league] ??= {})[b] ??= []).push(L90.overround([o.H, o.D, o.A])); } }
+  const rows = lgs.filter(l => acc[l]), bars = [];
+  rows.forEach((l, r) => { const best = Math.min(...books.slice(1).map(b => acc[l][b] ? avg(acc[l][b]) : 9));
+    books.forEach((b, c) => { const v = acc[l][b]; if (!v) return; const m = avg(v);
+      bars.push({ r, c, h: Math.max(0.05, m * 14), color: b3Color(b), glow: b !== "Pinnacle" && m === best, dim: false,
+        tip: `<strong>${esc(LG[l])}</strong><br>${esc(b)} : marge moyenne <b class="num">${pct(m, 1)}</b><br>${v.length} match${v.length > 1 ? "s" : ""}${b !== "Pinnacle" && m === best ? "<br>La moins chère de tes bookmakers ici" : ""}` }); }); });
+  return { rows: rows.map(l => LG[l]), cols: books.map(b => b.replace(" (FR)", "")), bars, sx: 1.05, sz: 0.85, bw: 0.62, bd: 0.6, ratio: 0.55, tallMobile: 0.85, elev: 0.55, az: -0.6, mobileRows: true, acc, books, lgs: rows };
+}
+// ---------- Vue 3 : escalier de la montante (capital devant, chance d'y arriver derrière) ----------
+function stairSpec(rows, cap) {
+  const top = Math.log(rows[rows.length - 1].stake / cap) || 1, bars = [];
+  rows.forEach(({ c, k, reach, stake }) => {
+    const tip = `<strong>Palier ${k + 1}</strong> · cote ${odd(c.p.o)}<br>${c.p.legs.map(l => esc(l.lab)).join(" + ")}<br>Capital ${eur(stake)} · chance d'y arriver <b>${pct(reach, reach < 0.1 ? 1 : 0)}</b>`;
+    bars.push({ r: 0, c: k, h: 0.25 + 3.2 * Math.log(stake / cap) / top, color: 0x9fe7f5, glow: k === rows.length - 1, tip });
+    bars.push({ r: 1, c: k, h: 0.05 + 3.2 * reach, color: 0xC4732A, dim: false, tip });
+  });
+  return { rows: ["Capital", "Chance"], cols: rows.map(x => `${x.k + 1}`), bars, sx: 1, sz: 1.15, bw: 0.9, bd: 0.85, ratio: 0.42, maxH: 380, tallMobile: 0.8, elev: 0.5, az: -0.5 };
+}
+
+// ---------- Outils de paris : cotes boostées, freebets, couverture, dutching, relief 3D ----------
+S.tool = Object.assign({ v: "value", bm: "", bk: "H", bo: "", bmax: "10", fbType: "free", fbAmt: "10", fbBook: "Winamax (FR)", fbMin: "1.5", fbConv: "70", fbB365: false,
+  hR: "", hM: "", hOs: "", hO1: "", hO2: "", hCash: "", dut: ["", "", ""], dutT: "10" }, ls.get("tool", {}));
+const saveTool = () => ls.set("tool", S.tool);
+const numv = x => { const v = parseFloat(String(x ?? "").replace(",", ".")); return isFinite(v) ? v : NaN; };
+const selLab = (f, k) => ({ H: `${short(f.home)} gagne`, D: "Match nul", A: `${short(f.away)} gagne`, O25: "Plus de 2,5 buts", U25: "Moins de 2,5 buts" })[k];
+const upcomingOdds = () => FX.filter(f => !started(f) && S.odds[f.key] && Object.keys(S.odds[f.key]).length);
+const fxLabel = f => `${short(f.home)} – ${short(f.away)} · ${new Date(f.date + "T12:00").toLocaleDateString("fr-FR", { weekday: "short", day: "numeric" })}${f.time ? " " + f.time : ""}`;
+
+// Matrice des scores recalée sur le marché : ajustement itératif aux probabilités Pinnacle sans marge (1X2 et ±2,5 buts)
+const MM = {};
+function mktMatrix(f) {
+  const fair = fairOf(f); if (!fair) return null;
+  const sig = JSON.stringify(fair); if (MM[f.key]?.sig === sig) return MM[f.key].M;
+  const n = 11, M = Float64Array.from(f.m.M);
+  for (let it = 0; it < 60; it++) {
+    const s = [0, 0, 0]; for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) s[i > j ? 0 : i === j ? 1 : 2] += M[i * n + j];
+    const t = [fair.H, fair.D, fair.A]; for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) { const g = i > j ? 0 : i === j ? 1 : 2; M[i * n + j] *= t[g] / s[g]; }
+    if (fair.O25) { let o = 0; for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) if (i + j > 2) o += M[i * n + j];
+      for (let i = 0; i < n; i++) for (let j = 0; j < n; j++) M[i * n + j] *= i + j > 2 ? fair.O25 / o : fair.U25 / (1 - o); }
+  }
+  MM[f.key] = { sig, M }; return M;
+}
+
+// ---------- Cote boostée ----------
+function boostBlock() {
+  const T = S.tool, list = upcomingOdds(); if (!list.length) return `<div class="empty">Aucun match coté à venir.</div>`;
+  const f = list.find(x => x.key === T.bm) || list[0], mkt = ["O25", "U25"].includes(T.bk) ? "OU25" : "1X2", ref = refProbs(f, mkt), p = ref.p[MK[mkt].indexOf(T.bk)];
+  const o = numv(T.bo), mx = numv(T.bmax), norm = bestMine(f, T.bk), e = o > 1 ? p * o - 1 : null;
+  const k = o > 1 ? S.cfg.bank * L90.kelly(p, o, S.cfg.kfrac, 1) : 0, stake = mx > 0 ? Math.min(mx, k) : k;
+  return `<div class="row" style="align-items:flex-end">
+      <label class="f" style="min-width:min(100%,260px)">Match<select data-tool="bm">${list.map(x => `<option value="${esc(x.key)}" ${x === f ? "selected" : ""}>${esc(fxLabel(x))}</option>`).join("")}</select></label>
+      <label class="f">Issue boostée<select data-tool="bk">${B3_SEL.map(x => `<option value="${x}" ${x === T.bk ? "selected" : ""}>${esc(selLab(f, x))}</option>`).join("")}</select></label>
+      <label class="f">Cote boostée<input type="number" step="0.01" id="t-bo" data-tool="bo" value="${esc(T.bo)}" placeholder="ex. 2,50"></label>
+      <label class="f">Mise max du boost (€)<input type="number" step="1" id="t-bmax" data-tool="bmax" value="${esc(T.bmax)}"></label></div>
+    <div class="readouts" style="margin-top:12px">
+      <div class="ro"><span>Probabilité juste</span><b>${pct(p, 1)}</b></div>
+      <div class="ro"><span>Cote juste</span><b>${odd(1 / p)}</b></div>
+      <div class="ro"><span>Cote normale chez toi</span><b>${norm ? odd(norm.o) : "–"}</b>${norm ? `<span>${esc(norm.book)}</span>` : ""}</div>
+      <div class="ro"><span>Espérance du boost</span><b class="${e > 0 ? "pos" : ""}">${e == null ? "–" : sgn(e)}</b></div>
+      <div class="ro"><span>Gain moyen à la mise conseillée</span><b>${e == null ? "–" : eur(stake * e)}</b><span>${e > 0 ? `mise ${eur(stake)}` : "ne pas jouer"}</span></div></div>
+    <p class="note" style="margin-top:8px">${e == null ? `Saisis la cote boostée affichée par ton bookmaker. Rentable à partir de <strong>${odd(1 / p)}</strong>.` : e > 0 ? `Boost rentable : la cote dépasse la cote juste de ${sgn(o * p - 1)}. Mise = Kelly ${nf(S.cfg.kfrac, 2)} de ta bankroll, plafonnée à la mise max du boost.` : `Boost non rentable : malgré le boost, la cote reste sous la cote juste (${odd(1 / p)}).`} Référence : ${esc(ref.src)}.</p>`;
+}
+
+// ---------- Conversion de freebet et de pari remboursé ----------
+function fbScan() {
+  const T = S.tool, F = numv(T.fbAmt), A = T.fbBook, minO = numv(T.fbMin) || 1, c = (numv(T.fbConv) || 0) / 100, R = 0.1, free = T.fbType === "free";
+  const hedgeOK = b => bookOK(b) && (T.fbB365 || b !== "Bet365"), out = []; let bestEV = null;
+  if (!(F > 0)) return { out, bestEV };
+  for (const f of upcomingOdds()) {
+    const books = S.odds[f.key]; if (!books[A]) continue; const fair = fairOf(f);
+    for (const market of ["1X2", "OU25"]) {
+      const keys = MK[market];
+      keys.forEach(k => {
+        const oi = books[A][k]; if (!(oi >= minO)) return;
+        if (free && fair?.[k]) { const v = F * (oi - 1) * fair[k]; if (!bestEV || v > bestEV.v) bestEV = { v, f, k, oi }; }
+        const oth = keys.filter(x => x !== k).map(x => ({ k: x, ...(bestMine(f, x, hedgeOK) || {}) })); if (oth.some(x => !(x.o > 1))) return;
+        const st = oth.map(x => Math.max(R, Math.round((free ? F * (oi - 1) : F * (oi - c)) / x.o / R) * R)), tot = st.reduce((a, b) => a + b, 0);
+        const nets = [F * (oi - 1) - tot, ...oth.map((x, j) => st[j] * x.o - tot - (free ? 0 : F * (1 - c)))], worst = Math.min(...nets);
+        out.push({ f, market, k, oi, oth: oth.map((x, j) => ({ ...x, s: st[j] })), tot, worst, conv: worst / F });
+      });
+    }
+  }
+  out.sort((a, b) => b.worst - a.worst); return { out: out.slice(0, 6), bestEV };
+}
+function fbBlock() {
+  const T = S.tool, free = T.fbType === "free", F = numv(T.fbAmt), seen = [...new Set(Object.values(S.odds).flatMap(o => Object.keys(o)))].filter(b => !NOT_BOOK(b) && !isSharp(b));
+  const books = [...new Set([...S.cfg.myBooks, ...seen])].filter(b => seen.includes(b)), { out, bestEV } = fbScan();
+  return `<div class="chips" role="group" aria-label="Type d'offre"><button class="chip" data-toolv="fbType" data-v="free" aria-pressed="${free}">Freebet (mise non rendue)</button><button class="chip" data-toolv="fbType" data-v="refund" aria-pressed="${!free}">Pari remboursé si perdant</button></div>
+    <div class="row" style="align-items:flex-end;margin-top:10px">
+      <label class="f">${free ? "Montant du freebet (€)" : "Mise remboursable (€)"}<input type="number" step="1" id="t-fbAmt" data-tool="fbAmt" value="${esc(T.fbAmt)}"></label>
+      <label class="f">Chez<select data-tool="fbBook">${books.map(b => `<option ${b === T.fbBook ? "selected" : ""}>${esc(b)}</option>`).join("")}</select></label>
+      <label class="f">Cote minimale exigée<input type="number" step="0.05" id="t-fbMin" data-tool="fbMin" value="${esc(T.fbMin)}"></label>
+      ${free ? "" : `<label class="f">Valeur d'un freebet (%)<input type="number" step="5" id="t-fbConv" data-tool="fbConv" value="${esc(T.fbConv)}"></label>`}
+      <label class="f" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" data-toolb="fbB365" ${T.fbB365 ? "checked" : ""}>Couvrir aussi chez Bet365 (cotes jusqu'à 4 jours)</label></div>
+    ${out.length ? `<div class="scroll" style="margin-top:12px"><table><thead><tr><th>Match</th><th>${free ? "Freebet sur" : "Mise sur"}</th><th>Couverture (argent réel)</th><th class="r">Garanti</th><th class="r">${free ? "Conversion" : "Rendement"}</th></tr></thead><tbody>
+      ${out.map(x => `<tr><td><button class="btn small" data-open="${esc(x.f.key)}">${esc(short(x.f.home))} – ${esc(short(x.f.away))}</button><br><span class="faint">${esc(fxLabel(x.f).split(" · ")[1])}</span></td>
+        <td><strong>${esc(selLab(x.f, x.k))}</strong><br><span class="num">${odd(x.oi)}</span> <span class="faint">${esc(T.fbBook)} · ${eur(F)}</span></td>
+        <td>${x.oth.map(h => `${esc(selLab(x.f, h.k))} <span class="num">${odd(h.o)}</span> <span class="faint">${esc(h.book)}</span> : <strong class="num">${eur(h.s)}</strong>`).join("<br>")}</td>
+        <td class="r num"><strong>${eur(x.worst)}</strong></td><td class="r num">${sgn(x.conv, 0)}</td></tr>`).join("")}</tbody></table></div>
+      <p class="note" style="margin-top:8px">${free ? `Le freebet sur une cote haute, l'argent réel sur les autres issues : le gain est le même quel que soit le résultat. Une conversion de 70 à 80 % est un bon résultat.` : `Mise d'argent réel sur l'issue, couverture des autres ; si l'issue perd, le remboursement en freebet vaut environ ${nf(numv(T.fbConv) || 0)} % de la mise une fois converti avec le tableau Freebet. « Garanti » inclut cette valeur.`} Les mises de couverture sont arrondies à 0,10 €. Vérifie chaque cote juste avant de placer, jambe la plus fragile d'abord.</p>
+      ${free && bestEV ? `<p class="note">Sans couvrir : la meilleure espérance est ${esc(selLab(bestEV.f, bestEV.k))} (${esc(short(bestEV.f.home))} – ${esc(short(bestEV.f.away))}) à ${odd(bestEV.oi)}, ${eur(bestEV.v)} en moyenne, mais tout ou rien. Couvrir sacrifie un peu d'espérance contre un gain certain.</p>` : ""}`
+    : `<div class="empty">${F > 0 ? `Aucun match coté chez ${esc(T.fbBook)} à une cote d'au moins ${odd(numv(T.fbMin) || 1)} avec une couverture possible chez tes bookmakers.` : "Indique un montant."}</div>`}`;
+}
+
+// ---------- Couverture et cash-out ----------
+function hedgeBlock() {
+  const T = S.tool, R = numv(T.hR), M = numv(T.hM) || 0, os = numv(T.hOs), opp = [numv(T.hO1), numv(T.hO2)].filter(x => x > 1), cash = numv(T.hCash);
+  let res = "";
+  if (R > 0 && opp.length) {
+    const hs = opp.map(o => Math.round(R / o * 100) / 100), tot = hs.reduce((a, b) => a + b, 0), locked = R - tot;
+    const p = os > 1 ? L90.devig([os, ...opp], S.cfg.devig)[0] : Math.max(0, 1 - opp.reduce((a, o) => a + 1 / o, 0) / 1.05), fairV = R * p;
+    res = `<div class="readouts" style="margin-top:12px">
+      <div class="ro"><span>Mise de couverture</span><b>${eur(tot)}</b><span>${hs.map((h, i) => `${eur(h)} à ${odd(opp[i])}`).join(" + ")}</span></div>
+      <div class="ro"><span>Encaissé quoi qu'il arrive</span><b>${eur(locked)}</b><span>${M > 0 ? `${locked - M >= 0 ? "+" : ""}${eur(locked - M)} par rapport à ta mise` : ""}</span></div>
+      <div class="ro"><span>Valeur juste du pari</span><b>${eur(fairV)}</b><span>chance de gagner ${pct(p, 0)}${os > 1 ? "" : " (approx.)"}</span></div>
+      ${cash > 0 ? `<div class="ro"><span>Cash-out proposé</span><b>${pct(cash / fairV, 0)}</b><span>de la valeur juste</span></div>` : ""}</div>
+      <p class="note" style="margin-top:8px">${cash > 0 ? (cash >= locked ? `Le cash-out (${eur(cash)}) rapporte au moins autant que la couverture (${eur(locked)}) : plus simple, prends-le si tu veux sécuriser.` : `Couvrir rapporte ${eur(locked - cash)} de plus que le cash-out du bookmaker.`) + " " : ""}Laisser courir vaut ${eur(fairV)} en moyenne : sécuriser coûte ${eur(Math.max(0, fairV - Math.max(locked, cash > 0 ? cash : 0)))} d'espérance, en échange de la certitude. Pour une montante, couvrir le dernier palier transforme la série en gain sûr.</p>`;
+  }
+  return `<div class="row" style="align-items:flex-end">
+      <label class="f">Retour potentiel du pari (€)<input type="number" step="1" id="t-hR" data-tool="hR" value="${esc(T.hR)}"></label>
+      <label class="f">Déjà misé (€)<input type="number" step="1" id="t-hM" data-tool="hM" value="${esc(T.hM)}"></label>
+      <label class="f">Cote actuelle de ton issue<input type="number" step="0.01" id="t-hOs" data-tool="hOs" value="${esc(T.hOs)}" placeholder="facultatif"></label>
+      <label class="f">Cote contraire 1<input type="number" step="0.01" id="t-hO1" data-tool="hO1" value="${esc(T.hO1)}"></label>
+      <label class="f">Cote contraire 2<input type="number" step="0.01" id="t-hO2" data-tool="hO2" value="${esc(T.hO2)}" placeholder="1X2 seulement"></label>
+      <label class="f">Cash-out proposé (€)<input type="number" step="0.5" id="t-hCash" data-tool="hCash" value="${esc(T.hCash)}" placeholder="facultatif"></label></div>
+    ${res || `<p class="note" style="margin-top:8px">Exemple : dernier palier d'une montante, retour 120 € si Lens gagne. Saisis les cotes actuelles du nul et de la victoire adverse : la page calcule les mises qui garantissent le même gain dans tous les cas, et compare avec le cash-out proposé.</p>`}`;
+}
+
+// ---------- Dutching ----------
+function dutchBlock() {
+  const T = S.tool, os = T.dut.map(numv), ok = os.filter(o => o > 1), Tot = numv(T.dutT);
+  let res = "";
+  if (ok.length >= 2 && Tot > 0) { const inv = ok.map(o => 1 / o), s = inv.reduce((a, b) => a + b, 0);
+    res = `<div class="readouts" style="margin-top:12px"><div class="ro"><span>Cote équivalente</span><b>${odd(1 / s)}</b></div><div class="ro"><span>Retour si une passe</span><b>${eur(Tot / s)}</b></div></div>
+      <div class="scroll"><table style="margin-top:8px"><tbody>${ok.map((o, i) => `<tr><td>Sélection ${i + 1}</td><td class="r num">cote ${odd(o)}</td><td class="r num">mise <strong>${eur(Tot * inv[i] / s)}</strong></td></tr>`).join("")}</tbody></table></div>`; }
+  return `<div class="row" style="align-items:flex-end">${T.dut.map((v, i) => `<label class="f">Cote ${i + 1}<input type="number" step="0.01" id="t-dut${i}" data-tooldut="${i}" value="${esc(v)}"></label>`).join("")}
+      <label class="f">Mise totale (€)<input type="number" step="1" id="t-dutT" data-tool="dutT" value="${esc(T.dutT)}"></label>
+      <button class="btn small" data-tooladd="1" ${T.dut.length >= 5 ? "disabled" : ""}>+ cote</button></div>${res}
+    <p class="note" style="margin-top:8px">Répartit une mise sur plusieurs issues exclusives (deux scores exacts, deux buteurs, deux écarts) pour le même retour quelle que soit celle qui passe. Exemple pour l'Objectif ×2 : « 1-0 » à 6,5 et « 2-0 » à 8 font une cote équivalente de 3,59.</p>`;
+}
+
+// ---------- Onglet ----------
+function renderTools() {
+  const T = S.tool, narrow = innerWidth < 600, val = T.v === "value";
+  let spec, side = "";
+  if (val) { spec = value3dSpec(narrow); const G = spec.G, per = {};
+    for (const f of G.list) { const fair = fairOf(f); for (const [b, o] of Object.entries(S.odds[f.key])) { if (!S.cfg.myBooks.includes(b)) continue; for (const k of B3_SEL) if (o[k] > 1 && fair[k]) (per[b] ??= []).push(fair[k] * o[k] - 1); } }
+    const pos = G.cells.filter(x => x.ev >= 0).sort((a, b) => b.ev - a.ev);
+    side = `<div class="b3-legend">${Object.entries(per).sort((a, b) => avg(b[1]) - avg(a[1])).map(([b, v]) => `<span><i style="background:${b3Hex(b3Color(b))}"></i>${esc(b.replace(" (FR)", ""))} <b class="num">${sgn(avg(v))}</b></span>`).join("")}</div>
+      <p class="note">${G.cells.length ? `${pos.length} sélection${pos.length > 1 ? "s" : ""} sur ${G.cells.length} au-dessus du plan${pos.length ? ` ; la meilleure : ${esc(selLab(pos[0].f, pos[0].k))} (${esc(short(pos[0].f.home))} – ${esc(short(pos[0].f.away))}) à ${odd(pos[0].o)} chez ${esc(pos[0].book)}, ${sgn(pos[0].ev)}` : ""}. Chiffre de chaque bookmaker : ce que ses cotes rendent en moyenne face au prix juste.${per["Bet365"] ? " Bet365 paraît moins cher, mais ses cotes viennent d'un fichier mis à jour deux fois par semaine : une partie de l'écart vient de cotes périmées, à vérifier sur le site." : ""}` : "Aucun match à venir coté par Pinnacle."}</p>`; }
+  else { spec = margin3dSpec(); const tot = spec.books.map(b => [b, spec.lgs.flatMap(l => spec.acc[l][b] || [])]).filter(x => x[1].length);
+    side = `<div class="b3-legend">${tot.map(([b, v]) => `<span><i style="background:${b3Hex(b3Color(b))}"></i>${esc(b.replace(" (FR)", ""))} <b class="num">${pct(avg(v), 1)}</b></span>`).join("")}</div>
+      <p class="note">Marge moyenne 1X2 par championnat ; plus la barre est basse, moins le bookmaker prélève. Barre cerclée : le moins cher de tes bookmakers dans ce championnat.</p>`; }
+  $("#v-tools").innerHTML = `<div class="stack">
+    <div><h1>Outils de paris</h1><p class="lede">Les cotes réelles de tes bookmakers, face au prix juste de Pinnacle. Les seuls avantages durables à la portée d'un parieur en France sont là : cotes boostées, freebets, bonus de remboursement, et choisir le bookmaker le moins cher pour chaque pari.</p></div>
+    <div class="panel"><header><h2>${val ? "Relief de la valeur" : "Marges par championnat"}</h2><div class="chips"><button class="chip" data-toolv="v" data-v="value" aria-pressed="${val}">Valeur</button><button class="chip" data-toolv="v" data-v="margin" aria-pressed="${!val}">Marges</button></div></header>
+      ${val ? `<p class="muted" style="margin:0 0 8px">Chaque barre : la meilleure cote de tes bookmakers sur une issue, comparée à la cote juste Pinnacle. Au-dessus du plan lumineux, le pari a une espérance positive ; en dessous, tu paies la marge. Couleur : le bookmaker qui offre cette cote.</p>` : ""}
+      ${b3Panel("t3d")}${side}<p class="note">Glisse pour tourner ; survole ou touche une barre pour le détail.</p></div>
+    <div class="panel"><header><h2>Cote boostée : rentable ou pas ?</h2><span class="note">Winamax, Betclic, Unibet en publient chaque jour</span></header>${boostBlock()}</div>
+    <div class="panel"><header><h2>Freebets et paris remboursés</h2><span class="note">Conversion en gain garanti avec tes bookmakers</span></header>${fbBlock()}</div>
+    <div class="grid2">
+      <div class="panel"><header><h2>Couverture et cash-out</h2></header>${hedgeBlock()}</div>
+      <div class="panel"><header><h2>Dutching</h2></header>${dutchBlock()}</div></div>
+  </div>`;
+  if (spec.bars.length) b3Mount("t3d", spec); else $("#t3d-stage").innerHTML = `<div class="empty">Pas encore de cotes Pinnacle pour les matchs à venir.</div>`;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-toolv],[data-tooladd]"); if (!b) return;
+  if (b.dataset.tooladd) { if (S.tool.dut.length < 5) S.tool.dut.push(""); } else S.tool[b.dataset.toolv] = b.dataset.v;
+  saveTool(); render();
+});
+document.addEventListener("input", e => {
+  const d = e.target.dataset; if (d.tool == null && d.tooldut == null) return;
+  if (e.target.tagName === "SELECT") return;
+  if (d.tooldut != null) S.tool.dut[+d.tooldut] = e.target.value; else S.tool[d.tool] = e.target.value;
+  saveTool(); deferRender(e.target);
+});
+document.addEventListener("change", e => {
+  const d = e.target.dataset;
+  if (d.tool != null && e.target.tagName === "SELECT") { S.tool[d.tool] = e.target.value; saveTool(); render(); }
+  if (d.toolb != null) { S.tool[d.toolb] = e.target.checked; saveTool(); render(); }
+});
+document.addEventListener("input", e => { const d = e.target.dataset; if (d.cbo == null) return; (S.cbo ??= {})[d.cbo] = e.target.value; deferRender(e.target); });
+
 // ---------- Rendu général et événements ----------
 function render() {
   document.body.classList.toggle("fan", S.mode === "fan");
-  if (S.mode === "fan" && (S.tab === "value" || S.tab === "bank" || S.tab === "ladder")) S.tab = "radar";
+  if (S.mode === "fan" && ["value", "bank", "ladder", "tools"].includes(S.tab)) S.tab = "radar";
   if (S.tab === "fan") S.fan.joinCode = S.fan.joinCode || "";
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.tab === S.tab));
   document.querySelectorAll(".mode button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === S.mode));
   for (const v of VIEWS) $("#v-" + v).hidden = v !== S.tab;
   renderNotice();
-  ({ radar: renderRadar, match: renderMatch, season: renderSeason, fan: renderFan, value: renderValue, ladder: renderLadder, bank: renderBank, proof: renderProof })[S.tab]();
+  ({ radar: renderRadar, match: renderMatch, season: renderSeason, fan: renderFan, value: renderValue, ladder: renderLadder, tools: renderTools, bank: renderBank, proof: renderProof })[S.tab]();
 }
-const VIEWS = ["radar", "match", "season", "fan", "value", "ladder", "bank", "proof"];
+const VIEWS = ["radar", "match", "season", "fan", "value", "ladder", "tools", "bank", "proof"];
 function go(tab) { S.tab = tab; try { history.replaceState(null, "", "#" + tab); } catch {} render(); scrollTo({ top: 0 }); }
 
 document.addEventListener("click", e => {
