@@ -3,7 +3,7 @@
 Trois formats gérés : getLeagueData (« dates » ou « teams »), puis la page HTML ancienne (datesData).
 Sortie : data/understat.csv (league, season, date, home, away, hg, ag, hxg, axg). Lancé par GitHub Actions.
 """
-import codecs, http.cookiejar, json, re, sys, time, urllib.request
+import codecs, gzip, http.cookiejar, json, re, sys, time, urllib.request, zlib
 from datetime import datetime, timezone
 from pathlib import Path
 import pandas as pd
@@ -19,8 +19,13 @@ def http(url, xhr, referer):
     h = {"User-Agent": UA, "Accept": "application/json, text/javascript, */*; q=0.01" if xhr else "text/html,application/xhtml+xml", "Accept-Language": "en-GB,en;q=0.9", "Referer": referer}
     if xhr: h["X-Requested-With"] = "XMLHttpRequest"
     with OPENER.open(urllib.request.Request(url, headers=h), timeout=40) as r:
-        body = r.read().decode("utf-8", "replace"); code = r.status
-    if len(DIAG) < 6: DIAG.append(f"{code} {url} | {len(body)} car. | début : {body[:160]!r}")
+        raw = r.read(); code = r.status
+    if raw[:2] == b"\x1f\x8b": raw = gzip.decompress(raw)          # réponse compressée gzip
+    elif raw[:1] == b"\x78":                                          # ou zlib brut
+        try: raw = zlib.decompress(raw)
+        except zlib.error: pass
+    body = raw.decode("utf-8", "replace")
+    if len(DIAG) < 4: DIAG.append(f"{code} {url} | {len(body)} car. | début : {body[:200]!r}")
     return body
 
 def from_dates(dates, code, season):
@@ -62,7 +67,10 @@ def parse(text, code, season):
 
 def fetch_one(code, slug, season):
     page = f"https://understat.com/league/{slug}/{season}"
-    for url, xhr in ((page, False), (f"https://understat.com/getLeagueData/{slug}/{season}", True)):  # la page d'abord : elle pose les cookies
+    if not len(JAR):  # une visite de page pose les cookies de session
+        try: http(page, False, page)
+        except Exception as e: print("échec page", str(e)[:120])
+    for url, xhr in ((f"https://understat.com/getLeagueData/{slug}/{season}", True), (page, False)):  # données JSON, puis page HTML en secours
         try:
             rows = parse(http(url, xhr, page), code, season)
             if rows: return rows, url

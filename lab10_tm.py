@@ -49,6 +49,7 @@ def features(T):
         miss = [c for c in cols if c not in T[tab].columns]
         if miss: raise RuntimeError(f"colonnes absentes dans {tab} : {miss}")
     G = G[G.competition_id.isin(COMP) & (pd.to_datetime(G.date) >= "2021-07-01")].copy(); G["date"] = pd.to_datetime(G.date)
+    LU = LU[["game_id", "club_id", "player_id", "type"]]
     LU = LU[LU.game_id.isin(G.game_id) & LU.type.astype(str).str.contains("start", case=False)]
     V = V[["player_id", "date", "market_value_in_eur"]].copy(); V["date"] = pd.to_datetime(V.date); V = V.sort_values("date")
     X = LU.merge(G[["game_id", "date"]], on="game_id").sort_values("date")
