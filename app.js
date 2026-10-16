@@ -639,6 +639,15 @@ function deepRows() {
   const l6 = d.lab6;
   if (l6) { out.push(["Modèle sur les tirs totaux", "1N2", `RPS ${nf(l6.rps_avec_tirs, 4)} contre ${nf(l6.rps_actuel, 4)} avec les seuls tirs cadrés`, "Rejeté"]);
     out.push(["Mélange modèle + marché (Bet365)", "1N2", `meilleur poids du marché : ${pct(l6.melange.poids_marche_optimal)} ; RPS ${nf(l6.melange.rps_marche, 4)} contre ${nf(l6.melange.rps_modele, 4)} pour le modèle seul`, "Adopté : référence 90 % marché"]); }
+  const l7 = d.lab7;
+  if (l7) { const t = l7.par_tranche.find(x => x.tranche === "75-85 %"), c2 = l7.cote_2;
+    if (t) out.push(["Paris annoncés à 75-85 %", "Calibration", `${nf(t.reussite * 100, 1)} % de réussite pour ${nf(t.proba_modele * 100, 1)} % annoncés sur ${nf(t.paris)} paris ; cote moyenne ${nf(t.cote_moy, 2)}, rendement ${sgn(t.rendement)}`, "Fiable, mais pas rentable"]);
+    out.push(["Les 10 % « plus sûrs » à cote ≈ 2", "Value", `annoncés ${nf(c2.top10_modele.proba_modele * 100)} %, passés ${nf(c2.top10_modele.reussite * 100)} % ; rendement ${sgn(c2.top10_modele.rendement)}`, "Rejeté : excès de confiance"]);
+    out.push(["Gradient boosting (au lieu de la régression logistique)", "1N2", `RPS ${nf(l7.modeles.boosting_modele, 4)} contre ${nf(l7.modeles.logistique_modele, 4)}`, "Rejeté"]); }
+  const la = d.lab_api;
+  if (la?.au_dela_ouverture) { const o = la.au_dela_ouverture, c = la.au_dela_cloture;
+    out.push(["Force du onze aligné (API-Football)", "1N2", `gain RPS ${nf(o.gain * 1000, 2)} ‰ au-delà des cotes d'ouverture (IC ${nf(o.ic95[0] * 1000, 1)} à ${nf(o.ic95[1] * 1000, 1)} ‰, ${nf(o.n_test)} matchs)${c ? ` ; au-delà de la clôture : ${nf(c.gain * 1000, 2)} ‰` : ""}`, o.prouve ? (c?.prouve ? "Avantage prouvé, même face à la clôture" : "Prouvé avant l'annonce des compos") : "Non prouvé"]); }
+  else out.push(["Force du onze aligné (API-Football)", "1N2", la ? `collecte : ${la.collecte}` : "test prêt, lancé dès que la clé API-Football est branchée", "En attente"]);
   const c = d.clv, cv = c && c["clv_seuil_1.05"];
   out.push(c ? ["Modèle face à la clôture Pinnacle", "1N2", `RPS ${nf(c.rps_modele, 4)} contre ${nf(c.rps_pinnacle_cloture, 4)} (clôture) ; CLV ${cv?.clv_moy != null ? `${sgn(cv.clv_moy)} sur ${nf(cv.n)} paris, IC ${sgn(cv.ic95[0])} à ${sgn(cv.ic95[1])}` : "trop peu de paris"}`,
     cv?.ic95 && cv.ic95[0] > 0 ? "Avantage prouvé" : "Pas d'avantage prouvé"] : ["Modèle face à la clôture Pinnacle (CLV)", "1N2", "calculé chaque lundi par la mise à jour automatique, dès que le dépôt GitHub tourne", "En attente"]);
@@ -676,7 +685,7 @@ function labPanel() {
   ];
   return `<div class="panel"><header><h2>Laboratoire : ce qui a été testé</h2><span class="note">Walk-forward, entraînement toujours antérieur au test</span></header>
     <div class="scroll"><table><thead><tr><th>Signal ou méthode</th><th>Cible</th><th>Résultat hors échantillon</th><th>Décision</th></tr></thead><tbody>
-    ${rows.map(([a, b, c, d]) => `<tr><td>${a}</td><td class="faint">${b}</td><td class="num">${c}</td><td><span class="pill ${/Rejeté|Faible|Sans effet|Moins bon|Non prouvé|non significatif|Pas d'avantage/.test(d) ? "warn" : /négligeable|En attente/.test(d) ? "ghost" : "good"}">${d}</span></td></tr>`).join("")}</tbody></table></div>
+    ${rows.map(([a, b, c, d]) => `<tr><td>${a}</td><td class="faint">${b}</td><td class="num">${c}</td><td><span class="pill ${/Rejeté|Faible|Sans effet|Moins bon|Non prouvé|non significatif|Pas d'avantage|pas rentable/.test(d) ? "warn" : /négligeable|En attente/.test(d) ? "ghost" : "good"}">${d}</span></td></tr>`).join("")}</tbody></table></div>
     <p class="note" style="margin-top:8px">Un signal n'entre dans la plateforme que s'il améliore la prévision sur des matchs que le modèle n'a pas vus. RPS, log-loss et Brier : plus bas = mieux.</p></div>
   <div class="panel"><header><h2>Données : ce qui est branché, ce qui manque</h2></header>
     <div class="stack muted" style="max-width:80ch">

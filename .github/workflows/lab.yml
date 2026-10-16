@@ -1,0 +1,48 @@
+name: Labo API
+# Lancement : onglet Actions → « Labo API » → Run workflow, ou un commit qui modifie lab/request.txt.
+# Collecte l'historique API-Football (reprise automatique jusqu'au budget du jour), teste les compositions contre les cotes,
+# publie out/lab_api.json et le cache dans le dépôt.
+on:
+  workflow_dispatch:
+    inputs:
+      seasons: { description: "Saisons (année de début)", default: "2024,2025,2026" }
+      budget: { description: "Appels API maximum pour ce passage", default: "7000" }
+  push:
+    paths: ["lab/request.txt"]
+  schedule:
+    - cron: "17 2 * * *"   # reprise quotidienne de la collecte tant qu'elle n'est pas complète
+permissions: { contents: write }
+concurrency: { group: lambda90-data, cancel-in-progress: false }
+jobs:
+  lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install numpy pandas scipy scikit-learn statsmodels
+      - name: Collecte déjà complète ?
+        id: done
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ] && [ -f out/lab_api.json ] && grep -q '"collecte": "complète"' out/lab_api.json; then echo "skip=1" >> $GITHUB_OUTPUT; fi
+      - name: Cotes de clôture (football-data.co.uk)
+        if: steps.done.outputs.skip != '1'
+        run: python pipeline/fetch_closing.py data || echo "clôtures indisponibles"
+      - name: Labo
+        if: steps.done.outputs.skip != '1'
+        env:
+          API_FOOTBALL_KEY: ${{ secrets.API_FOOTBALL_KEY }}
+          LAB_SEASONS: ${{ github.event.inputs.seasons || '2024,2025,2026' }}
+          LAB_BUDGET: ${{ github.event.inputs.budget || '7000' }}
+        run: python lab_api.py .
+      - name: Page
+        if: steps.done.outputs.skip != '1'
+        run: ./mk.sh
+      - name: Publier dans le dépôt
+        if: steps.done.outputs.skip != '1'
+        run: |
+          git config user.name "lambda90-bot"; git config user.email "bot@users.noreply.github.com"
+          git add out/lab_api.json data/af_cache data/closing.csv lambda-90.html 2>/dev/null || true
+          git commit -m "Labo API $(date -u +%FT%H:%M)" || echo "rien à publier"
+          git pull --rebase && git push

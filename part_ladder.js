@@ -2,7 +2,7 @@
 S.lad = Object.assign({ cap: 10, steps: 4, lo: 1.85, hi: 2.25, legs: 2, secure: 0, est: true }, ls.get("lad", {}));
 S.ladRun = ls.get("ladRun", null); S.ladHist = ls.get("ladHist", []);
 const saveLad = () => { ls.set("lad", S.lad); ls.set("ladRun", S.ladRun); ls.set("ladHist", S.ladHist); };
-const LSEL = ["H", "D", "A", "1N", "N2", "12", "O15", "O25", "U25", "U35", "BY", "BN", "HS", "AS"];
+const LSEL = ["H", "D", "A", "1N", "N2", "12", "O15", "O25", "U25", "U35", "BY", "BN", "HS", "AS"];  // O15, U35, HS, AS : marchés naturellement autour de 75-85 %
 function avgMargin() {
   const xs = []; for (const books of Object.values(S.odds)) for (const [b, o] of Object.entries(books)) if (isANJ(b) && ["H", "D", "A"].every(k => o[k] > 1)) xs.push(L90.overround([o.H, o.D, o.A]));
   return xs.length ? { m: xs.reduce((s, v) => s + v, 0) / xs.length, n: xs.length } : { m: 0.07, n: 0 };
@@ -120,6 +120,10 @@ function renderLadder() {
   $("#v-ladder").innerHTML = `<div class="stack">
     <div class="panel"><header><h2>Objectif ×2</h2><span class="note">Doubler un capital palier par palier : ce que disent vraiment les probabilités</span></header>
       <p class="lede">Une cote de 2 n'est jamais « sûre ». Chez un bookmaker agréé, elle correspond à environ ${pct(fair2)} de chances une fois sa marge retirée (marge moyenne ${S.oddsSource === "demo" ? `des cotes de démonstration : ${pct(mg.m, 1)}, à remplacer par les vraies cotes` : mg.n ? `mesurée : ${pct(mg.m, 1)} sur ${mg.n} lignes de cotes` : `supposée : ${pct(mg.m, 1)}, faute de cotes`}). Les meilleures sélections du moteur montent un peu au-dessus. Enchaîner les paliers multiplie les risques : une montante est un seul gros combiné joué en plusieurs fois.</p>
+      <div class="chips" style="margin-top:14px" role="group" aria-label="Profil de sélection">
+        <button class="chip" data-ladpreset="x2" aria-pressed="${L.lo === 1.85 && L.hi === 2.25}">Cote ≈ 2 : un palier double la mise</button>
+        <button class="chip" data-ladpreset="sure" aria-pressed="${L.lo === 1.15 && L.hi === 1.35}">Très probables (75-85 %) : cote ≈ 1,25</button></div>
+      ${L.hi <= 1.4 ? `<p class="note" style="margin-top:8px">À cote ≈ 1,25, il faut 3 paliers pour doubler : 0,78 × 0,78 × 0,78 ≈ 47 %, comme un seul palier à cote 2. Sur 2 301 paris de ce type testés en 2025-26, le moteur annonçait 79 % et 77,9 % sont passés (cote moyenne 1,22, rendement −5 %).</p>` : ""}
       <div class="row" style="margin-top:14px">
         <label class="f">Capital de départ (€)<input type="number" min="1" step="1" data-lad="cap" value="${L.cap}"></label>
         <label class="f">Paliers visés<input type="number" min="1" max="10" step="1" data-lad="steps" value="${L.steps}"></label>
@@ -175,6 +179,8 @@ function ladderResult(res) {
 }
 function ladderEnd(status) { const r = S.ladRun; if (!r) return; r.status = status; r.final = r.stake + r.banked; S.ladHist.push(r); S.ladRun = null; saveLad(); toast(status === "won" ? "Objectif atteint" : status === "lost" ? "Montante perdue" : "Montante arrêtée"); }
 document.addEventListener("click", e => {
+  const pr = e.target.closest("[data-ladpreset]");
+  if (pr) { Object.assign(S.lad, pr.dataset.ladpreset === "sure" ? { lo: 1.15, hi: 1.35, legs: 1, steps: 3 } : { lo: 1.85, hi: 2.25, legs: 2, steps: 4 }); saveLad(); render(); return; }
   const b = e.target.closest("[data-ladpick],[data-ladres],[data-ladact]"); if (!b) return;
   if (b.dataset.ladpick != null) ladderStart(S._ladPicks[+b.dataset.ladpick]);
   else if (b.dataset.ladres) ladderResult(b.dataset.ladres);

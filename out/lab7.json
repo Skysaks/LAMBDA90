@@ -1,0 +1,83 @@
+{
+ "n_test": 3129,
+ "par_tranche": [
+  {
+   "tranche": "45-55 %",
+   "paris": 3692,
+   "reussite": 0.5,
+   "proba_modele": 0.5,
+   "cote_moy": 1.9283,
+   "rendement": -0.0523
+  },
+  {
+   "tranche": "55-65 %",
+   "paris": 3415,
+   "reussite": 0.5871,
+   "proba_modele": 0.5984,
+   "cote_moy": 1.6542,
+   "rendement": -0.0415
+  },
+  {
+   "tranche": "65-75 %",
+   "paris": 4086,
+   "reussite": 0.6973,
+   "proba_modele": 0.7036,
+   "cote_moy": 1.3622,
+   "rendement": -0.059
+  },
+  {
+   "tranche": "75-85 %",
+   "paris": 2301,
+   "reussite": 0.7792,
+   "proba_modele": 0.7897,
+   "cote_moy": 1.2247,
+   "rendement": -0.0505
+  },
+  {
+   "tranche": "85 %+",
+   "paris": 868,
+   "reussite": 0.8906,
+   "proba_modele": 0.8984,
+   "cote_moy": 1.0931,
+   "rendement": -0.0313
+  }
+ ],
+ "cote_2": {
+  "paris": 3578,
+  "reussite_moyenne": 0.46674119619899385,
+  "cote_moy": 2.040338177752935,
+  "top10_modele": {
+   "paris": 358,
+   "reussite": 0.48044692737430167,
+   "proba_modele": 0.5961233107797563,
+   "rendement": -0.05162011173184359
+  },
+  "top10_marche": {
+   "paris": 358,
+   "reussite": 0.4664804469273743,
+   "proba_marche": 0.5155631780678099,
+   "rendement": -0.1301117318435754
+  }
+ },
+ "modeles": {
+  "logistique_modele": 0.20152667793208934,
+  "boosting_modele": 0.2028115895529583,
+  "logistique_modele_marche": 0.19833289910983923,
+  "boosting_modele_marche": 0.2002495451059524,
+  "marche_seul": 0.19813722367988554
+ },
+ "boosting_vs_logistique": {
+  "gain": -0.0012849116208689386,
+  "ic95": [
+   -0.002342644324838643,
+   -0.0002147506441813456
+  ]
+ },
+ "meilleur_vs_marche": {
+  "gain": -0.00019567542995367192,
+  "ic95": [
+   -0.0010393331382729722,
+   0.0006370796196554918
+  ]
+ }
+}

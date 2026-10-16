@@ -13,6 +13,10 @@ OUT = Path(sys.argv[1]); CL = Path(sys.argv[2])
 if not CL.exists(): print("pas de", CL); sys.exit(0)
 D = pd.read_csv(OUT / "engine3_preds.csv", parse_dates=["date"])
 C = pd.read_csv(CL, parse_dates=["Date"]).rename(columns={"Date": "date", "HomeTeam": "home", "AwayTeam": "away"})
+# Pinnacle d'abord ; depuis la fermeture de son API (juillet 2025), la colonne peut manquer : repli sur la clôture Bet365
+BOOK = "Pinnacle"
+if C[["PSCH", "PSCD", "PSCA"]].dropna().shape[0] < 200 if {"PSCH", "PSCD", "PSCA"} <= set(C.columns) else True:
+    BOOK = "Bet365"; C = C.rename(columns={"B365H": "PSH", "B365D": "PSD", "B365A": "PSA", "B365CH": "PSCH", "B365CD": "PSCD", "B365CA": "PSCA"})
 D = D.merge(C[["date", "home", "away", "PSH", "PSD", "PSA", "PSCH", "PSCD", "PSCA"]], on=["date", "home", "away"], how="inner")
 D = D.dropna(subset=["PSH", "PSD", "PSA", "PSCH", "PSCD", "PSCA"]).reset_index(drop=True)
 if len(D) < 200: print("trop peu de matchs appariés", len(D)); sys.exit(0)
@@ -35,7 +39,7 @@ for s in seasons[1:]:
 ok = ~np.isnan(P[:, 0]); D, P, O = D[ok].reset_index(drop=True), P[ok], O[ok]
 OP = D[["PSH", "PSD", "PSA"]].to_numpy(); CP = D[["PSCH", "PSCD", "PSCA"]].to_numpy()
 po, pc = shin(OP), shin(CP)
-R = dict(n=int(len(D)), saisons=[int(s) for s in seasons[1:]], rps_modele=float(rps(P, O).mean()), rps_pinnacle_ouverture=float(rps(po, O).mean()), rps_pinnacle_cloture=float(rps(pc, O).mean()))
+R = dict(bookmaker=BOOK, n=int(len(D)), saisons=[int(s) for s in seasons[1:]], rps_modele=float(rps(P, O).mean()), rps_pinnacle_ouverture=float(rps(po, O).mean()), rps_pinnacle_cloture=float(rps(pc, O).mean()))
 # CLV : paris où le modèle × cote d'ouverture > seuil ; CLV = cote ouverture / cote de clôture juste - 1
 for thr in (1.02, 1.05, 1.10):
     ev = P * OP; pick = ev > thr

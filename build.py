@@ -13,7 +13,7 @@ feed_p = B/'out/feed_odds.json'
 feed = json.load(open(feed_p)) if feed_p.exists() else None
 live = {k: v for k, v in live.items() if k != 'clock'}
 lab.pop('stack_coefs', None)
-lab['deep'] = {k: json.load(open(B/f'out/{k}.json')) for k in ('lab2', 'lab2b', 'lab3', 'lab4', 'lab5', 'lab6', 'clv') if (B/f'out/{k}.json').exists()}
+lab['deep'] = {k: json.load(open(B/f'out/{k}.json')) for k in ('lab2', 'lab2b', 'lab3', 'lab4', 'lab5', 'lab6', 'lab7', 'lab_api', 'clv') if (B/f'out/{k}.json').exists()}
 data = json.dumps(dict(pre=pre, live=live, extra=extra, lab=lab, v3=v3meta, feed=feed), ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
 t = open(B/'template.html').read()
 t = t.replace('/*__DATA__*/null', data).replace('/*__CORE__*/', open(B/'core.js').read()).replace('/*__APP__*/', open(B/'app_full.js').read())
