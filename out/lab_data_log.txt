@@ -1,0 +1,83 @@
+2425 F1 306
+2425 E0 380
+2425 E1 552
+2425 SP1 380
+2425 D1 306
+2425 I1 380
+2425 P1 306
+2425 N1 306
+2526 F1 306
+2526 E0 380
+2526 E1 552
+2526 SP1 380
+2526 D1 306
+2526 I1 380
+2526 P1 306
+2526 N1 306
+2627 F1 54
+2627 E0 60
+2627 E1 119
+2627 SP1 78
+2627 D1 45
+2627 I1 60
+2627 P1 71
+2627 N1 72
+écrit data/closing.csv
+en.1 2017 (0, None)
+en.1 2018 (0, None)
+en.1 2019 (0, None)
+en.1 2020 (0, None)
+en.1 2021 (0, None)
+en.1 2022 (0, None)
+en.1 2023 (0, None)
+en.1 2024 (0, None)
+en.1 2025 (0, None)
+en.1 2026 (0, None)
+es.1 2017 (0, None)
+es.1 2018 (0, None)
+es.1 2019 (0, None)
+es.1 2020 (0, None)
+es.1 2021 (0, None)
+es.1 2022 (0, None)
+es.1 2023 (0, None)
+es.1 2024 (0, None)
+es.1 2025 (0, None)
+es.1 2026 (0, None)
+de.1 2017 (0, None)
+de.1 2018 (0, None)
+de.1 2019 (0, None)
+de.1 2020 (0, None)
+de.1 2021 (0, None)
+de.1 2022 (0, None)
+de.1 2023 (0, None)
+de.1 2024 (0, None)
+de.1 2025 (0, None)
+de.1 2026 (0, None)
+it.1 2017 (0, None)
+it.1 2018 (0, None)
+it.1 2019 (0, None)
+it.1 2020 (0, None)
+it.1 2021 (0, None)
+it.1 2022 (0, None)
+it.1 2023 (0, None)
+it.1 2024 (0, None)
+it.1 2025 (0, None)
+it.1 2026 (0, None)
+fr.1 2017 (0, None)
+fr.1 2018 (0, None)
+fr.1 2019 (0, None)
+fr.1 2020 (0, None)
+fr.1 2021 (0, None)
+fr.1 2022 (0, None)
+fr.1 2023 (0, None)
+fr.1 2024 (0, None)
+fr.1 2025 (0, None)
+fr.1 2026 (0, None)
+matchs avec xG : 0
+pas de data/understat.csv : lab9 non lancé
+fichier séparé indisponible games HTTP Error 403: Forbidden
+fichier séparé indisponible game_lineups HTTP Error 403: Forbidden
+fichier séparé indisponible player_valuations HTTP Error 403: Forbidden
+{
+ "erreur": "HTTPError : HTTP Error 403: Forbidden"
+}
