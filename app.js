@@ -102,8 +102,10 @@ function refProbs(f, market) {
   if (market === "1X2") return cons ? { p: blend(model, cons), src: "Mélange modèle et consensus" } : { p: model, src: "Modèle" };
   return cons ? { p: cons, src: "Consensus du marché" } : { p: model, src: "Modèle (sans avantage mesuré)" };
 }
+// match commencé : les cotes du flux sont des cotes en direct, sans rapport avec l'avant-match
+const started = f => { const k = Date.parse(S.kick?.[f.key] || ""); return isFinite(k) && k <= Date.now(); };
 function analyse(f) {
-  const books = S.odds[f.key]; if (!books) return null;
+  const books = S.odds[f.key]; if (!books || started(f)) return null;
   const res = { value: [], arbs: [], best: {} };
   for (const market of Object.keys(MK)) {
     const ref = refProbs(f, market), keys = MK[market];

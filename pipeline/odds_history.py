@@ -24,8 +24,9 @@ def snap(e):
 def main():
     if not FEED.exists(): print("pas de flux"); return
     feed = json.load(open(FEED)); H = json.load(open(HIST)) if HIST.exists() else {}
-    now = int(time.time() * 1000)
+    now = int(time.time() * 1000); iso = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
     for e in feed["events"]:
+        if e["commence_time"] <= iso: continue  # match commencé : cotes en direct, hors avant-match
         s = snap(e)
         if not s: continue
         rec = H.setdefault(e["id"], {"home": e["home_team"], "away": e["away_team"], "commence": e["commence_time"], "snaps": []})

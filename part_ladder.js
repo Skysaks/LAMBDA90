@@ -10,6 +10,7 @@ function avgMargin() {
 function ladderCands() {
   const mg = avgMargin(), out = [];
   for (const f of FX) {
+    if (started(f)) continue;
     const h = short(f.home), a = short(f.away), M = f.m.M, defs = Object.fromEntries(COMBO(h, a).map(x => [x[0], x]));
     defs["12"] = ["12", `${h} ou ${a} (pas de nul)`, (i, j) => i !== j];
     const books = S.odds[f.key] || {}, b = f.band;
