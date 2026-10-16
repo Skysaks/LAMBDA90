@@ -13,16 +13,26 @@ BASE = "https://pub-e682421888d945d684bcae8890b0ec20.r2.dev/data/"
 COMP = {"GB1": "en.1", "GB2": "en.2", "FR1": "fr.1", "ES1": "es.1", "L1": "de.1", "IT1": "it.1", "PO1": "pt.1", "NL1": "nl.1"}
 R = {}
 
+UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0 Safari/537.36"
+def dl(url, path):
+    req = urllib.request.Request(url, headers={"User-Agent": UA, "Accept": "*/*"})
+    with urllib.request.urlopen(req, timeout=300) as r, open(path, "wb") as f:
+        while True:
+            b = r.read(1 << 20)
+            if not b: break
+            f.write(b)
 def get_tables():
     CACHE.mkdir(parents=True, exist_ok=True); need = ["games", "game_lineups", "player_valuations"]; T = {}
     for t in need:
         p = CACHE / f"{t}.csv.gz"
         if not p.exists():
-            try: urllib.request.urlretrieve(BASE + f"{t}.csv.gz", p)
-            except Exception as e: print("fichier séparé indisponible", t, str(e)[:80])
+            try: dl(BASE + f"{t}.csv.gz", p)
+            except Exception as e:
+                print("fichier séparé indisponible", t, str(e)[:80])
+                if p.exists(): p.unlink()
     if not all((CACHE / f"{t}.csv.gz").exists() for t in need):
         z = CACHE / "all.zip"
-        if not z.exists(): urllib.request.urlretrieve(BASE + "transfermarkt-datasets.zip", z)
+        if not z.exists(): dl(BASE + "transfermarkt-datasets.zip", z)
         with zipfile.ZipFile(z) as Z:
             for t in need:
                 name = next((n for n in Z.namelist() if n.split("/")[-1] in (f"{t}.csv", f"{t}.csv.gz")), None)

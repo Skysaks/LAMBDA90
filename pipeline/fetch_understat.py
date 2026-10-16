@@ -3,7 +3,7 @@
 Trois formats gérés : getLeagueData (« dates » ou « teams »), puis la page HTML ancienne (datesData).
 Sortie : data/understat.csv (league, season, date, home, away, hg, ag, hxg, axg). Lancé par GitHub Actions.
 """
-import codecs, json, re, sys, time, urllib.request
+import codecs, http.cookiejar, json, re, sys, time, urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
 import pandas as pd
@@ -13,10 +13,15 @@ UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like 
 now = datetime.now(timezone.utc); CUR = now.year if now.month >= 7 else now.year - 1
 SEASONS = list(range(2017, CUR + 1))
 
+JAR = http.cookiejar.CookieJar(); OPENER = urllib.request.build_opener(urllib.request.HTTPCookieProcessor(JAR))
+DIAG = []
 def http(url, xhr, referer):
-    h = {"User-Agent": UA, "Accept": "application/json, text/html", "Referer": referer}
+    h = {"User-Agent": UA, "Accept": "application/json, text/javascript, */*; q=0.01" if xhr else "text/html,application/xhtml+xml", "Accept-Language": "en-GB,en;q=0.9", "Referer": referer}
     if xhr: h["X-Requested-With"] = "XMLHttpRequest"
-    with urllib.request.urlopen(urllib.request.Request(url, headers=h), timeout=40) as r: return r.read().decode("utf-8", "replace")
+    with OPENER.open(urllib.request.Request(url, headers=h), timeout=40) as r:
+        body = r.read().decode("utf-8", "replace"); code = r.status
+    if len(DIAG) < 6: DIAG.append(f"{code} {url} | {len(body)} car. | début : {body[:160]!r}")
+    return body
 
 def from_dates(dates, code, season):
     rows = []
@@ -49,6 +54,7 @@ def parse(text, code, season):
         body = json.loads(t)
         if body.get("dates"): return from_dates(body["dates"], code, season)
         if body.get("teams"): return from_teams(body["teams"], code, season)
+        if len(DIAG) < 6: DIAG.append(f"JSON sans dates ni teams : clés {list(body)[:10]}")
         return []
     m = re.search(r"datesData\s*=\s*JSON\.parse\('(.*?)'\)", text)
     if m: return from_dates(json.loads(codecs.decode(m.group(1), "unicode_escape")), code, season)
@@ -56,11 +62,13 @@ def parse(text, code, season):
 
 def fetch_one(code, slug, season):
     page = f"https://understat.com/league/{slug}/{season}"
-    for url, xhr in ((f"https://understat.com/getLeagueData/{slug}/{season}", True), (page, False)):
+    for url, xhr in ((page, False), (f"https://understat.com/getLeagueData/{slug}/{season}", True)):  # la page d'abord : elle pose les cookies
         try:
             rows = parse(http(url, xhr, page), code, season)
             if rows: return rows, url
-        except Exception as e: print("échec", url, str(e)[:120])
+        except Exception as e:
+            print("échec", url, str(e)[:160])
+            if len(DIAG) < 6: DIAG.append(f"ERREUR {url} : {str(e)[:200]}")
         time.sleep(1.5)
     return [], None
 
@@ -79,6 +87,7 @@ def main():
     if len(allr):
         OUT.parent.mkdir(exist_ok=True); allr.sort_values(["league", "date"]).to_csv(OUT, index=False)
     for k, v in log.items(): print(k, v)
+    print("DIAGNOSTIC :"); [print(" ", d) for d in DIAG]
     print("matchs avec xG :", len(allr))
 
 if __name__ == "__main__": main()
