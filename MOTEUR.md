@@ -28,11 +28,14 @@ Score hors échantillon 2025-26 : RPS 0,2015. Bet365 (Shin) fait 0,1981, la clô
 | Bet365 au-dessus du prix juste Pinnacle (4 369 matchs) | 88 paris, CLV −0,6 % (IC −3,2 à +1,7 %) | Pas d'avantage prouvé |
 | Paris annoncés à 75-85 % | 77,9 % réussis, cote moyenne 1,22, rendement −5 % | Calibré, pas rentable |
 | Gradient boosting | RPS 0,2028 contre 0,2015 | Rejeté |
+| xG Understat (16 408 matchs, 5 championnats) : ajoutés au moteur, ou à la place des tirs cadrés | RPS 0,2016 et 0,2019 contre 0,2012 ; rien au-delà du marché | Rejeté : les tirs cadrés captent déjà l'information |
+| Valeur du onze aligné, jeu de données ouvert Transfermarkt (11 960 matchs) | +0,31 ‰ au-delà du modèle (IC −0,66 à +1,27 ‰) ; rien au-delà de l'ouverture ni de la clôture Pinnacle | Non prouvé : la composition est déjà dans les cotes |
+| Rotation (onze du jour contre onze habituel) | −0,28 ‰ | Rejeté |
 
 ## Tests en cours (GitHub Actions)
 
 - Journal de value (`pipeline/value_log.py`, `value_eval.py`) : chaque jour, toute cote d'un bookmaker au-dessus du prix juste Pinnacle est notée puis jugée à la clôture. Premier relevé : 264 cotes, dont 5 seulement chez des bookmakers agréés en France (TRJ plafonné à 85 %).
-- xG Understat (`lab9_xg.py`) et valeur du onze aligné, jeu de données ouvert Transfermarkt (`lab10_tm.py`) : workflow « Labo données gratuites ».
+- xG Understat (`lab9_xg.py`) et valeur du onze aligné (`lab10_tm.py`) : testés, rejetés (voir ci-dessus) ; relancés chaque lundi par le workflow « Labo données gratuites ».
 - Compositions et notes des joueurs API-Football (`lab_api.py`) : demande l'offre Pro (l'offre gratuite n'ouvre que 2022-2024, sans appels groupés ni saison en cours).
 
 ## Critères de confiance (mesurables, pas des impressions)
