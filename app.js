@@ -26,7 +26,7 @@ const lastResult = PRE.last_result, V3 = DATA.v3;
 // ---------- État ----------
 const S = {
   tab: "radar", mode: "quant", league: "all", matchKey: FX[0]?.key, odds: {}, oddsSource: "demo",
-  cfg: { devig: "shin", ref: "auto", minEV: 0.02, kfrac: 0.25, cap: 0.02, offshore: false, bank: 1000, ddMax: 0.2, dayLoss: 0.05, arbTotal: 100, arbRound: 0.5 },
+  cfg: { devig: "shin", ref: "auto", minEV: 0.02, kfrac: 0.25, cap: 0.02, offshore: false, myBooks: ["Bet365", "Winamax (FR)", "Betclic (FR)", "Unibet (FR)"], onlyMine: true, bank: 1000, ddMax: 0.2, dayLoss: 0.05, arbTotal: 100, arbRound: 0.5 },
   live: {}, bets: [], picks: {}, store: "memory", ai: {}, mtab: "apercu", day: "all", q: "", seasonLg: "fr.1", pred: {}, combo: {}
 };
 const ls = { get(k, d) { try { const v = localStorage.getItem("l90:" + k); return v ? JSON.parse(v) : d; } catch { return d; } },
@@ -40,6 +40,19 @@ const ago = t => { const m = Math.round((Date.now() - t) / 60000); return m < 1 
 
 // ---------- Bookmakers ----------
 const isANJ = b => !/pinnacle|betfair|matchbook|1xbet|marathon|sbo|smarkets/i.test(b) && /\(FR\)|betclic|winamax|unibet|pmu|parions|netbet|zebet|vbet|bwin|genybet|olybet|feelingbet|barri|pokerstars|betsson/i.test(b);
+// Bookmakers où l'utilisateur peut jouer ; « Moyenne du marché » est une référence, jamais un bookmaker
+const NOT_BOOK = b => /moyenne du march/i.test(b);
+const bookOK = b => !NOT_BOOK(b) && (S.cfg.onlyMine && S.cfg.myBooks?.length ? S.cfg.myBooks.includes(b) : (S.cfg.offshore || isANJ(b)));
+function myBooksPanel() {
+  const seen = [...new Set(Object.values(S.odds).flatMap(o => Object.keys(o)))].filter(b => !NOT_BOOK(b) && !isSharp(b)).sort((x, y) => (S.cfg.myBooks.includes(y) - S.cfg.myBooks.includes(x)) || x.localeCompare(y));
+  const all = [...new Set([...S.cfg.myBooks, ...seen])];
+  return `<div class="mybooks"><div class="row" style="justify-content:space-between;align-items:center"><strong>Mes bookmakers</strong>
+      <label style="display:flex;gap:8px;align-items:center"><input type="checkbox" data-cfgbool="onlyMine" ${S.cfg.onlyMine ? "checked" : ""}> Cotes de mes bookmakers seulement</label></div>
+    <div class="chips wrap" style="margin-top:8px">${all.map(b => `<button class="chip" data-mybook="${esc(b)}" aria-pressed="${S.cfg.myBooks.includes(b)}">${esc(b)}${seen.includes(b) ? "" : ' <span class="faint">(pas de cotes)</span>'}${isANJ(b) ? "" : ' <span class="faint">· hors ANJ</span>'}</button>`).join("")}</div>
+    <p class="note" style="margin-top:6px">Bet365 vient de football-data.co.uk (mis à jour deux fois par semaine) ; Winamax, Betclic et Unibet de The Odds API (chaque matin). Pinnacle sert de référence de prix juste.</p></div>`;
+}
+document.addEventListener("click", e => { const b = e.target.closest("[data-mybook]"); if (!b) return; const n = b.dataset.mybook, L = S.cfg.myBooks;
+  S.cfg.myBooks = L.includes(n) ? L.filter(x => x !== n) : [...L, n]; saveCfg(); render(); });
 const isSharp = b => /pinnacle/i.test(b);
 
 // ---------- Cotes de démonstration (simulées, déterministes) ----------
@@ -96,12 +109,12 @@ function analyse(f) {
     const ref = refProbs(f, market), keys = MK[market];
     const best = keys.map(k => {
       let o = 0, book = null;
-      for (const [b, v] of Object.entries(books)) { if (!S.cfg.offshore && !isANJ(b)) continue; if (v[k] > o) { o = v[k]; book = b; } }
+      for (const [b, v] of Object.entries(books)) { if (!bookOK(b)) continue; if (v[k] > o) { o = v[k]; book = b; } }
       return { k, o, book };
     });
     keys.forEach((k, i) => { res.best[k] = { ...best[i], p: ref.p[i], src: ref.src }; });
     for (const [b, v] of Object.entries(books)) {
-      if (!S.cfg.offshore && !isANJ(b)) continue;
+      if (!bookOK(b)) continue;
       keys.forEach((k, i) => {
         const o = v[k]; if (!(o > 1)) return;
         const e = L90.ev(ref.p[i], o);
@@ -390,8 +403,9 @@ function renderValue() {
         <label class="f">Fraction de Kelly<input type="number" id="kfrac" step="0.05" min="0" max="1" data-cfgnum="kfrac" value="${S.cfg.kfrac}"></label>
         <label class="f">Mise max (% bankroll)<input type="number" id="cap" step="0.5" data-cfgpct="cap" value="${S.cfg.cap * 100}"></label>
         <label class="f">Bankroll (€)<input type="number" id="bank" step="50" data-cfgnum="bank" value="${S.cfg.bank}"></label>
-        <label class="f" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="offshore" data-cfgbool="offshore" ${S.cfg.offshore ? "checked" : ""}>Inclure les bookmakers non agréés ANJ</label>
+        ${S.cfg.onlyMine ? "" : `<label class="f" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="offshore" data-cfgbool="offshore" ${S.cfg.offshore ? "checked" : ""}>Inclure les bookmakers non agréés ANJ</label>`}
       </div>
+      <div style="margin-top:14px">${myBooksPanel()}</div>
       ${(() => { const c = LAB.deep?.clv, cv = c?.["clv_seuil_1.05"];
         return ["model", "blend"].includes(S.cfg.ref) && cv?.clv_moy != null ? `<p class="notice-inline warn">Mesuré face à la clôture Pinnacle : la value annoncée par le modèle seul a une CLV de ${sgn(cv.clv_moy)} sur ${nf(cv.n)} paris (la cote évolue contre elle). La référence « Pinnacle sans marge » est la seule qui ait une chance : son verdict s'accumule dans le journal de value du Registre.</p>` : ""; })()}</div>
     <div class="panel"><header><h2>Paris à valeur</h2><span class="pill ${scan.value.length ? "good" : "ghost"}">${scan.value.length} opportunités</span></header>
@@ -461,11 +475,12 @@ function importOdds(txt) {
       }
       if (Object.keys(o).length) {
         books[bk.title] = o;
+        if (ev.history) { const hs = ev.history.map(s => s.b[bk.title] ? { t: s.t, ...s.b[bk.title] } : null).filter(Boolean); if (hs.length > 1) (S.hist[best.key] ??= {})[bk.title] = hs.slice(-30); }
         const h = ((S.hist[best.key] ??= {})[bk.title] ??= []), last = h[h.length - 1];
         if (!last || ["H", "D", "A", "O25", "U25"].some(x => last[x] !== o[x])) { h.push({ t: now, ...o }); if (h.length > 30) h.shift(); }
       }
     }
-    S.odds[best.key] = books; S.kick[best.key] = ev.commence_time; matched++;
+    S.odds[best.key] = Object.assign(S.odds[best.key] || {}, books); S.kick[best.key] = ev.commence_time; matched++;
     per[ev.sport_key] = (per[ev.sport_key] || 0) + 1; S.oddsMeta[ev.sport_key] = now;
   }
   if (!matched && !data.length) return "Aucun match dans ce texte : le championnat n'a peut-être pas de rencontre programmée.";

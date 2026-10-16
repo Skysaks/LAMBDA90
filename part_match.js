@@ -98,6 +98,23 @@ function confidence(f) {
 }
 const bandTxt = (f, j) => f.band ? `<div class="band num" title="Fourchette à 80 % : incertitude sur les forces des équipes">${nf(f.band[j][0] * 100)}–${nf(f.band[j][1] * 100)}</div>` : "";
 const pname = n => n.split(" ").map(w => w.length > 1 && w === w.toUpperCase() ? w[0] + w.slice(1).toLowerCase() : w).join(" ");
+// Mouvement du marché : probabilités sans marge au fil des instantanés (un par mise à jour), Pinnacle d'abord
+function marketMove(f) {
+  const H = S.hist[f.key] || {}, src = ["Pinnacle", "Moyenne du marché", "Bet365", "Winamax (FR)", "Betclic (FR)", "Unibet (FR)"].find(b => (H[b] || []).filter(s => s.H > 1).length > 1);
+  if (!src) return `<div class="panel"><header><h2>Mouvement du marché</h2></header><p class="muted">Pas encore d'historique pour ce match : un instantané des cotes est pris à chaque mise à jour quotidienne, le mouvement apparaît dès le deuxième.</p></div>`;
+  const S_ = H[src].filter(s => s.H > 1 && s.D > 1 && s.A > 1).map(s => { const q = [1 / s.H, 1 / s.D, 1 / s.A], t = q[0] + q[1] + q[2]; return { t: s.t, p: q.map(x => x / t) }; });
+  const W = 640, Hh = 150, t0 = S_[0].t, t1 = S_[S_.length - 1].t || t0 + 1, X = t => 34 + (W - 44) * (t1 > t0 ? (t - t0) / (t1 - t0) : 1), all = S_.flatMap(s => s.p), lo = Math.max(0, Math.floor((Math.min(...all) - 0.04) * 20) / 20), hi = Math.min(1, Math.ceil((Math.max(...all) + 0.04) * 20) / 20), Y = p => 10 + (Hh - 30) * (1 - (p - lo) / (hi - lo));
+  const col = ["var(--h)", "var(--d)", "var(--a)"], lab = [short(f.home), "Nul", short(f.away)];
+  const d0 = S_[0].p, d1 = S_[S_.length - 1].p, mv = [0, 1, 2].map(i => (d1[i] - d0[i]) * 100), big = mv.map(Math.abs).indexOf(Math.max(...mv.map(Math.abs)));
+  const when = t => new Date(t).toLocaleString("fr-FR", { weekday: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  return `<div class="panel"><header><h2>Mouvement du marché</h2><span class="note">${esc(src)} sans marge · ${S_.length} instantanés depuis ${when(t0)}</span></header>
+    <svg viewBox="0 0 ${W} ${Hh}" width="100%" role="img" aria-label="Évolution des probabilités du marché">
+      ${[lo, (lo + hi) / 2, hi].map(p => `<line x1="30" x2="${W - 10}" y1="${Y(p)}" y2="${Y(p)}" stroke="var(--line)" stroke-width="1"/><text x="0" y="${Y(p) + 4}" fill="var(--ink3)" font-size="11">${Math.round(p * 100)}%</text>`).join("")}
+      ${[0, 1, 2].map(i => `<polyline fill="none" stroke="${col[i]}" stroke-width="2.5" stroke-linejoin="round" points="${S_.map(s => `${X(s.t).toFixed(1)},${Y(s.p[i]).toFixed(1)}`).join(" ")}"/><circle cx="${X(t1)}" cy="${Y(d1[i])}" r="3.5" fill="${col[i]}"/>`).join("")}
+    </svg>
+    <div class="row" style="gap:14px;margin-top:6px">${[0, 1, 2].map(i => `<span><i class="key ${["h", "d", "a"][i]}"></i>${esc(lab[i])} <b class="num">${pct(d1[i])}</b> <span class="faint num">${mv[i] >= 0 ? "+" : ""}${nf(mv[i], 1)} pt${Math.abs(mv[i]) >= 2 ? "s" : ""}</span></span>`).join("")}</div>
+    <p class="note" style="margin-top:6px">${Math.abs(mv[big]) >= 2 ? `Le marché a bougé vers ${big === 1 ? "le nul" : esc(lab[big])} (${mv[big] > 0 ? "+" : ""}${nf(mv[big], 1)} pts) : c'est souvent une information (blessure, compo, météo) qui arrive. Le modèle ne la connaît pas.` : "Marché stable depuis le premier instantané."}</p></div>`;
+}
 function renderMatch() {
   const f = FXK[S.matchKey] || FX[0]; if (!f) { $("#v-match").innerHTML = `<div class="empty">Aucun match à afficher.</div>`; return; }
   S.matchKey = f.key;
@@ -125,7 +142,7 @@ function renderMatch() {
   else if (mt === "marches") body = `<div class="panel"><header><h2>Combiné même match</h2><span class="note">Probabilité exacte, corrélations comprises</span></header>${comboBlock(f)}</div>` + marketsFull(f, an);
   else if (mt === "joueurs") body = `<div class="stack">${newsBlock(f)}${playersBlock(f)}</div>`;
   else if (mt === "live") body = `<div class="panel"><header><h2>Suivi live</h2><span class="note">Moteur minute par minute calibré sur ${LIVE.n_matches} matchs et ${LIVE.n_reds} cartons rouges</span></header>${liveBlock(f)}</div>`;
-  else body = `<div class="panel"><header><h2>Cotes des bookmakers</h2>
+  else body = `${marketMove(f)}<div class="panel"><header><h2>Cotes des bookmakers</h2>
       <div class="row"><label class="f">Retrait de la marge<select id="devig" data-cfg="devig"><option value="shin">Shin</option><option value="power">Puissance</option><option value="mult">Proportionnel</option><option value="add">Additif</option></select></label>
       <label class="f">Probabilité de référence<select id="ref" data-cfg="ref"><option value="auto">Automatique</option><option value="sharp">Pinnacle sans marge</option><option value="consensus">Consensus du marché</option><option value="blend">Mélange modèle et marché</option><option value="model">Modèle seul</option></select></label></div></header>
       ${oddsEditor(f)}

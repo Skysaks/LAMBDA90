@@ -26,25 +26,30 @@ function ladderCands() {
       const p = L90.joint(M, [d[2]]);
       const pm = mkp[id] ?? null, pr = pm ? 0.1 * p + 0.9 * pm : p, msrc = ["O25", "U25"].includes(id) ? r2?.src : r1?.src;
       let o = 0, book = null;
-      if (["H", "D", "A", "O25", "U25"].includes(id)) for (const [bk, v] of Object.entries(books)) { if (!S.cfg.offshore && !isANJ(bk)) continue; if (v[id] > o) { o = v[id]; book = bk; } }
+      const byBook = {};
+      if (["H", "D", "A", "O25", "U25"].includes(id)) for (const [bk, v] of Object.entries(books)) { if (!bookOK(bk) || !(v[id] > 1)) continue; byBook[bk] = v[id]; if (v[id] > o) { o = v[id]; book = bk; } }
       const real = o > 1;
       // cote estimée : ce qu'un bookmaker agréé proposerait, à partir du prix du marché s'il existe (sinon du modèle)
       if (!real) { if (!S.lad.est) continue; o = Math.round(100 / ((pm ?? p) * (1 + mg.m))) / 100; book = "estimée"; }
-      out.push({ f, id, lab: d[1], p, pm, pr, msrc, low: lowOf[id] ?? null, o, book, real });
+      out.push({ f, id, lab: d[1], p, pm, pr, msrc, low: lowOf[id] ?? null, o, book, real, byBook });
     }
   }
   return { list: out, mg };
 }
-function ladderPicks() {
-  const { list, mg } = ladderCands(), { lo, hi, legs } = S.lad, res = [];
-  for (const c of list) if (c.o >= lo && c.o <= hi) res.push({ legs: [c], o: c.o, p: c.p, pr: c.pr, real: c.real, date: c.f.date });
+function ladderPicks(o = {}) {
+  const { list, mg } = ladderCands(), lo = o.lo ?? S.lad.lo, hi = o.hi ?? S.lad.hi, legs = o.legs ?? S.lad.legs, res = [];
+  for (const c of list) if (c.o >= lo && c.o <= hi) res.push({ legs: [c], o: c.o, p: c.p, pr: c.pr, real: c.real, book: c.book, date: c.f.date });
   if (legs >= 2) {
     const lo2 = Math.sqrt(lo) * 0.82, hi2 = Math.sqrt(hi) * 1.22;
     const pool = list.filter(c => c.o >= Math.max(1.12, lo2) && c.o <= hi2).sort((x, y) => y.pr * y.o - x.pr * x.o).slice(0, 160);
     for (let i = 0; i < pool.length; i++) for (let j = i + 1; j < pool.length; j++) {
       const x = pool[i], y = pool[j]; if (x.f.key === y.f.key) continue;
-      const o = x.o * y.o; if (o < lo || o > hi) continue;
-      res.push({ legs: [x, y], o, p: x.p * y.p, pr: x.pr * y.pr, real: x.real && y.real, date: x.f.date > y.f.date ? x.f.date : y.f.date });
+      // un combiné se joue chez un seul bookmaker : meilleure cote commune aux deux matchs
+      let o = 0, book = null;
+      if (x.real && y.real) { for (const b of Object.keys(x.byBook)) if (y.byBook[b] && x.byBook[b] * y.byBook[b] > o) { o = x.byBook[b] * y.byBook[b]; book = b; } if (!book) continue; }
+      else { o = x.o * y.o; book = "estimée"; }
+      if (o < lo || o > hi) continue;
+      res.push({ legs: [x, y], o, p: x.p * y.p, pr: x.pr * y.pr, real: x.real && y.real, book, date: x.f.date > y.f.date ? x.f.date : y.f.date });
     }
   }
   for (const r of res) r.ev = r.pr * r.o - 1;
@@ -64,6 +69,74 @@ function ladderPlan(picks, n) {
   }
   return plan;
 }
+// ---------- Montante intégrale : 100 % du capital à chaque palier, paliers enchaînés dans le temps ----------
+S.lint = Object.assign({ steps: 7, prof: "x2", pace: "serre", legs: 1 }, ls.get("lint", {}));
+const LINT_PROF = { x2: { lo: 1.85, hi: 2.25, lab: "Cote ≈ 2" }, x15: { lo: 1.4, hi: 1.6, lab: "Cote ≈ 1,5" }, x13: { lo: 1.22, hi: 1.38, lab: "Cote ≈ 1,3" } };
+const kickOf = f => { const k = Date.parse(S.kick[f.key] || ""); return isFinite(k) ? k : Date.parse(`${f.date}T${f.time || "15:00"}:00`); };
+function chainPlan(picks, n, paceH) {
+  const now = Date.now(), END = 115 * 60e3;  // un match et sa marge : 1 h 55 avant de pouvoir enchaîner
+  const cand = picks.map(p => { const ks = p.legs.map(l => kickOf(l.f)); return { p, start: Math.min(...ks), end: Math.max(...ks) + END }; }).filter(c => c.start > now + 10 * 60e3);
+  const used = new Set(), plan = []; let t = now;
+  for (let k = 0; k < n; k++) {
+    const ok = cand.filter(c => c.start >= t && c.p.legs.every(l => !used.has(l.f.key)));
+    if (!ok.length) break;
+    const first = Math.min(...ok.map(c => c.start));
+    const pool = ok.filter(c => c.start <= first + paceH * 3600e3);
+    const best = pool.reduce((a, c) => (c.p.pr > a.p.pr ? c : a));
+    plan.push(best); best.p.legs.forEach(l => used.add(l.f.key)); t = best.end;
+  }
+  return plan;
+}
+function lintBlock() {
+  const L = S.lint, P = LINT_PROF[L.prof], { picks } = ladderPicks({ lo: P.lo, hi: P.hi, legs: L.legs });
+  const plan = chainPlan(picks, L.steps, L.pace === "serre" ? 6 : 20), cap = +S.lad.cap || 10;
+  let reach = 1, stake = cap; const rows = plan.map((c, k) => { reach *= c.p.pr; stake *= c.p.o; return { c, k, reach, stake }; });
+  const done = rows.length, last = rows[done - 1];
+  const fmtT = ms => new Date(ms).toLocaleString("fr-FR", { weekday: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
+  const par = [1, 2, 3, 4].map(k => ({ k, p: last ? 1 - Math.pow(1 - last.reach, k) : 0, mise: cap / k, gain: last ? cap / k * (last.stake / cap) : 0 }));
+  const ev = last ? last.reach * last.stake : 0;
+  S._lintPlan = plan;
+  return `<div class="panel"><header><h2>Montante intégrale</h2><span class="note">100 % du capital remis en jeu à chaque palier</span></header>
+    <div class="chips" role="group" aria-label="Nombre de paliers">${[5, 6, 7, 8, 9, 10].map(n => `<button class="chip" data-lint="steps" data-v="${n}" aria-pressed="${L.steps === n}">${n} paliers</button>`).join("")}</div>
+    <div class="chips" style="margin-top:8px" role="group" aria-label="Profil de cote">${Object.entries(LINT_PROF).map(([k, v]) => `<button class="chip" data-lint="prof" data-v="${k}" aria-pressed="${L.prof === k}">${v.lab}</button>`).join("")}
+      <button class="chip" data-lint="legs" data-v="${L.legs === 1 ? 2 : 1}" aria-pressed="${L.legs === 2}">Autoriser les doubles</button>
+      <button class="chip" data-lint="pace" data-v="${L.pace === "serre" ? "jour" : "serre"}" aria-pressed="${L.pace === "jour"}">Plus sûr, plus lent</button></div>
+    ${done ? `<div class="readouts" style="margin-top:14px">
+        <div class="ro"><span>Départ</span><b>${eur(cap)}</b></div>
+        <div class="ro"><span>Si les ${done} paliers passent</span><b>${eur(last.stake)}</b></div>
+        <div class="ro"><span>Chance d'aller au bout</span><b>${pct(last.reach, last.reach < 0.1 ? 1 : 0)}</b></div>
+        <div class="ro"><span>Soit</span><b>1 sur ${nf(1 / last.reach)}</b></div>
+        <div class="ro"><span>Chance de tout perdre</span><b>${pct(1 - last.reach, 1)}</b></div>
+        <div class="ro"><span>Ce que tu récupères en moyenne</span><b>${eur(ev)}</b></div></div>
+      <div class="scroll" style="margin-top:12px"><table><thead><tr><th>Palier</th><th>Quand</th><th>Sélection</th><th class="r">Cote</th><th class="r">Proba</th><th class="r">Capital après</th><th class="r">Chance d'y arriver</th></tr></thead><tbody>
+      ${rows.map(({ c, k, reach, stake }) => `<tr><td class="num">${k + 1}</td><td class="faint" style="white-space:nowrap">${fmtT(c.start)}</td><td>${c.p.legs.map(lg => `<strong>${esc(lg.lab)}</strong> <span class="faint">${esc(short(lg.f.home))} – ${esc(short(lg.f.away))}</span>`).join("<br>")}</td>
+        <td class="r num">${odd(c.p.o)}${c.p.real ? `<br><span class="faint">${esc((c.p.book || "").replace(" (FR)", ""))}</span>` : ' <span class="pill ghost">est.</span>'}</td><td class="r num">${pct(c.p.pr)}</td><td class="r num">${eur(stake)}</td><td class="r num"><strong>${pct(reach, reach < 0.1 ? 1 : 0)}</strong></td></tr>`).join("")}</tbody></table></div>
+      ${done < L.steps ? `<p class="note" style="margin-top:8px">Seulement ${done} paliers enchaînables avec les matchs cotés à venir : chaque palier doit être terminé avant le suivant. Les autres apparaîtront quand les cotes des journées suivantes seront publiées.</p>` : ""}
+      <div class="grid2" style="margin-top:14px">
+        <div><h3 style="margin:0 0 8px">Partager le capital entre plusieurs montantes</h3><div class="scroll"><table><thead><tr><th>Montantes</th><th class="r">Mise chacune</th><th class="r">Au moins une réussit</th><th class="r">Gain d'une réussite</th></tr></thead><tbody>
+          ${par.map(x => `<tr><td class="num">${x.k}</td><td class="r num">${eur(x.mise)}</td><td class="r num">${pct(x.p, x.p < 0.1 ? 1 : 0)}</td><td class="r num">${eur(x.gain)}</td></tr>`).join("")}</tbody></table></div>
+          <p class="note">Avec des sélections de même qualité et des matchs différents. Plus de chances d'en réussir une, gain divisé d'autant : l'espérance ne change pas.</p></div>
+        <div><h3 style="margin:0 0 8px">Montante ou combiné ?</h3><p class="muted" style="margin:0">Un combiné des ${done} mêmes sélections a la même probabilité (${pct(last.reach, 1)}) et la même cote (${odd(last.stake / cap)}). La montante permet de s'arrêter en route et de vérifier compos et cotes avant chaque palier ; le combiné se joue d'un coup, souvent avec un plafond de gain chez le bookmaker.</p>
+          <p class="muted">Chaque palier paie la marge du bookmaker : sur ${done} paliers, l'espérance tombe à ${eur(ev)} pour ${eur(cap)} misés.</p></div></div>
+      <div class="row" style="margin-top:12px"><button class="btn primary" data-lintstart="1" ${S.ladRun ? "disabled" : ""}>Démarrer cette montante (palier 1)</button><span class="note">Chaque palier se valide à la main après le match ; le suivant prévu est proposé automatiquement.</span></div>`
+    : `<div class="empty">Aucune sélection enchaînable dans ce profil de cote avec les matchs cotés à venir.</div>`}</div>`;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-lint]");
+  if (b) { const k = b.dataset.lint, v = b.dataset.v; S.lint[k] = ["steps", "legs"].includes(k) ? +v : v; ls.set("lint", S.lint); render(); return; }
+  if (e.target.closest("[data-lintstart]")) {
+    const plan = S._lintPlan || []; if (!plan.length || S.ladRun) return;
+    S.lad.steps = plan.length; S.lad.secure = 0;
+    ladderStart(plan[0].p);
+    S.ladRun.plan = plan.map(c => ({ txt: c.p.legs.map(l => `${l.lab} (${short(l.f.home)} – ${short(l.f.away)})`).join(" + "), o: Math.round(c.p.o * 100) / 100, p: c.p.pr, keys: c.p.legs.map(l => l.f.key), when: c.start, book: c.p.book }));
+    saveLad(); render(); return;
+  }
+  if (e.target.closest("[data-ladnext]")) {
+    const r = S.ladRun; if (!r || r.pending || r.status !== "active" || !r.plan) return;
+    const nx = r.plan[r.steps.length]; if (!nx) return;
+    r.steps.push({ txt: nx.txt, o: nx.o, p: nx.p, keys: nx.keys }); r.pending = true; saveLad(); render(); toast("Palier suivant ajouté.");
+  }
+});
 function ladderTop(picks, n) {
   // les n sélections les plus probables, sans réutiliser un match
   const used = new Set(), top = [];
@@ -140,6 +213,8 @@ function renderLadder() {
         <label class="f">Mettre de côté à chaque gain<select data-lad="secure">${[0, 0.25, 0.5].map(v => `<option value="${v}" ${L.secure == v ? "selected" : ""}>${v ? pct(v) + " du gain" : "rien (tout remis)"}</option>`).join("")}</select></label>
         <label style="display:flex;gap:8px;align-items:center;align-self:flex-end;padding-bottom:8px"><input type="checkbox" data-lad="est" ${L.est ? "checked" : ""}> Inclure les marchés sans cote importée (cote estimée)</label>
       </div></div>
+    <div class="panel">${myBooksPanel()}</div>
+    ${lintBlock()}
     <div class="grid2">
       <div class="panel"><header><h2>La réalité des paliers</h2><span class="note">Avec les ${L.steps} sélections les plus probables</span></header>
         <div class="scroll"><table><thead><tr><th>Palier</th><th class="r">Cote</th><th class="r">Proba du palier</th><th class="r">Proba d'y arriver</th><th class="r">Capital en jeu</th><th class="r">Mis de côté</th></tr></thead><tbody>
@@ -152,7 +227,7 @@ function renderLadder() {
     <div class="panel"><header><h2>Les 10 sélections les plus probables</h2><span class="note">Cote ${odd(L.lo)}–${odd(L.hi)}, un match n'apparaît qu'une fois</span></header>
       ${top.length ? `<ol class="top10">${top.map((p, r) => { const i = picks.indexOf(p); return `<li><div class="t10-rank num">${r + 1}</div><div class="t10-main">
         ${p.legs.map(l => `<div class="t10-leg"><div><strong>${esc(l.lab)}</strong> <span class="faint">${esc(short(l.f.home))} – ${esc(short(l.f.away))}, ${new Date(l.f.date + "T12:00").toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })}${l.f.time ? " " + esc(l.f.time) : ""}</span></div><p class="t10-why">${esc(whyLeg(l))}</p></div>`).join("")}</div>
-        <div class="t10-nums"><div><span>Proba</span><b class="num">${pct(p.pr, 1)}</b></div><div><span>Cote</span><b class="num">${odd(p.o)}${p.real ? "" : '<small title="Cote estimée : à vérifier chez ton bookmaker"> est.</small>'}</b></div><div><span>EV</span><b class="num ${p.ev > 0 ? "pos" : ""}">${sgn(p.ev)}</b></div>
+        <div class="t10-nums"><div><span>Proba</span><b class="num">${pct(p.pr, 1)}</b></div><div><span>Cote${p.real && p.book ? ` · ${esc(p.book.replace(" (FR)", ""))}` : ""}</span><b class="num">${odd(p.o)}${p.real ? "" : '<small title="Cote estimée : à vérifier chez ton bookmaker"> est.</small>'}</b></div><div><span>EV</span><b class="num ${p.ev > 0 ? "pos" : ""}">${sgn(p.ev)}</b></div>
         <button class="btn small" data-ladpick="${i}" ${run && run.status === "active" && !run.pending ? "" : run ? "disabled" : ""}>${run ? "Jouer ce palier" : "Démarrer avec"}</button></div></li>`; }).join("")}</ol>
         <p class="note" style="margin-top:10px">Classées par probabilité retenue : 90 % marché sans marge (Pinnacle) + 10 % modèle quand une vraie cote de référence existe, car c'est le meilleur mélange mesuré sur 3 129 matchs ; sinon modèle seul. Les ${L.steps} premières servent au calcul des paliers ci-dessus. Une montante se joue dans l'ordre des dates : deux sélections jouées en même temps ne peuvent pas s'enchaîner. Même la n° 1 échoue environ ${nf(Math.round((1 - top[0].pr) * 10))} fois sur 10.</p>` : `<div class="empty">Aucune sélection dans cette fourchette de cotes.</div>`}</div>
     <div class="panel"><header><h2>Meilleures sélections à cote ${odd(L.lo)}–${odd(L.hi)}</h2><span class="note">${nf(picks.length)} possibilités, classées par probabilité retenue</span></header>
@@ -169,7 +244,7 @@ function ladderRunBlock() {
   return `<div class="readouts"><div class="ro"><span>Palier</span><b>${r.steps.filter(s => s.result === "won").length + (r.pending ? 1 : 0)} / ${r.target}</b></div><div class="ro"><span>En jeu</span><b>${eur(stake)}</b></div><div class="ro"><span>Mis de côté</span><b>${eur(r.banked)}</b></div></div>
     <div class="scroll" style="margin-top:10px"><table><tbody>${r.steps.map((s, i) => `<tr><td>${i + 1}</td><td>${esc(s.txt)}</td><td class="r num">${odd(s.o)}</td><td class="r num">${pct(s.p)}</td>
       <td>${s.result ? `<span class="pill ${s.result === "won" ? "good" : "bad"}">${s.result === "won" ? "Gagné" : "Perdu"}</span>` : `<button class="btn small" data-ladres="won">Gagné</button> <button class="btn small" data-ladres="lost">Perdu</button>`}</td></tr>`).join("")}</tbody></table></div>
-    ${!r.pending && r.status === "active" ? `<p class="note" style="margin-top:8px">Palier validé. Choisis la sélection suivante dans le plan ou la liste.</p>` : ""}`;
+    ${!r.pending && r.status === "active" ? (r.plan?.[r.steps.length] ? `<div class="row" style="margin-top:10px;align-items:center"><button class="btn small primary" data-ladnext="1">Jouer le palier ${r.steps.length + 1} prévu</button><span class="note">${esc(r.plan[r.steps.length].txt)} · cote ${odd(r.plan[r.steps.length].o)}${r.plan[r.steps.length].book ? " · " + esc(r.plan[r.steps.length].book) : ""} · ${new Date(r.plan[r.steps.length].when).toLocaleString("fr-FR", { weekday: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}. Vérifie la cote réelle avant de jouer.</span></div>` : `<p class="note" style="margin-top:8px">Palier validé. Choisis la sélection suivante dans la liste.</p>`) : ""}`;
 }
 function ladderStart(p) {
   const L = S.lad;

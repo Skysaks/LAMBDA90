@@ -3,6 +3,8 @@ on:
   schedule:
     - cron: "0 5 * * *"   # chaque jour 7 h (Paris, heure d'été)
   workflow_dispatch: {}
+  push:
+    paths: ["lab/update_request.txt"]
 concurrency: { group: lambda90-data, cancel-in-progress: false }
 permissions:
   contents: write
@@ -26,6 +28,8 @@ jobs:
         env: { ODDS_API_KEY: "${{ secrets.ODDS_API_KEY }}" }
         run: |
           python pipeline/fetch_odds.py
+          python pipeline/fetch_fd_fixtures.py . || echo "cotes Bet365 indisponibles"
+          python pipeline/odds_history.py .
           python pipeline/value_log.py .
       - name: Clôtures et journal de value
         run: |
