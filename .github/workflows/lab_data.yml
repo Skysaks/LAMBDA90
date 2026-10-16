@@ -23,21 +23,24 @@ jobs:
           git clone --depth 1 https://github.com/xgabora/Club-Football-Match-Data-2000-2025.git /tmp/xg
           git clone --depth 1 https://github.com/openfootball/football.json.git /tmp/of
       - name: Cotes de clôture
-        run: python pipeline/fetch_closing.py data || echo "clôtures indisponibles"
+        run: python pipeline/fetch_closing.py data 2>&1 | tail -30 | tee out/lab_data_log.txt || true
       - name: xG Understat
-        run: python pipeline/fetch_understat.py data || echo "Understat indisponible"
+        run: python pipeline/fetch_understat.py data 2>&1 | tail -80 | tee -a out/lab_data_log.txt || true
       - name: Labo xG
         run: |
-          if [ -f data/understat.csv ]; then python lab9_xg.py /tmp/xg/data /tmp/of out || echo '{"erreur": "lab9 en échec, voir le journal Actions"}' > out/lab9.json; fi
+          if [ -f data/understat.csv ]; then
+            python lab9_xg.py /tmp/xg/data /tmp/of out > /tmp/lab9.txt 2>&1 || python -c "import json,sys;json.dump({'erreur':open('/tmp/lab9.txt').read()[-1500:]},open('out/lab9.json','w'),ensure_ascii=False)"
+            tail -40 /tmp/lab9.txt | tee -a out/lab_data_log.txt
+          else echo "pas de data/understat.csv : lab9 non lancé" | tee -a out/lab_data_log.txt; fi
       - name: Labo valeurs des onzes
-        run: python lab10_tm.py .
+        run: python lab10_tm.py . 2>&1 | tail -60 | tee -a out/lab_data_log.txt || true
       - name: Labo value contre Pinnacle
-        run: python lab8.py .
+        run: python lab8.py . > /dev/null 2>&1 || echo "lab8 en échec" | tee -a out/lab_data_log.txt
       - name: Page
         run: ./mk.sh
       - name: Publier dans le dépôt
         run: |
           git config user.name "lambda90-bot"; git config user.email "bot@users.noreply.github.com"
-          git add out/lab8.json out/lab9.json out/lab10.json data/understat.csv data/closing.csv lambda-90.html 2>/dev/null || true
+          for f in out/lab8.json out/lab9.json out/lab10.json out/lab_data_log.txt data/understat.csv data/closing.csv lambda-90.html; do [ -e "$f" ] && git add "$f"; done
           git commit -m "Labo données $(date -u +%FT%H:%M)" || echo "rien à publier"
-          git pull --rebase && git push
+          git pull --rebase --autostash && git push
