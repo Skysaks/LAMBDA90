@@ -23,65 +23,155 @@
 2627 P1 71
 2627 N1 72
 écrit data/closing.csv
-en.1 2017 (0, None)
-en.1 2018 (0, None)
-en.1 2019 (0, None)
-en.1 2020 (0, None)
-en.1 2021 (0, None)
-en.1 2022 (0, None)
-en.1 2023 (0, None)
-en.1 2024 (0, None)
-en.1 2025 (0, None)
-en.1 2026 (0, None)
-es.1 2017 (0, None)
-es.1 2018 (0, None)
-es.1 2019 (0, None)
-es.1 2020 (0, None)
-es.1 2021 (0, None)
-es.1 2022 (0, None)
-es.1 2023 (0, None)
-es.1 2024 (0, None)
-es.1 2025 (0, None)
-es.1 2026 (0, None)
-de.1 2017 (0, None)
-de.1 2018 (0, None)
-de.1 2019 (0, None)
-de.1 2020 (0, None)
-de.1 2021 (0, None)
-de.1 2022 (0, None)
-de.1 2023 (0, None)
-de.1 2024 (0, None)
-de.1 2025 (0, None)
-de.1 2026 (0, None)
-it.1 2017 (0, None)
-it.1 2018 (0, None)
-it.1 2019 (0, None)
-it.1 2020 (0, None)
-it.1 2021 (0, None)
-it.1 2022 (0, None)
-it.1 2023 (0, None)
-it.1 2024 (0, None)
-it.1 2025 (0, None)
-it.1 2026 (0, None)
-fr.1 2017 (0, None)
-fr.1 2018 (0, None)
-fr.1 2019 (0, None)
-fr.1 2020 (0, None)
-fr.1 2021 (0, None)
-fr.1 2022 (0, None)
-fr.1 2023 (0, None)
-fr.1 2024 (0, None)
-fr.1 2025 (0, None)
-fr.1 2026 (0, None)
+en.1 2017 (380, 'https://understat.com/getLeagueData/EPL/2017')
+en.1 2018 (380, 'https://understat.com/getLeagueData/EPL/2018')
+en.1 2019 (380, 'https://understat.com/getLeagueData/EPL/2019')
+en.1 2020 (380, 'https://understat.com/getLeagueData/EPL/2020')
+en.1 2021 (380, 'https://understat.com/getLeagueData/EPL/2021')
+en.1 2022 (380, 'https://understat.com/getLeagueData/EPL/2022')
+en.1 2023 (380, 'https://understat.com/getLeagueData/EPL/2023')
+en.1 2024 (380, 'https://understat.com/getLeagueData/EPL/2024')
+en.1 2025 (380, 'https://understat.com/getLeagueData/EPL/2025')
+en.1 2026 (60, 'https://understat.com/getLeagueData/EPL/2026')
+es.1 2017 (380, 'https://understat.com/getLeagueData/La_liga/2017')
+es.1 2018 (380, 'https://understat.com/getLeagueData/La_liga/2018')
+es.1 2019 (380, 'https://understat.com/getLeagueData/La_liga/2019')
+es.1 2020 (380, 'https://understat.com/getLeagueData/La_liga/2020')
+es.1 2021 (380, 'https://understat.com/getLeagueData/La_liga/2021')
+es.1 2022 (380, 'https://understat.com/getLeagueData/La_liga/2022')
+es.1 2023 (380, 'https://understat.com/getLeagueData/La_liga/2023')
+es.1 2024 (380, 'https://understat.com/getLeagueData/La_liga/2024')
+es.1 2025 (380, 'https://understat.com/getLeagueData/La_liga/2025')
+es.1 2026 (78, 'https://understat.com/getLeagueData/La_liga/2026')
+de.1 2017 (306, 'https://understat.com/getLeagueData/Bundesliga/2017')
+de.1 2018 (306, 'https://understat.com/getLeagueData/Bundesliga/2018')
+de.1 2019 (306, 'https://understat.com/getLeagueData/Bundesliga/2019')
+de.1 2020 (306, 'https://understat.com/getLeagueData/Bundesliga/2020')
+de.1 2021 (306, 'https://understat.com/getLeagueData/Bundesliga/2021')
+de.1 2022 (306, 'https://understat.com/getLeagueData/Bundesliga/2022')
+de.1 2023 (306, 'https://understat.com/getLeagueData/Bundesliga/2023')
+de.1 2024 (306, 'https://understat.com/getLeagueData/Bundesliga/2024')
+de.1 2025 (306, 'https://understat.com/getLeagueData/Bundesliga/2025')
+de.1 2026 (45, 'https://understat.com/getLeagueData/Bundesliga/2026')
+it.1 2017 (380, 'https://understat.com/getLeagueData/Serie_A/2017')
+it.1 2018 (380, 'https://understat.com/getLeagueData/Serie_A/2018')
+it.1 2019 (380, 'https://understat.com/getLeagueData/Serie_A/2019')
+it.1 2020 (380, 'https://understat.com/getLeagueData/Serie_A/2020')
+it.1 2021 (380, 'https://understat.com/getLeagueData/Serie_A/2021')
+it.1 2022 (380, 'https://understat.com/getLeagueData/Serie_A/2022')
+it.1 2023 (380, 'https://understat.com/getLeagueData/Serie_A/2023')
+it.1 2024 (380, 'https://understat.com/getLeagueData/Serie_A/2024')
+it.1 2025 (380, 'https://understat.com/getLeagueData/Serie_A/2025')
+it.1 2026 (60, 'https://understat.com/getLeagueData/Serie_A/2026')
+fr.1 2017 (380, 'https://understat.com/getLeagueData/Ligue_1/2017')
+fr.1 2018 (380, 'https://understat.com/getLeagueData/Ligue_1/2018')
+fr.1 2019 (279, 'https://understat.com/getLeagueData/Ligue_1/2019')
+fr.1 2020 (380, 'https://understat.com/getLeagueData/Ligue_1/2020')
+fr.1 2021 (380, 'https://understat.com/getLeagueData/Ligue_1/2021')
+fr.1 2022 (380, 'https://understat.com/getLeagueData/Ligue_1/2022')
+fr.1 2023 (306, 'https://understat.com/getLeagueData/Ligue_1/2023')
+fr.1 2024 (306, 'https://understat.com/getLeagueData/Ligue_1/2024')
+fr.1 2025 (306, 'https://understat.com/getLeagueData/Ligue_1/2025')
+fr.1 2026 (54, 'https://understat.com/getLeagueData/Ligue_1/2026')
 DIAGNOSTIC :
-  200 https://understat.com/league/EPL/2017 | 18688 car. | début : '<!DOCTYPE html>\n<html lang="en">\n    <head>\n\t\t<base href="https://understat.com/">\n\t\t<title>EPL xG Table and Scorers for the 2017/2018 season | Understat.com</t'
-  200 https://understat.com/getLeagueData/EPL/2017 | 88196 car. | début : '\x1f�\x08\x00\x00\x00\x00\x00\x00\x03��k����.\n��\x0cM�|�2x�x>���n��v�����̉�U�r)�R�uR�����\x03�\x17\x12$A��7U�v�]6���H\x12|\x00<x�_}�^�\x7fx�����+�\x7f�\u07be�5��^}��x\x7f���_�>>>�\x7f�����ǧϯ~���߯���\x05l����߾����JXo�?}��Qyg�?'
-  200 https://understat.com/league/EPL/2018 | 18688 car. | début : '<!DOCTYPE html>\n<html lang="en">\n    <head>\n\t\t<base href="https://understat.com/">\n\t\t<title>EPL xG Table and Scorers for the 2018/2019 season | Understat.com</t'
-  200 https://understat.com/getLeagueData/EPL/2018 | 87630 car. | début : '\x1f�\x08\x00\x00\x00\x00\x00\x00\x03��msf��%��\x15F݈�����K�O��m���qX������\x04��Tl�H\x1dV�����7sol \x01$��͒<=!)\x1fI\x0f�@be�ʕ�������>������+��\x1f\u07be�G��\x7fx�����{��\x7f����ǧG�;�\x1e>||z���?�\x7f�ϛw��\x0elw�w��o�Q�ziuP�W_�'
-  200 https://understat.com/league/EPL/2019 | 18688 car. | début : '<!DOCTYPE html>\n<html lang="en">\n    <head>\n\t\t<base href="https://understat.com/">\n\t\t<title>EPL xG Table and Scorers for the 2019/2020 season | Understat.com</t'
-  200 https://understat.com/getLeagueData/EPL/2019 | 88223 car. | début : "\x1f�\x08\x00\x00\x00\x00\x00\x00\x03��m�f�m&\x0c���ވ�$V����\x13%��آ�\x105�3�����]b�٬�Vw��'�/p^\x12ȓ��S�Z�M\x12��w�2���\x0b\x17���O�w?}|�\x0f��M���\x1f\u07bd�\x07��_������=���\x1f?==���Ç\x0fw�O�?��>���\x1f�?������\x03;�����\x7fP��f�3���o"
-matchs avec xG : 0
-pas de data/understat.csv : lab9 non lancé
+  200 https://understat.com/league/EPL/2017 | 18688 car. | début : '<!DOCTYPE html>\n<html lang="en">\n    <head>\n\t\t<base href="https://understat.com/">\n\t\t<title>EPL xG Table and Scorers for the 2017/2018 season | Understat.com</title>\n        <meta charset="UTF-8" />\n\t'
+  200 https://understat.com/getLeagueData/EPL/2017 | 521428 car. | début : '{"teams":{"72":{"id":"72","title":"Everton","history":[{"h_a":"h","xG":0.720574,"xGA":0.27644,"npxG":0.720574,"npxGA":0.27644,"ppda":{"att":130,"def":21},"ppda_allowed":{"att":289,"def":20},"deep":3,"'
+  200 https://understat.com/getLeagueData/EPL/2018 | 517852 car. | début : '{"teams":{"72":{"id":"72","title":"Everton","history":[{"h_a":"a","xG":0.715382,"xGA":0.891038,"npxG":0.715382,"npxGA":0.891038,"ppda":{"att":312,"def":20},"ppda_allowed":{"att":228,"def":9},"deep":2,'
+  200 https://understat.com/getLeagueData/EPL/2019 | 522210 car. | début : '{"teams":{"71":{"id":"71","title":"Aston Villa","history":[{"h_a":"a","xG":0.639599,"xGA":2.57262,"npxG":0.639599,"npxGA":2.57262,"ppda":{"att":255,"def":19},"ppda_allowed":{"att":147,"def":28},"deep"'
+matchs avec xG : 16408
+ "equipes_rapprochees": 156,
+ "couverture_de.1": 0.9738891433806688,
+ "couverture_en.1": 0.9761029411764706,
+ "couverture_es.1": 1.0,
+ "couverture_fr.1": 0.998744769874477,
+ "couverture_it.1": 0.9996323529411765,
+ "matchs_testables": 3602,
+ "n_test": 1851,
+ "rps": {
+  "actuel": 0.20118974548436686,
+  "plus_xg": 0.20160745749172118,
+  "xg_au_lieu_tirs": 0.2019454542387989,
+  "marche": 0.19785413475505712,
+  "marche_plus_xg": 0.19874176805703087
+ },
+ "xg_en_plus": {
+  "gain": -0.00041771200735432954,
+  "ic95": [
+   -0.001943578560307792,
+   0.0010375196778921734
+  ],
+  "prouve": false
+ },
+ "xg_au_lieu_tirs": {
+  "gain": -0.0007557087544320552,
+  "ic95": [
+   -0.0025836006214104714,
+   0.0009664837192712804
+  ],
+  "prouve": false
+ },
+ "au_dela_marche": {
+  "gain": -0.0008876333019737481,
+  "ic95": [
+   -0.002392369471350748,
+   0.000612075727623673
+  ],
+  "prouve": false
+ }
+}
+/home/runner/work/LAMBDA90/LAMBDA90/lab10_tm.py:107: Pandas4Warning: Starting with pandas version 4.0 all arguments of all will be keyword-only.
+  m = D[["PSCH", "PSCD", "PSCA"]].notna().all(1).to_numpy(); CK = np.full((len(D), 3), np.nan)
 {
- "erreur": "KeyError : 'date'"
+ "matchs_avec_onzes": 11960,
+ "derniere_date": "2026-05-24",
+ "equipes_rapprochees": 151,
+ "matchs_testables": 4646,
+ "saisons": [
+  2024,
+  2025
+ ],
+ "valeur_au_dela_modele": {
+  "n_test": 2341,
+  "rps_sans": 0.19704306480093703,
+  "rps_avec": 0.1967317140517806,
+  "gain": 0.0003113507491564282,
+  "ic95": [
+   -0.0006558795417678264,
+   0.0012724302013747669
+  ],
+  "prouve": false
+ },
+ "rotation_au_dela_modele": {
+  "n_test": 2341,
+  "rps_sans": 0.19704306480093703,
+  "rps_avec": 0.1973207611167267,
+  "gain": -0.0002776963157896715,
+  "ic95": [
+   -0.0011344150027298501,
+   0.0005834694632502847
+  ],
+  "prouve": false
+ },
+ "tout_au_dela_ouverture": {
+  "n_test": 2341,
+  "rps_sans": 0.19464261838618735,
+  "rps_avec": 0.19481619702432204,
+  "gain": -0.00017357863813470046,
+  "ic95": [
+   -0.0007622345414273087,
+   0.0004480960752471344
+  ],
+  "prouve": false
+ },
+ "tout_au_dela_cloture": {
+  "n_test": 1172,
+  "rps_sans": 0.1891932928965546,
+  "rps_avec": 0.18950849498712394,
+  "gain": -0.00031520209056934423,
+  "ic95": [
+   -0.0007570804898529936,
+   0.00013450304918892752
+  ],
+  "prouve": false
+ }
 }
