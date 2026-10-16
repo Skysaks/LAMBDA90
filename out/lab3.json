@@ -1,0 +1,54 @@
+{
+ "n": 1482,
+ "couverture_marche_80": {
+  "H": 0.9278002699055331,
+  "D": 0.8333333333333334,
+  "A": 0.9318488529014844
+ },
+ "largeur_moy_pts": {
+  "H": 23.261187474207357,
+  "D": 9.008955121647015,
+  "A": 20.759263913419183
+ },
+ "par_largeur": [
+  {
+   "q": "étroite",
+   "n": 371,
+   "largeur_pts": 17.5684,
+   "ecart_marche_pts": 6.2228,
+   "rps_modele": 0.1829,
+   "rps_marche": 0.1785,
+   "exces": 0.0044
+  },
+  {
+   "q": "moyenne-",
+   "n": 370,
+   "largeur_pts": 22.3604,
+   "ecart_marche_pts": 5.1112,
+   "rps_modele": 0.2002,
+   "rps_marche": 0.199,
+   "exces": 0.0011
+  },
+  {
+   "q": "moyenne+",
+   "n": 370,
+   "largeur_pts": 24.3319,
+   "ecart_marche_pts": 5.7459,
+   "rps_modele": 0.2186,
+   "rps_marche": 0.2162,
+   "exces": 0.0024
+  },
+  {
+   "q": "large",
+   "n": 371,
+   "largeur_pts": 28.7845,
+   "ecart_marche_pts": 6.7252,
+   "rps_modele": 0.2064,
+   "rps_marche": 0.1997,
+   "exces": 0.0067
+  }
+ ],
+ "corr_largeur_ecart": 0.13209928617056826,
+ "promus_largeur_pts": 12.09771630880688,
+ "n_promus": 1
+}

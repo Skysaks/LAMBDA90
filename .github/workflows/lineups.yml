@@ -1,0 +1,25 @@
+name: Compositions officielles
+# Toutes les heures de 10 h 40 à 21 h 40 UTC : compositions des matchs qui commencent dans les 100 minutes, puis page reconstruite.
+on:
+  schedule: [{ cron: "40 10-21 * * *" }]
+  workflow_dispatch:
+permissions: { contents: write }
+concurrency: { group: lambda90-data, cancel-in-progress: false }
+jobs:
+  compos:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Compositions (API-Football)
+        env: { API_FOOTBALL_KEY: "${{ secrets.API_FOOTBALL_KEY }}" }
+        run: python pipeline/fetch_lineups.py compos out
+      - name: Page
+        run: ./mk.sh
+      - name: Publier dans le dépôt
+        run: |
+          git config user.name "lambda90-bot"; git config user.email "bot@users.noreply.github.com"
+          git add lambda-90.html out/lineups.json
+          git commit -m "Compositions $(date -u +%FT%H:%M)" || echo "rien à publier"
+          git pull --rebase && git push
