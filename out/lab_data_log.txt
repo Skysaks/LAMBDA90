@@ -73,11 +73,15 @@ fr.1 2023 (0, None)
 fr.1 2024 (0, None)
 fr.1 2025 (0, None)
 fr.1 2026 (0, None)
+DIAGNOSTIC :
+  200 https://understat.com/league/EPL/2017 | 18688 car. | début : '<!DOCTYPE html>\n<html lang="en">\n    <head>\n\t\t<base href="https://understat.com/">\n\t\t<title>EPL xG Table and Scorers for the 2017/2018 season | Understat.com</t'
+  200 https://understat.com/getLeagueData/EPL/2017 | 88196 car. | début : '\x1f�\x08\x00\x00\x00\x00\x00\x00\x03��k����.\n��\x0cM�|�2x�x>���n��v�����̉�U�r)�R�uR�����\x03�\x17\x12$A��7U�v�]6���H\x12|\x00<x�_}�^�\x7fx�����+�\x7f�\u07be�5��^}��x\x7f���_�>>>�\x7f�����ǧϯ~���߯���\x05l����߾����JXo�?}��Qyg�?'
+  200 https://understat.com/league/EPL/2018 | 18688 car. | début : '<!DOCTYPE html>\n<html lang="en">\n    <head>\n\t\t<base href="https://understat.com/">\n\t\t<title>EPL xG Table and Scorers for the 2018/2019 season | Understat.com</t'
+  200 https://understat.com/getLeagueData/EPL/2018 | 87630 car. | début : '\x1f�\x08\x00\x00\x00\x00\x00\x00\x03��msf��%��\x15F݈�����K�O��m���qX������\x04��Tl�H\x1dV�����7sol \x01$��͒<=!)\x1fI\x0f�@be�ʕ�������>������+��\x1f\u07be�G��\x7fx�����{��\x7f����ǧG�;�\x1e>||z���?�\x7f�ϛw��\x0elw�w��o�Q�ziuP�W_�'
+  200 https://understat.com/league/EPL/2019 | 18688 car. | début : '<!DOCTYPE html>\n<html lang="en">\n    <head>\n\t\t<base href="https://understat.com/">\n\t\t<title>EPL xG Table and Scorers for the 2019/2020 season | Understat.com</t'
+  200 https://understat.com/getLeagueData/EPL/2019 | 88223 car. | début : "\x1f�\x08\x00\x00\x00\x00\x00\x00\x03��m�f�m&\x0c���ވ�$V����\x13%��آ�\x105�3�����]b�٬�Vw��'�/p^\x12ȓ��S�Z�M\x12��w�2���\x0b\x17���O�w?}|�\x0f��M���\x1f\u07bd�\x07��_������=���\x1f?==���Ç\x0fw�O�?��>���\x1f�?������\x03;�����\x7fP��f�3���o"
 matchs avec xG : 0
 pas de data/understat.csv : lab9 non lancé
-fichier séparé indisponible games HTTP Error 403: Forbidden
-fichier séparé indisponible game_lineups HTTP Error 403: Forbidden
-fichier séparé indisponible player_valuations HTTP Error 403: Forbidden
 {
- "erreur": "HTTPError : HTTP Error 403: Forbidden"
+ "erreur": "KeyError : 'date'"
 }
