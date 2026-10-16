@@ -1,0 +1,122 @@
+{
+ "date": "2026-10-16T18:18+00:00",
+ "saisons_demandees": [
+  2017,
+  2018,
+  2019,
+  2020,
+  2021,
+  2022,
+  2023,
+  2024,
+  2025,
+  2026
+ ],
+ "budget": 7000,
+ "collecte": "complète",
+ "appels": 532,
+ "erreurs_api": [
+  {
+   "path": "fixtures",
+   "params": {
+    "league": 61,
+    "season": 2017,
+    "status": "FT"
+   },
+   "errors": {
+    "plan": "Free plans do not have access to this season, try from 2022 to 2024."
+   }
+  },
+  {
+   "path": "fixtures",
+   "params": {
+    "league": 61,
+    "season": 2018,
+    "status": "FT"
+   },
+   "errors": {
+    "plan": "Free plans do not have access to this season, try from 2022 to 2024."
+   }
+  },
+  {
+   "path": "fixtures",
+   "params": {
+    "league": 61,
+    "season": 2019,
+    "status": "FT"
+   },
+   "errors": {
+    "plan": "Free plans do not have access to this season, try from 2022 to 2024."
+   }
+  },
+  {
+   "path": "fixtures",
+   "params": {
+    "league": 61,
+    "season": 2020,
+    "status": "FT"
+   },
+   "errors": {
+    "plan": "Free plans do not have access to this season, try from 2022 to 2024."
+   }
+  },
+  {
+   "path": "fixtures",
+   "params": {
+    "league": 61,
+    "season": 2021,
+    "status": "FT"
+   },
+   "errors": {
+    "plan": "Free plans do not have access to this season, try from 2022 to 2024."
+   }
+  },
+  {
+   "path": "fixtures",
+   "params": {
+    "ids": "871474-871470-871472-871473-871476-871475-871477-871479-871471-871478-871484-871482-871486-871488-871480-871481-871489-871485-871487-871495"
+   },
+   "errors": {
+    "plan": "Free plans do not have access to the Ids parameter."
+   }
+  },
+  {
+   "path": "fixtures",
+   "params": {
+    "ids": "871490-871496-871497-871491-871494-871499-871492-871498-871493-871500-871501-871506-871503-871504-871502-871507-871509-871508-871505-871511"
+   },
+   "errors": {
+    "plan": "Free plans do not have access to the Ids parameter."
+   }
+  },
+  {
+   "path": "fixtures",
+   "params": {
+    "ids": "871514-871513-871510-871517-871512-871515-871518-871519-871516-871521-871526-871523-871524-871528-871520-871522-871527-871529-871525-871483"
+   },
+   "errors": {
+    "plan": "Free plans do not have access to the Ids parameter."
+   }
+  },
+  {
+   "path": "fixtures",
+   "params": {
+    "ids": "871536-871535-871534-871537-871532-871539-871533-871530-871538-871531-871540-871544-871543-871549-871547-871545-871541-871548-871542-871546"
+   },
+   "errors": {
+    "plan": "Free plans do not have access to the Ids parameter."
+   }
+  },
+  {
+   "path": "fixtures",
+   "params": {
+    "ids": "871553-871557-871555-871554-871558-871550-871551-871559-871552-871556-871565-871566-871569-871563-871560-871564-871561-871567-871568-871562"
+   },
+   "errors": {
+    "plan": "Free plans do not have access to the Ids parameter."
+   }
+  }
+ ],
+ "compositions_jointes": null,
+ "matchs_en_cache": 0
+}
