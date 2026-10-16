@@ -17,7 +17,7 @@ for s in SEASONS:
             raw = urllib.request.urlopen(urllib.request.Request(url, headers={"User-Agent": "lambda90"}), timeout=30).read().decode("latin-1")
         except Exception as e:
             print("absent", url, e); continue
-        df = pd.read_csv(io.StringIO(raw)); df = df[[c for c in KEEP if c in df.columns]].dropna(subset=["HomeTeam"])
+        df = pd.read_csv(io.StringIO(raw.lstrip("\ufeff").replace("ï»¿", "", 1))); df.columns = [c.strip() for c in df.columns]; df = df[[c for c in KEEP if c in df.columns]].dropna(subset=["HomeTeam"])
         df["Date"] = pd.to_datetime(df.Date, dayfirst=True, errors="coerce"); frames.append(df); print(s, d, len(df))
 if frames:
     pd.concat(frames).to_csv(OUT / "closing.csv", index=False); print("écrit", OUT / "closing.csv")

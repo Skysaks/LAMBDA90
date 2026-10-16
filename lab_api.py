@@ -25,7 +25,7 @@ LEAGUES = {"fr.1": (61, "F1"), "en.1": (39, "E0"), "es.1": (140, "SP1"), "de.1":
 SEASONS = [int(x) for x in os.environ.get("LAB_SEASONS", "2024,2025,2026").split(",") if x.strip()]
 BUDGET = int(os.environ.get("LAB_BUDGET", "7000"))
 BASE = "https://v3.football.api-sports.io"
-STATE = {"calls": 0, "errors": [], "stopped": None, "batch_ok": None}
+STATE = {"calls": 0, "errors": [], "stopped": None, "batch_ok": None, "no_ids": False, "seasons_refused": [], "incomplete": False}
 
 class Stop(Exception): pass
 
@@ -46,7 +46,10 @@ def http_get(path, **params):
             msg = json.dumps(err, ensure_ascii=False)
             if "rate" in msg.lower() or "too many" in msg.lower(): time.sleep(20 * (attempt + 1)); continue
             if "limit" in msg.lower() and "day" in msg.lower(): raise Stop("quota journalier de l'API atteint")
-            STATE["errors"].append({"path": path, "params": params, "errors": err}); return []
+            STATE["errors"].append({"path": path, "params": params, "errors": err})
+            if "ids" in params and "ids" in msg.lower(): STATE["no_ids"] = True
+            if "season" in params and "season" in msg.lower(): STATE["seasons_refused"].append(params["season"])
+            return []
         time.sleep(0.22)
         return d.get("response", [])
     raise Stop("trop de refus pour limite de débit")
@@ -81,21 +84,36 @@ def fetch():
         for season in SEASONS:
             lp = CACHE / f"list_{lid}_{season}.json.gz"; lst = load(lp)
             current = season >= (datetime.now(timezone.utc).year if datetime.now(timezone.utc).month >= 7 else datetime.now(timezone.utc).year - 1)
-            if lst is None or current:
+            if lst is None or current or (lst and "g" not in lst[0]):
                 items = get("fixtures", league=lid, season=season, status="FT")
-                lst = [dict(id=i["fixture"]["id"], date=i["fixture"]["date"]) for i in items]; save(lp, lst)
+                lst = [dict(id=i["fixture"]["id"], date=i["fixture"]["date"], g=[(i.get("goals") or {}).get("home"), (i.get("goals") or {}).get("away")]) for i in items]
+                if lst: save(lp, lst)
+            if not lst: continue
             dp = CACHE / f"det_{lid}_{season}.json.gz"; det = load(dp) or {}
             todo = [x["id"] for x in lst if str(x["id"]) not in det]
-            for k in range(0, len(todo), 20):
-                chunk = todo[k:k + 20]
-                items = get("fixtures", ids="-".join(map(str, chunk)))
-                for it in items:
-                    if STATE["batch_ok"] is None: STATE["batch_ok"] = "lineups" in it and "players" in it
-                    if "lineups" in it and "players" in it: det[str(it["fixture"]["id"])] = compact(it)
-                    else:  # l'API n'a pas joint les compositions : deux appels par match
-                        fid = it["fixture"]["id"]
-                        det[str(fid)] = compact(it, get("fixtures/lineups", fixture=fid), get("fixtures/players", fixture=fid))
-                save(dp, det)
+            try:
+                k = 0
+                while k < len(todo):
+                    if not STATE["no_ids"]:
+                        chunk = todo[k:k + 20]; items = get("fixtures", ids="-".join(map(str, chunk)))
+                        if STATE["no_ids"]: continue  # l'offre refuse les appels groupés : on repasse ce lot match par match
+                        for it in items:
+                            if STATE["batch_ok"] is None: STATE["batch_ok"] = "lineups" in it and "players" in it
+                            fid = it["fixture"]["id"]
+                            det[str(fid)] = compact(it) if ("lineups" in it and "players" in it) else compact(it, get("fixtures/lineups", fixture=fid), get("fixtures/players", fixture=fid))
+                        k += 20
+                    else:
+                        fid = todo[k]; head = {"fixture": {"id": fid, "date": next(x["date"] for x in lst if x["id"] == fid)}, "teams": None}
+                        lu = get("fixtures/lineups", fixture=fid); pl = get("fixtures/players", fixture=fid)
+                        if lu and len(lu) == 2:
+                            head["teams"] = {"home": {"id": lu[0]["team"]["id"], "name": lu[0]["team"]["name"]}, "away": {"id": lu[1]["team"]["id"], "name": lu[1]["team"]["name"]}}
+                            g = next((x.get("g") for x in lst if x["id"] == fid), None) or [None, None]
+                            head["goals"] = {"home": g[0], "away": g[1]}
+                            det[str(fid)] = compact(head, lu, pl)
+                        k += 1
+            finally:
+                if det: save(dp, det)
+            if len(det) < len(lst): STATE["incomplete"] = True
             print(code, season, "matchs en cache :", len(det), "| appels :", STATE["calls"], flush=True)
 
 # ---------- signaux ----------
@@ -221,8 +239,12 @@ def analyse(F):
 def main():
     R = dict(date=datetime.now(timezone.utc).isoformat(timespec="minutes"), saisons_demandees=SEASONS, budget=BUDGET)
     if os.environ.get("API_FOOTBALL_KEY", "").strip():
-        try: fetch(); R["collecte"] = "complète"
+        try:
+            fetch()
+            R["collecte"] = "partielle : reprise automatique au prochain lancement" if STATE["incomplete"] else "complète"
         except Stop as e: R["collecte"] = f"partielle : {e} (reprise automatique au prochain lancement)"
+        if STATE["seasons_refused"]: R["saisons_refusees_par_l_offre"] = sorted(set(STATE["seasons_refused"]))
+        if STATE["no_ids"]: R["offre"] = "gratuite probable : appels groupés refusés, deux appels par match (100 appels par jour, environ 50 matchs par jour)"
     else: R["collecte"] = "pas de clé API_FOOTBALL_KEY : analyse du cache seulement"
     R.update(appels=STATE["calls"], erreurs_api=STATE["errors"][:10], compositions_jointes=STATE["batch_ok"])
     F = build_features(); R["matchs_en_cache"] = int(len(F))

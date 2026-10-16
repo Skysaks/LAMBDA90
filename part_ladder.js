@@ -14,18 +14,23 @@ function ladderCands() {
     defs["12"] = ["12", `${h} ou ${a} (pas de nul)`, (i, j) => i !== j];
     const books = S.odds[f.key] || {}, b = f.band;
     const lowOf = { H: b?.[0][0], D: b?.[1][0], A: b?.[2][0], "1N": b && 1 - b[2][1], N2: b && 1 - b[0][1], "12": b && 1 - b[1][1] };
-    const mk1 = (() => { const s = Object.keys(books).find(isSharp); return s ? bookProbs(books[s], "1X2") : null; })();
-    const mk2 = (() => { const s = Object.keys(books).find(isSharp); return s ? bookProbs(books[s], "OU25") : null; })();
+    // référence marché : Pinnacle sans marge, sinon consensus des autres bookmakers (moyenne des probabilités sans marge)
+    const mref = market => { const sh = Object.keys(books).find(isSharp), p = sh ? bookProbs(books[sh], market) : null; if (p) return { p, src: "Pinnacle" };
+      const all = Object.values(books).map(o => bookProbs(o, market)).filter(Boolean); if (all.length < 3) return null;
+      return { p: all[0].map((_, i) => all.reduce((t, x) => t + x[i], 0) / all.length), src: `consensus de ${all.length} bookmaker${all.length > 1 ? "s" : ""}` }; };
+    const r1 = S.oddsSource === "demo" ? null : mref("1X2"), r2 = S.oddsSource === "demo" ? null : mref("OU25");
+    const mk1 = r1?.p, mk2 = r2?.p;
     const mkp = { H: mk1?.[0], D: mk1?.[1], A: mk1?.[2], "1N": mk1 && mk1[0] + mk1[1], N2: mk1 && mk1[1] + mk1[2], "12": mk1 && mk1[0] + mk1[2], O25: mk2?.[0], U25: mk2?.[1] };
     for (const id of LSEL) {
       const d = defs[id]; if (!d) continue;
       const p = L90.joint(M, [d[2]]);
+      const pm = mkp[id] ?? null, pr = pm ? 0.1 * p + 0.9 * pm : p, msrc = ["O25", "U25"].includes(id) ? r2?.src : r1?.src;
       let o = 0, book = null;
       if (["H", "D", "A", "O25", "U25"].includes(id)) for (const [bk, v] of Object.entries(books)) { if (!S.cfg.offshore && !isANJ(bk)) continue; if (v[id] > o) { o = v[id]; book = bk; } }
       const real = o > 1;
-      if (!real) { if (!S.lad.est) continue; o = Math.round(100 / (p * (1 + mg.m))) / 100; book = "estimée"; }
-      const pm = S.oddsSource === "demo" ? null : mkp[id], pr = pm ? 0.1 * p + 0.9 * pm : p;  // lab6 : le marché seul est le meilleur estimateur 1N2 ; 10 % de modèle pour départager
-      out.push({ f, id, lab: d[1], p, pm, pr, low: lowOf[id] ?? null, o, book, real });
+      // cote estimée : ce qu'un bookmaker agréé proposerait, à partir du prix du marché s'il existe (sinon du modèle)
+      if (!real) { if (!S.lad.est) continue; o = Math.round(100 / ((pm ?? p) * (1 + mg.m))) / 100; book = "estimée"; }
+      out.push({ f, id, lab: d[1], p, pm, pr, msrc, low: lowOf[id] ?? null, o, book, real });
     }
   }
   return { list: out, mg };
@@ -43,7 +48,9 @@ function ladderPicks() {
     }
   }
   for (const r of res) r.ev = r.pr * r.o - 1;
-  res.sort((x, y) => y.pr - x.pr || y.ev - x.ev);
+  // avec de vraies cotes, une sélection sans référence marché (modèle seul) passe après celles que le marché confirme (lab7 : excès de confiance du modèle)
+  const anyReal = S.oddsSource !== "demo" && res.some(r => r.legs.every(l => l.pm != null));
+  res.sort((x, y) => (anyReal ? (y.legs.every(l => l.pm != null) - x.legs.every(l => l.pm != null)) : 0) || y.pr - x.pr || y.ev - x.ev);
   return { picks: res, mg };
 }
 function ladderPlan(picks, n) {
@@ -85,8 +92,8 @@ function whyLeg(l) {
   } else if (l.id === "BY") out.push(`${h} marque dans ${pct(1 - Math.exp(-f.lam))} des cas environ, ${a} dans ${pct(1 - Math.exp(-f.mu))}`, `${nf(xg, 1)} buts attendus`);
   else if (l.id === "BN") out.push(`il suffit qu'une équipe reste muette`, `${a} attend ${nf(f.mu, 1)} but`);
   else if (l.id === "HS" || l.id === "AS") { const [t, x] = l.id === "HS" ? [h, f.lam] : [a, f.mu]; out.push(`${t} attend ${nf(x, 1)} but`, st[l.id === "HS" ? 1 : 0] ? `l'adversaire encaisse ${nf(st[l.id === "HS" ? 1 : 0].ga, 1)} par match sur 12 mois` : ""); }
-  if (l.pm != null) { const g = (l.p - l.pm) * 100; out.push(Math.abs(g) < 3 ? `modèle et marché d'accord (${pct(l.p)} / ${pct(l.pm)})` : g > 0 ? `le modèle est plus optimiste que le marché de ${nf(g)} pts : prudence` : `le marché y croit davantage que le modèle (+${nf(-g)} pts)`); }
-  else out.push("pas de cote de référence : modèle seul");
+  if (l.pm != null) { const g = (l.p - l.pm) * 100, src = l.msrc || "marché"; out.push(Math.abs(g) < 3 ? `modèle et ${src} d'accord (${pct(l.p)} / ${pct(l.pm)})` : g > 0 ? `le modèle est plus optimiste que le ${src} de ${nf(g)} pts : la probabilité retenue suit le marché` : `le ${src} y croit davantage que le modèle (+${nf(-g)} pts)`); }
+  else out.push("aucune cote de marché pour ce pari : modèle seul, à vérifier");
   (f.stakes || []).forEach((s, i) => { if (s) out.push(`${i ? a : h} : ${s}`); });
   if (f.known && !(f.known[0] && f.known[1])) out.push("une équipe sans historique récent");
   const t = out.filter(Boolean).join(" ; ");

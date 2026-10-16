@@ -24,7 +24,13 @@ jobs:
         run: python pipeline/fetch_results.py
       - name: Cotes (The Odds API)
         env: { ODDS_API_KEY: "${{ secrets.ODDS_API_KEY }}" }
-        run: python pipeline/fetch_odds.py
+        run: |
+          python pipeline/fetch_odds.py
+          python pipeline/value_log.py .
+      - name: Clôtures et journal de value
+        run: |
+          python pipeline/fetch_closing.py data || echo "clôtures indisponibles"
+          python pipeline/value_eval.py .
       - name: Blessures et suspensions (API-Football)
         env: { API_FOOTBALL_KEY: "${{ secrets.API_FOOTBALL_KEY }}" }
         run: python pipeline/fetch_lineups.py jour out
@@ -34,7 +40,6 @@ jobs:
             python engine3.py /tmp/xg/data /tmp/of out tune
             python engine3.py /tmp/xg/data /tmp/of out full
             python engine3_eval.py out
-            python pipeline/fetch_closing.py data || echo "clôtures indisponibles"
             python clv.py out data/closing.csv
           fi
       - name: Entraînement final et page

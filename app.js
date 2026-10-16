@@ -391,7 +391,9 @@ function renderValue() {
         <label class="f">Mise max (% bankroll)<input type="number" id="cap" step="0.5" data-cfgpct="cap" value="${S.cfg.cap * 100}"></label>
         <label class="f">Bankroll (€)<input type="number" id="bank" step="50" data-cfgnum="bank" value="${S.cfg.bank}"></label>
         <label class="f" style="flex-direction:row;align-items:center;gap:8px"><input type="checkbox" id="offshore" data-cfgbool="offshore" ${S.cfg.offshore ? "checked" : ""}>Inclure les bookmakers non agréés ANJ</label>
-      </div></div>
+      </div>
+      ${(() => { const c = LAB.deep?.clv, cv = c?.["clv_seuil_1.05"];
+        return ["model", "blend"].includes(S.cfg.ref) && cv?.clv_moy != null ? `<p class="notice-inline warn">Mesuré face à la clôture Pinnacle : la value annoncée par le modèle seul a une CLV de ${sgn(cv.clv_moy)} sur ${nf(cv.n)} paris (la cote évolue contre elle). La référence « Pinnacle sans marge » est la seule qui ait une chance : son verdict s'accumule dans le journal de value du Registre.</p>` : ""; })()}</div>
     <div class="panel"><header><h2>Paris à valeur</h2><span class="pill ${scan.value.length ? "good" : "ghost"}">${scan.value.length} opportunités</span></header>
       ${scan.value.length ? `<div class="scroll"><table><thead><tr><th>Match</th><th>Issue</th><th>Bookmaker</th><th class="r">Cote</th><th class="r">Cote juste</th><th class="r">EV</th><th class="r">Mise</th><th>Référence</th><th></th></tr></thead><tbody>
       ${scan.value.slice(0, 60).map(x => `<tr><td><button class="btn small" data-open="${esc(x.f.key)}">${esc(short(x.f.home))} – ${esc(short(x.f.away))}</button></td><td>${SEL[x.k]}</td><td>${esc(x.book)}</td><td class="r num">${odd(x.o)}</td><td class="r num">${odd(1 / x.p)}</td><td class="r"><span class="pill good">${sgn(x.ev)}</span></td><td class="r num">${eur(x.stake)}</td><td class="faint">${esc(x.src)}</td>
@@ -648,6 +650,17 @@ function deepRows() {
   if (la?.au_dela_ouverture) { const o = la.au_dela_ouverture, c = la.au_dela_cloture;
     out.push(["Force du onze aligné (API-Football)", "1N2", `gain RPS ${nf(o.gain * 1000, 2)} ‰ au-delà des cotes d'ouverture (IC ${nf(o.ic95[0] * 1000, 1)} à ${nf(o.ic95[1] * 1000, 1)} ‰, ${nf(o.n_test)} matchs)${c ? ` ; au-delà de la clôture : ${nf(c.gain * 1000, 2)} ‰` : ""}`, o.prouve ? (c?.prouve ? "Avantage prouvé, même face à la clôture" : "Prouvé avant l'annonce des compos") : "Non prouvé"]); }
   else out.push(["Force du onze aligné (API-Football)", "1N2", la ? `collecte : ${la.collecte}` : "test prêt, lancé dès que la clé API-Football est branchée", "En attente"]);
+  const l8 = d.lab8, s8 = l8?.["seuil_0.02"];
+  if (s8?.clv != null) out.push(["Bet365 au-dessus du prix juste Pinnacle", "Value marché", `${nf(s8.paris)} paris sur ${nf(l8.matchs)} matchs ; CLV ${sgn(s8.clv)} (IC ${sgn(s8.ic95_clv[0])} à ${sgn(s8.ic95_clv[1])})`, s8.ic95_clv[0] > 0 ? "Avantage prouvé" : "Pas d'avantage prouvé"]);
+  const ve = d.value_eval, vf = ve?.agrees_france, va = ve?.tout;
+  out.push(["Journal de value (cotes réelles contre Pinnacle)", "Test en avant", ve ? `${nf(ve.cotes_notees)} cotes notées, ${nf(ve.jugees)} jugées${va?.clv != null ? ` ; CLV ${sgn(va.clv)} (IC ${sgn(va.ic95_clv[0])} à ${sgn(va.ic95_clv[1])})` : ""}${vf?.clv != null ? ` ; bookmakers agréés en France : ${sgn(vf.clv)} sur ${nf(vf.n)}` : ""}` : "démarre avec la mise à jour quotidienne", va?.ic95_clv?.[0] > 0 ? "Avantage prouvé" : ve?.jugees > 100 ? "Pas d'avantage prouvé" : "En attente"]);
+  const l9 = d.lab9;
+  if (l9?.xg_en_plus) out.push(["xG Understat ajoutés au moteur", "1N2", `RPS ${nf(l9.rps.plus_xg, 4)} contre ${nf(l9.rps.actuel, 4)} (IC du gain ${nf(l9.xg_en_plus.ic95[0] * 1000, 1)} à ${nf(l9.xg_en_plus.ic95[1] * 1000, 1)} ‰) ; au-delà du marché : ${nf(l9.au_dela_marche.gain * 1000, 2)} ‰`, l9.xg_en_plus.prouve ? "Prouvé : à intégrer" : "Non prouvé"]);
+  else out.push(["xG Understat", "1N2", l9?.erreur || "test prêt, lancé par le labo données", l9?.erreur ? "Erreur" : "En attente"]);
+  const l10 = d.lab10;
+  if (l10?.tout_au_dela_ouverture) { const t = l10.tout_au_dela_ouverture, c = l10.tout_au_dela_cloture;
+    out.push(["Valeur du onze aligné (Transfermarkt)", "1N2", `gain ${nf(t.gain * 1000, 2)} ‰ au-delà de l'ouverture (IC ${nf(t.ic95[0] * 1000, 1)} à ${nf(t.ic95[1] * 1000, 1)} ‰)${c ? ` ; au-delà de la clôture ${nf(c.gain * 1000, 2)} ‰` : ""} ; ${nf(l10.matchs_testables)} matchs`, t.prouve ? (c?.prouve ? "Avantage prouvé, même face à la clôture" : "Prouvé avant les compos") : "Non prouvé"]); }
+  else out.push(["Valeur du onze aligné (Transfermarkt)", "1N2", l10?.erreur || "test prêt, lancé par le labo données", l10?.erreur ? "Erreur" : "En attente"]);
   const c = d.clv, cv = c && c["clv_seuil_1.05"];
   out.push(c ? ["Modèle face à la clôture Pinnacle", "1N2", `RPS ${nf(c.rps_modele, 4)} contre ${nf(c.rps_pinnacle_cloture, 4)} (clôture) ; CLV ${cv?.clv_moy != null ? `${sgn(cv.clv_moy)} sur ${nf(cv.n)} paris, IC ${sgn(cv.ic95[0])} à ${sgn(cv.ic95[1])}` : "trop peu de paris"}`,
     cv?.ic95 && cv.ic95[0] > 0 ? "Avantage prouvé" : "Pas d'avantage prouvé"] : ["Modèle face à la clôture Pinnacle (CLV)", "1N2", "calculé chaque lundi par la mise à jour automatique, dès que le dépôt GitHub tourne", "En attente"]);
@@ -685,7 +698,7 @@ function labPanel() {
   ];
   return `<div class="panel"><header><h2>Laboratoire : ce qui a été testé</h2><span class="note">Walk-forward, entraînement toujours antérieur au test</span></header>
     <div class="scroll"><table><thead><tr><th>Signal ou méthode</th><th>Cible</th><th>Résultat hors échantillon</th><th>Décision</th></tr></thead><tbody>
-    ${rows.map(([a, b, c, d]) => `<tr><td>${a}</td><td class="faint">${b}</td><td class="num">${c}</td><td><span class="pill ${/Rejeté|Faible|Sans effet|Moins bon|Non prouvé|non significatif|Pas d'avantage|pas rentable/.test(d) ? "warn" : /négligeable|En attente/.test(d) ? "ghost" : "good"}">${d}</span></td></tr>`).join("")}</tbody></table></div>
+    ${rows.map(([a, b, c, d]) => `<tr><td>${a}</td><td class="faint">${b}</td><td class="num">${c}</td><td><span class="pill ${/Rejeté|Faible|Sans effet|Moins bon|Non prouvé|non significatif|Pas d'avantage|pas rentable|Erreur/.test(d) ? "warn" : /négligeable|En attente/.test(d) ? "ghost" : "good"}">${d}</span></td></tr>`).join("")}</tbody></table></div>
     <p class="note" style="margin-top:8px">Un signal n'entre dans la plateforme que s'il améliore la prévision sur des matchs que le modèle n'a pas vus. RPS, log-loss et Brier : plus bas = mieux.</p></div>
   <div class="panel"><header><h2>Données : ce qui est branché, ce qui manque</h2></header>
     <div class="stack muted" style="max-width:80ch">

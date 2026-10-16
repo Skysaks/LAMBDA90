@@ -1,0 +1,43 @@
+name: Labo données gratuites
+# xG Understat et valeurs des onzes (jeu de données ouvert Transfermarkt), testés contre le moteur, l'ouverture et la clôture.
+# Lancement : Actions → « Labo données gratuites » → Run workflow, ou un commit qui modifie lab/data_request.txt. Relance chaque lundi.
+on:
+  workflow_dispatch: {}
+  push:
+    paths: ["lab/data_request.txt"]
+  schedule:
+    - cron: "41 3 * * 1"
+permissions: { contents: write }
+concurrency: { group: lambda90-data, cancel-in-progress: false }
+jobs:
+  lab:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install numpy pandas scipy scikit-learn statsmodels
+      - name: Données ouvertes
+        run: |
+          git clone --depth 1 https://github.com/xgabora/Club-Football-Match-Data-2000-2025.git /tmp/xg
+          git clone --depth 1 https://github.com/openfootball/football.json.git /tmp/of
+      - name: Cotes de clôture
+        run: python pipeline/fetch_closing.py data || echo "clôtures indisponibles"
+      - name: xG Understat
+        run: python pipeline/fetch_understat.py data || echo "Understat indisponible"
+      - name: Labo xG
+        run: |
+          if [ -f data/understat.csv ]; then python lab9_xg.py /tmp/xg/data /tmp/of out || echo '{"erreur": "lab9 en échec, voir le journal Actions"}' > out/lab9.json; fi
+      - name: Labo valeurs des onzes
+        run: python lab10_tm.py .
+      - name: Labo value contre Pinnacle
+        run: python lab8.py .
+      - name: Page
+        run: ./mk.sh
+      - name: Publier dans le dépôt
+        run: |
+          git config user.name "lambda90-bot"; git config user.email "bot@users.noreply.github.com"
+          git add out/lab8.json out/lab9.json out/lab10.json data/understat.csv data/closing.csv lambda-90.html 2>/dev/null || true
+          git commit -m "Labo données $(date -u +%FT%H:%M)" || echo "rien à publier"
+          git pull --rebase && git push
