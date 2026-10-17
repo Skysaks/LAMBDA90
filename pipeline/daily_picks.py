@@ -17,6 +17,8 @@ SPORT = {"soccer_france_ligue_one": "fr.1", "soccer_epl": "en.1", "soccer_spain_
          "soccer_portugal_primeira_liga": "pt.1", "soccer_netherlands_eredivisie": "nl.1", "soccer_efl_champ": "en.2"}
 DIV = {"fr.1": "F1", "en.1": "E0", "es.1": "SP1", "de.1": "D1", "it.1": "I1", "pt.1": "P1", "nl.1": "N1", "en.2": "E1"}
 MY = {"bet365": "Bet365", "winamax_fr": "Winamax (FR)", "betclic_fr": "Betclic (FR)", "unibet_fr": "Unibet (FR)"}
+# Cotes du jour (The Odds API, chaque matin). Bet365 vient d'un fichier mis à jour deux fois par semaine : jamais utilisé seul pour juger un prix.
+FRESH = {k: v for k, v in MY.items() if k != "bet365"}
 PARIS = timezone(timedelta(hours=2))  # heure d'été ; l'écart d'une heure en hiver ne change pas la journée de match
 
 def shin(odds):
@@ -68,7 +70,7 @@ def steam(e, k):
     if not first or first is last: return None
     f0, f1 = fair_of(first["b"]["Pinnacle"]), fair_of(last["b"]["Pinnacle"])
     if not f0 or not f1 or k not in f0 or k not in f1: return None
-    mine0 = max([first["b"].get(t, {}).get(k, 0) for t in MY.values()] or [0])
+    mine0 = max([first["b"].get(t, {}).get(k, 0) for t in FRESH.values()] or [0])
     return {"dp": f1[k] - f0[k], "mine0": mine0, "hours": (last["t"] - first["t"]) / 3.6e6}
 
 LAB = {"H": "home", "D": "draw", "A": "away", "O25": "over", "U25": "under"}
@@ -85,22 +87,24 @@ def candidates(now):
         f = E[k]; B = book_odds(e); fair = fair_of(B.get("pinnacle"))
         if not fair: continue
         pmod = model_probs(f); pr = {s: 0.9 * fair[s] + 0.1 * pmod[s] for s in fair}
-        best = {}
+        best, bestfr = {}, {}
         for s in fair:
             o, bk = max(((B.get(key, {}).get(s, 0), t) for key, t in MY.items()), default=(0, None))
             if o > 1: best[s] = (o, bk)
+            o, bk = max(((B.get(key, {}).get(s, 0), t) for key, t in FRESH.items()), default=(0, None))
+            if o > 1: bestfr[s] = (o, bk)
         fr = [B[key] for key in ("winamax_fr", "betclic_fr", "unibet_fr") if key in B and all(B[key].get(x, 0) > 1 for x in "HDA")]
         marg = sum(sum(1 / b[x] for x in "HDA") - 1 for b in fr) / len(fr) if fr else None
         dc = {"1N": pr["H"] + pr["D"], "N2": pr["D"] + pr["A"], "12": pr["H"] + pr["A"]}
         band = f.get("band"); bw = max(b[1] - b[0] for b in band) if band else None
-        rows.append(dict(f=f, e=e, kick=kick, key=f"{f['league']}|{f['date']}|{f['home']}|{f['away']}", fair=fair, pmod=pmod, pr=pr, best=best, marg=marg, dc=dc, bw=bw))
+        rows.append(dict(f=f, e=e, kick=kick, key=f"{f['league']}|{f['date']}|{f['home']}|{f['away']}", fair=fair, pmod=pmod, pr=pr, best=best, bestfr=bestfr, marg=marg, dc=dc, bw=bw))
     return rows
 
 def pick_of(r):
     opts = [(r["pr"][s], s) for s in r["best"] if r["best"][s][0] >= 1.25]
     if not opts: return None
-    p, s = max(opts); o, bk = r["best"][s]
-    return dict(sel=s, p=round(p, 4), pm=round(r["fair"][s], 4), pmod=round(r["pmod"][s], 4), o=o, book=bk, ev=round(r["fair"][s] * o - 1, 4))
+    p, s = max(opts); o, bk = r["best"][s]; ofr, bfr = r["bestfr"].get(s, (None, None))
+    return dict(sel=s, p=round(p, 4), pm=round(r["fair"][s], 4), pmod=round(r["pmod"][s], 4), o=o, book=bk, ev=round(r["fair"][s] * o - 1, 4), ofr=ofr, bookfr=bfr)
 
 def build_day(now):
     rows = sorted(candidates(now), key=lambda r: r["kick"])
@@ -116,16 +120,16 @@ def build_day(now):
                         res=dict(sel=res, p=round(r["pr"][res], 4)), dc=dict(sel=dcs, p=round(r["dc"][dcs], 4))))
     top.sort(key=lambda x: -x["p"]); top = top[:8]
     # Hot : prix proche du juste chez mes bookmakers, modèle d'accord ; bonus si Pinnacle a bougé vers l'issue sans que mes cotes suivent
-    hot = []
-    for r in win:
-        for s, (o, bk) in r["best"].items():
+    hot = []  # fenêtre de 48 h : plus de choix pour trouver les prix proches du juste
+    for r in [r for r in rows if r["kick"] <= now + timedelta(hours=48)]:
+        for s, (o, bk) in r["bestfr"].items():  # prix jugé sur les cotes du jour seulement
             p = r["fair"][s]
             if p < 0.28 or o < 1.3: continue
             ev = p * o - 1; agree = r["pmod"][s] - p; st = steam(r["e"], s); lag = bool(st and st["dp"] >= 0.015 and st["mine0"] and o >= st["mine0"] * 0.99)
             score = ev + 0.3 * max(-0.05, min(0.05, agree)) + (0.02 if lag else 0)
-            if ev >= -0.025 and agree >= -0.03:
+            if ev >= -0.04 and agree >= -0.05:
                 hot.append(dict(key=r["key"], kick=r["e"]["commence_time"], home=r["f"]["home"], away=r["f"]["away"], league=r["f"]["league"], sel=s, p=round(r["pr"][s], 4),
-                                pm=round(p, 4), pmod=round(r["pmod"][s], 4), o=o, book=bk, ev=round(ev, 4), lag=lag, dp=round(st["dp"], 4) if st else None, score=round(score, 4)))
+                                pm=round(p, 4), pmod=round(r["pmod"][s], 4), o=o, book=bk, ev=round(ev, 4), lag=lag, b365=r["best"].get(s, (None, None))[0] if r["best"].get(s, (0, ""))[1] == "Bet365" else None, dp=round(st["dp"], 4) if st else None, score=round(score, 4)))
     hot.sort(key=lambda x: -x["score"]); seen = set(); hot2 = []
     for h in hot:
         if h["key"] in seen: continue

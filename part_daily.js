@@ -53,6 +53,7 @@ function argsFor(f, id, it = {}) {
   const fm = f.form || [[], []], side = /^(A|N2)$/.test(id) ? 1 : /^(H|1N)$/.test(id) ? 0 : -1;
   if (side >= 0 && fm[side]?.length) { const L = fm[side], w = L.filter(x => x[2] > x[3]).length, l = L.filter(x => x[2] < x[3]).length; out.push(`Forme récente de ${short(side ? f.away : f.home)} : ${w} victoire${w > 1 ? "s" : ""}, ${l} défaite${l > 1 ? "s" : ""} sur ${L.length} (contexte : la forme n'ajoute rien au modèle une fois la force connue).`); }
   if (it.o && pm) { const fairO = 1 / pm; out.push(`Meilleure cote chez toi : ${odd(it.o)} (${(it.book || "").replace(" (FR)", "")}) pour une cote juste de ${odd(fairO)} : ${it.o >= fairO ? `au-dessus du prix juste (${sgn(it.o * pm - 1)})` : `marge payée ${pct(1 - it.o * pm, 1)}`}.`); }
+  if (it.b365 && it.b365 > it.o) out.push(`Bet365 affiche ${odd(it.b365)} dans son dernier fichier : à vérifier sur le site, le prix a pu bouger.`);
   if (it.lag) out.push(`Cote en retard : Pinnacle a fait monter cette issue de ${nf((it.dp || 0) * 100, 1)} pts depuis le premier relevé, la cote de tes bookmakers n'a pas suivi.`);
   if ((it.book || "") === "Bet365") out.push("Cote Bet365 tirée d'un fichier mis à jour deux fois par semaine : vérifie-la sur le site avant de jouer.");
   const p = it.p ?? pm; if (p) out.push(`Échoue en moyenne ${p > 0.5 ? `1 fois sur ${nf(1 / (1 - p), 1)}` : `${nf((1 - p) * 10, 0)} fois sur 10`}.`);
@@ -108,7 +109,7 @@ function renderDaily() {
     <div class="grid2">
       <div class="panel hotp"><header><h2>Hot Picks</h2><span class="note">Prix intéressant au vu du marché</span></header>
         ${hot.length ? hot.map(x => hotCard(x)).join("") : `<div class="empty">${live ? "Publiés avec le registre du matin." : "Aucune sélection au prix juste aujourd'hui chez tes bookmakers."}</div>`}
-        <p class="note">Critères : meilleure cote de tes bookmakers à moins de 2,5 % du prix juste Pinnacle (ou au-dessus), modèle d'accord, bonus si la cote est en retard sur un mouvement Pinnacle. Hot ne veut pas dire sûr.</p></div>
+        <p class="note">Critères, sur les 48 prochaines heures : meilleure cote du jour chez Winamax, Betclic ou Unibet à moins de 4 % du prix juste Pinnacle (ou au-dessus), modèle pas plus prudent de 5 points, bonus si la cote est en retard sur un mouvement Pinnacle. Bet365 n'entre pas dans le calcul (cotes jusqu'à 4 jours). Hot ne veut pas dire sûr.</p></div>
       <div class="panel coldp"><header><h2>Cold Games</h2><span class="note">Matchs à laisser passer</span></header>
         ${cold.length ? cold.map(x => coldCard(x)).join("") : `<div class="empty">${live ? "Publiés avec le registre du matin." : "Aucun match signalé."}</div>`}
         <p class="note">Score d'alerte : issues serrées, désaccord modèle-marché, incertitude du modèle, marge élevée, mouvement de cote. Chaque critère est affiché.</p></div></div>
@@ -123,7 +124,7 @@ function pickRowDaily(x, i) {
   const f = fxOf(x), sel = SELF(f, x.sel), done = "won" in x;
   return `<li class="tp-row"><div class="tp-rank">${i + 1}</div><div class="tp-main"><strong>${esc(sel)}</strong><span class="faint">${esc(short(f.home))} – ${esc(short(f.away))} · ${esc(LG[x.league] || "")} · ${esc(kickLab(x.kick))}</span>
       <details class="tp-why"><summary>Pourquoi</summary><ul>${argsFor(f._ghost ? { ...f, m: null } : f, x.sel, x).map(a => `<li>${esc(a)}</li>`).join("")}</ul></details></div>
-    <div class="tp-odds"><b class="num">${odd(x.o)}</b><span class="faint">${esc((x.book || "").replace(" (FR)", ""))}</span>${done ? `<span class="pill ${x.won ? "good" : "bad"}">${x.hg}-${x.ag}</span>` : ""}</div>
+    <div class="tp-odds"><b class="num">${odd(x.o)}</b><span class="faint">${esc((x.book || "").replace(" (FR)", ""))}${x.ofr && x.bookfr !== x.book ? ` · ${odd(x.ofr)} ${esc(x.bookfr.replace(" (FR)", ""))}` : ""}</span>${done ? `<span class="pill ${x.won ? "good" : "bad"}">${x.hg}-${x.ag}</span>` : ""}</div>
     <div class="tp-ring">${ring(x.p, 62, x.p >= 0.7 ? "var(--good)" : x.p >= 0.55 ? "var(--signal)" : "var(--warn)")}</div>
     <div class="tp-act">${done ? "" : `<button class="btn small" data-survadd='${esc(JSON.stringify({ key: x.key, sel: x.sel, o: x.o, p: x.p, book: x.book, kick: x.kick }))}'>Survivant</button>
       <button class="btn small" data-bet='${esc(JSON.stringify({ matchKey: x.key, label: short(f.home) + " – " + short(f.away), market: /O|U/.test(x.sel) ? "OU25" : "1X2", sel: x.sel, book: x.book, odds: x.o, stake: Math.round(S.cfg.bank * L90.kelly(x.pm || x.p, x.o, S.cfg.kfrac, S.cfg.cap) * 100) / 100, p: x.pm || x.p }))}'>Journal</button>`}</div></li>`;
