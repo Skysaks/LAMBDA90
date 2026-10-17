@@ -7,7 +7,7 @@ from datetime import datetime, timezone, timedelta
 from pathlib import Path
 ROOT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
 FEED, HIST = ROOT / "out" / "feed_odds.json", ROOT / "data" / "odds_history.json"
-KEEP = {"pinnacle", "bet365", "winamax_fr", "betclic_fr", "unibet_fr", "market_avg"}
+KEEP = {"pinnacle", "bet365", "winamax_fr", "betclic_fr", "unibet_fr", "pmu_fr", "market_avg"}
 def snap(e):
     out = {}
     for b in e.get("bookmakers", []):

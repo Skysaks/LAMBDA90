@@ -11,37 +11,47 @@ const ez = x => { x = Math.max(0, Math.min(1, x)); return 1 - Math.pow(1 - x, 3)
 
 // ---------- Kit de dessin ----------
 function kit(x, W, H) {
-  const u = Math.min(W, H) / 1080, land = W > H, pad = (land ? 90 : 64) * u;
+  // tall (9:16) : zones couvertes par l'interface des Shorts, Reels et TikTok (haut ≈ 200 px, bas ≈ 330 px) laissées libres
+  const u = Math.min(W, H) / 1080, land = W > H, tall = H / W > 1.6, pad = (land ? 90 : 64) * u, top = pad + (tall ? 110 * u : 0);
   const F = (w, s) => `${w} ${s * u}px "Unbounded","Segoe UI",sans-serif`, P = (w, s) => `${w} ${s * u}px "IBM Plex Sans","Segoe UI",sans-serif`;
-  const K = { x, W, H, u, land, pad, F, P };
+  const K = { x, W, H, u, land, tall, pad, top, barY: tall ? 128 * u : 22 * u, F, P, bb: null, hb: null, fb: null, _hf: 0, base: 1 };
+  // Emprises : corps de la diapo (bb), en-tête (hb), pied avec logo et avertissement (fb)
+  const ext = (b, x0, y0, x1, y1) => { b.x0 = Math.min(b.x0, x0); b.y0 = Math.min(b.y0, y0); b.x1 = Math.max(b.x1, x1); b.y1 = Math.max(b.y1, y1); };
+  K.mark = (x0, y0, x1, y1) => { const b = K._hf === 1 ? K.hb : K._hf === 2 ? K.fb : K.bb; if (b) ext(b, x0, y0, x1, y1); };
+  const zone = (z, fn) => { const prev = K._hf; K._hf = z; x.save(); x.setTransform(K.base, 0, 0, K.base, 0, 0); try { return fn(); } finally { x.restore(); K._hf = prev; } };
   K.bg = () => { const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, C_.bg0); g.addColorStop(1, C_.bg1); x.fillStyle = g; x.fillRect(0, 0, W, H);
     const r = x.createRadialGradient(W * 0.82, H * 0.08, 10, W * 0.82, H * 0.08, Math.max(W, H) * 0.7); r.addColorStop(0, `rgba(${C_.glow},.16)`); r.addColorStop(1, `rgba(${C_.glow},0)`); x.fillStyle = r; x.fillRect(0, 0, W, H);
     x.strokeStyle = `rgba(${C_.glow},.06)`; x.lineWidth = 2 * u; x.beginPath(); x.arc(W / 2, H * 0.62, Math.min(W, H) * 0.34, 0, 7); x.stroke(); x.beginPath(); x.moveTo(0, H * 0.62); x.lineTo(W, H * 0.62); x.stroke(); };
   K.text = (s, X, Y, font, col = C_.ink, align = "left", maxW = 0, alpha = 1) => { x.save(); x.globalAlpha = alpha; x.font = font; x.fillStyle = col; x.textAlign = align; x.textBaseline = "alphabetic";
-    let t = String(s ?? ""); if (maxW) while (t.length > 3 && x.measureText(t).width > maxW) t = t.slice(0, -2).trimEnd() + "…"; x.fillText(t, X, Y); x.restore(); };
+    let t = String(s ?? ""); if (maxW) while (t.length > 3 && x.measureText(t).width > maxW) t = t.slice(0, -2).trimEnd() + "…"; x.fillText(t, X, Y);
+    if (t) { const fs = +(/([\d.]+)px/.exec(font) || [0, 30])[1], w = x.measureText(t).width, l = align === "center" ? X - w / 2 : align === "right" ? X - w : X; K.mark(l, Y - fs * 0.8, l + w, Y + fs * 0.25); } x.restore(); };
   K.wrap = (s, X, Y, font, maxW, lh, col = C_.ink2, maxLines = 3, alpha = 1) => { x.save(); x.font = font; const words = String(s).split(" "), lines = []; let cur = "";
     for (const w of words) { const t = cur ? cur + " " + w : w; if (x.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t; } if (cur) lines.push(cur);
     const L = lines.slice(0, maxLines); if (lines.length > maxLines) L[maxLines - 1] = L[maxLines - 1].replace(/\s*\S*$/, "…"); x.restore(); L.forEach((l, i) => K.text(l, X, Y + i * lh, font, col, "left", 0, alpha)); return L.length * lh; };
-  K.card = (X, Y, w, h, alpha = 1, accent) => { x.save(); x.globalAlpha = alpha; x.fillStyle = C_.card; x.beginPath(); x.roundRect(X, Y, w, h, 26 * u); x.fill(); x.strokeStyle = C_.line; x.lineWidth = 2 * u; x.stroke();
+  K.card = (X, Y, w, h, alpha = 1, accent) => { K.mark(X, Y, X + w, Y + h); x.save(); x.globalAlpha = alpha; x.fillStyle = C_.card; x.beginPath(); x.roundRect(X, Y, w, h, 26 * u); x.fill(); x.strokeStyle = C_.line; x.lineWidth = 2 * u; x.stroke();
     if (accent) { x.fillStyle = accent; x.beginPath(); x.roundRect(X, Y, 7 * u, h, [26 * u, 0, 0, 26 * u]); x.fill(); } x.restore(); };
-  K.ring = (cx, cy, r, p, col, k = 1, label, lw = 12) => { x.save(); x.lineCap = "round"; x.lineWidth = lw * u; x.strokeStyle = "rgba(124,136,168,.25)"; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.stroke();
+  K.ring = (cx, cy, r, p, col, k = 1, label, lw = 12) => { K.mark(cx - r - lw * u / 2, cy - r - lw * u / 2, cx + r + lw * u / 2, cy + r + lw * u / 2); x.save(); x.lineCap = "round"; x.lineWidth = lw * u; x.strokeStyle = "rgba(124,136,168,.25)"; x.beginPath(); x.arc(cx, cy, r, 0, 7); x.stroke();
     x.strokeStyle = col; x.beginPath(); x.arc(cx, cy, r, -Math.PI / 2, -Math.PI / 2 + 2 * Math.PI * p * k); x.stroke(); x.restore();
     K.text(label ?? `${Math.round(p * k * 100)}%`, cx, cy + r * 0.2, F("500", r / u * 0.52), C_.ink, "center"); };
-  K.tri = (X, Y, w, h, ps, labs, k = 1) => { const cols = [C_.good, C_.ink3, "#7FA3FF"]; let cx = X; const gap = 6 * u;
+  K.tri = (X, Y, w, h, ps, labs, k = 1) => { K.mark(X, Y, X + w, Y + h); const cols = [C_.good, C_.ink3, "#7FA3FF"]; let cx = X; const gap = 6 * u;
     ps.forEach((p, i) => { const ww = Math.max(0, (w - 2 * gap) * p * k); x.fillStyle = cols[i]; x.beginPath(); x.roundRect(cx, Y, ww, h, h / 2); x.fill(); cx += ww + gap; });
     const ty = Y + h + 64 * u; ps.forEach((p, i) => { const al = ["left", "center", "right"][i], tx = [X, X + w / 2, X + w][i];
       K.text(`${Math.round(p * k * 100)}%`, tx, ty, F("600", 54), C_.ink, al); K.text(labs[i], tx, ty + 40 * u, P("500", 28), C_.ink2, al, w / 3.2); }); };
-  K.bar = (X, Y, w, h, p, col, k = 1) => { x.fillStyle = "rgba(124,136,168,.18)"; x.beginPath(); x.roundRect(X, Y, w, h, h / 2); x.fill(); x.fillStyle = col; x.beginPath(); x.roundRect(X, Y, Math.max(h, w * p * k), h, h / 2); x.fill(); };
-  K.head = (eyebrow, title, k = 1, sub) => { const y0 = pad + 40 * u; K.text(String(eyebrow).toUpperCase(), pad, y0, P("600", 30), C_.sig, "left", 0, k);
+  K.bar = (X, Y, w, h, p, col, k = 1) => { K.mark(X, Y, X + w, Y + h); x.fillStyle = "rgba(124,136,168,.18)"; x.beginPath(); x.roundRect(X, Y, w, h, h / 2); x.fill(); x.fillStyle = col; x.beginPath(); x.roundRect(X, Y, Math.max(h, w * p * k), h, h / 2); x.fill(); };
+  K.head = (...a) => zone(1, () => head(...a));
+  const head = (eyebrow, title, k = 1, sub) => { const y0 = top + 40 * u; K.text(String(eyebrow).toUpperCase(), pad, y0, P("600", 30), C_.sig, "left", 0, k);
     let fs = land ? 74 : 84; x.font = F("600", fs); while (fs > 46 && x.measureText(title).width > W - 2 * pad) { fs -= 2; x.font = F("600", fs); }
     K.text(title, pad, y0 + (land ? 92 : 104) * u - (1 - k) * 30 * u, F("600", fs), C_.ink, "left", W - 2 * pad, k);
     if (sub) K.text(sub, pad, y0 + (land ? 146 : 162) * u, P("500", 34), C_.ink2, "left", W - 2 * pad, k);
     return y0 + (sub ? (land ? 190 : 210) : (land ? 140 : 160)) * u; };
-  K.foot = () => { const y = H - pad - (land ? 10 : 46) * u; x.fillStyle = C_.sig; x.beginPath(); x.roundRect(pad, y - 54 * u, 58 * u, 58 * u, 13 * u); x.fill();
-    K.text("λ", pad + 29 * u, y - 12 * u, F("700", 34), C_.markInk, "center"); K.text("Lambda 90", pad + 76 * u, y - 13 * u, F("600", 34), C_.ink);
+  K.foot = () => zone(2, foot);
+  const foot = () => { const y = tall ? H - 330 * u : H - pad - (land ? 10 : 46) * u; x.fillStyle = C_.sig; x.beginPath(); x.roundRect(pad, y - 54 * u, 58 * u, 58 * u, 13 * u); x.fill();
+    K.mark(pad, y - 54 * u, pad + 58 * u, y + 4 * u); K.text("λ", pad + 29 * u, y - 12 * u, F("700", 34), C_.markInk, "center"); K.text("Lambda 90", pad + 76 * u, y - 13 * u, F("600", 34), C_.ink);
     if (S.studio.handle) { x.font = F("600", 34); const wb = x.measureText("Lambda 90").width; K.text("· @" + String(S.studio.handle).replace(/^@/, "").slice(0, 30), pad + 76 * u + wb + 14 * u, y - 13 * u, P("600", 28), C_.sig); }
     const disc = "Probabilités, pas de certitudes · 18+ · Jouer comporte des risques : 09 74 75 13 13";
     if (land) K.text(disc, W - pad, y - 16 * u, P("400", 21), C_.ink3, "right"); else K.text(disc, pad, y + 40 * u, P("400", 22), C_.ink3, "left", W - 2 * pad); return y - 80 * u; };
+  // Police ajustée : la plus grande taille (entre max et min) qui tient dans maxW
+  K.fitF = (s, w, max, min, maxW, fam = F) => { let fs = max; x.font = fam(w, fs); while (fs > min && x.measureText(String(s)).width > maxW) { fs -= 2; x.font = fam(w, fs); } return fam(w, fs); };
   return K;
 }
 const stA = (t, i, d = 0.12) => ez((t * ST_DUR - 0.25 - i * d * ST_DUR / 3) / 0.55);   // apparition échelonnée
@@ -59,20 +69,22 @@ function stTemplate(tpl) {
         K.text(String(i + 1), xx + 40 * K.u, y + rh * 0.62, K.F("500", 56), C_.good, "center", 0, a); K.text(r.sel, xx + 96 * K.u, y + rh * 0.45, K.P("600", 38), C_.ink, "left", w - 300 * K.u, a);
         K.text(`${short(r.f.home)} – ${short(r.f.away)} · cote ${odd(r.x.o)}`, xx + 96 * K.u, y + rh * 0.45 + 40 * K.u, K.P("400", 27), C_.ink3, "left", w - 300 * K.u, a);
         K.ring(xx + w - 80 * K.u, y + rh / 2 - 4 * K.u, Math.min(46 * K.u, rh * 0.32), r.x.p, C_.good, a); }); } };
-    const det = rows.map((r, i) => ({ name: r.sel, draw(K, t) { const y0 = K.head(`Top ${i + 1} · ${LG[r.x.league] || ""}`, r.sel, stA(t, 0), `${short(r.f.home)} – ${short(r.f.away)} · ${kickLab(r.x.kick)}`); const yE = K.foot();
-      const cy = y0 + (yE - y0) * (K.land ? 0.45 : 0.32), R = (K.land ? 190 : 210) * K.u, cx = K.land ? K.pad + R + 40 * K.u : K.W / 2; K.ring(cx, cy, R, r.x.p, C_.good, stA(t, 1), null, 22);
-      K.text("de chances selon Lambda 90", cx, cy + R + 64 * K.u, K.P("500", 30), C_.ink2, "center", 0, stA(t, 1));
-      const why = r.f._ghost ? [] : argsFor(r.f, r.x.sel, r.x).slice(0, 3), bx = K.land ? cx + R + 120 * K.u : K.pad, by = K.land ? y0 + 40 * K.u : cy + R + 130 * K.u, bw = K.land ? K.W - bx - K.pad : K.W - 2 * K.pad;
+    const det = rows.map((r, i) => ({ name: r.sel, draw(K, t) { const y0 = K.head(`Top ${i + 1} · ${LG[r.x.league] || ""}`, r.sel, stA(t, 0), `${short(r.f.home)} – ${short(r.f.away)} · ${kickLab(r.x.kick)}`); const yE = K.foot(), u = K.u, av = yE - y0;
+      const side = K.land || av < 780 * u, R = side ? Math.min(190 * u, av / 2 - 70 * u, (K.W - 2 * K.pad) * 0.19) : Math.min(210 * u, (av - 540 * u) / 2);
+      const cx = side ? K.pad + R + 20 * u : K.W / 2, cy = side ? y0 + R + 40 * u : y0 + R + 40 * u; K.ring(cx, cy, R, r.x.p, C_.good, stA(t, 1), null, 22);
+      K.text("de chances selon Lambda 90", cx, cy + R + 58 * u, K.P("500", side ? 26 : 30), C_.ink2, "center", side ? 2 * R + 60 * u : 0, stA(t, 1));
+      const why = r.f._ghost ? [] : argsFor(r.f, r.x.sel, r.x).slice(0, 3), bx = side ? cx + R + 80 * u : K.pad, by = side ? y0 + 50 * u : cy + R + 140 * u, bw = side ? K.W - bx - K.pad : K.W - 2 * K.pad;
       K.text(`Cote ${odd(r.x.o)} · ${(r.x.book || "").replace(" (FR)", "")}`, bx, by, K.F("500", 40), C_.sig, "left", bw, stA(t, 2)); let yy = by + 60 * K.u;
-      why.forEach((w_, j) => { yy += K.wrap("• " + w_, bx, yy, K.P("500", 30), bw, 40 * K.u, C_.ink2, 3, stA(t, 3 + j)) + 14 * K.u; }); } }));
+      const fs = side && !K.land ? 27 : 30, lh = (fs + 9) * u; why.forEach((w_, j) => { yy += K.wrap("• " + w_, bx, yy, K.P("500", fs), bw, lh, C_.ink2, side && !K.land ? 4 : 3, stA(t, 3 + j)) + 14 * u; }); } }));
     return { slides: [list, ...det], subject: `Top ${rows.length} du ${dLab}`, lines: rows.map((r, i) => `${i + 1}. ${r.sel} (${short(r.f.home)} – ${short(r.f.away)}) : ${pct(r.x.p)}, cote ${odd(r.x.o)}`) };
   }
   if (tpl === "combos") {
     const CB = (DAILY[today]?.combos || []).slice(0, 4); if (!CB.length) return { empty: "Les combinés sont publiés avec le registre du matin." };
     const slides = CB.map((c, ci) => ({ name: c.lab, draw(K, t) { const y0 = K.head(dLab, c.lab, stA(t, 0), `${c.legs.length} sélections · cote ${odd(c.o)} · ${(c.book || "").replace(" (FR)", "")}`); const yE = K.foot();
-      const R = (K.land ? 150 : 170) * K.u, cx = K.land ? K.W - K.pad - R - 20 * K.u : K.W / 2, cy = K.land ? y0 + R + 40 * K.u : y0 + R + 30 * K.u; K.ring(cx, cy, R, c.p, C_.good, stA(t, 1), null, 20);
-      K.text(`1 chance sur ${nf(1 / c.p, 1)}`, cx, cy + R + 56 * K.u, K.P("600", 30), C_.ink2, "center", 0, stA(t, 1));
-      const lx = K.pad, ly = K.land ? y0 + 30 * K.u : cy + R + 120 * K.u, lw = K.land ? cx - R - 80 * K.u - K.pad : K.W - 2 * K.pad, rh = Math.min((K.land ? 130 : 180) * K.u, (yE - ly) / c.legs.length);
+      const u = K.u, av = yE - y0, side = K.land || av < 1000 * u, R = side ? Math.min(150 * u, av / 2 - 60 * u) : 170 * u;
+      const cx = side ? K.W - K.pad - R - 20 * u : K.W / 2, cy = y0 + R + (side ? 40 : 30) * u; K.ring(cx, cy, R, c.p, C_.good, stA(t, 1), null, 20);
+      K.text(`1 chance sur ${nf(1 / c.p, 1)}`, cx, cy + R + 56 * u, K.P("600", 30), C_.ink2, "center", 0, stA(t, 1));
+      const lx = K.pad, ly = side ? y0 + 30 * u : cy + R + 120 * u, lw = side ? cx - R - 70 * u - K.pad : K.W - 2 * K.pad, rh = Math.min((side ? 130 : 180) * u, (yE - ly) / c.legs.length);
       c.legs.forEach((l, i) => { const a = stA(t, 2 + i * 0.5), y = ly + i * rh, f = fxOf(l); K.card(lx, y, lw, rh - 14 * K.u, a, C_.sig); K.text(SELF(f, l.sel), lx + 30 * K.u, y + rh * 0.42, K.P("600", 34), C_.ink, "left", lw - 60 * K.u, a);
         K.text(`${short(f.home)} – ${short(f.away)} · ${pct(l.p)}`, lx + 30 * K.u, y + rh * 0.42 + 38 * K.u, K.P("400", 26), C_.ink3, "left", lw - 60 * K.u, a); }); } }));
     return { slides, subject: `Les combinés du ${dLab}`, lines: CB.map(c => `${c.lab} : ${c.legs.map(l => SELF(fxOf(l), l.sel)).join(" + ")} · cote ${odd(c.o)} · ${pct(c.p)}`) };
@@ -96,8 +108,8 @@ function stTemplate(tpl) {
     const fav = H >= A ? [h, H] : [a, A];
     const slides = [
       { name: "Affiche", draw(K, t) { K.head(sub, "Avant-match", stA(t, 0)); const yE = K.foot(), cy = K.H * (K.land ? 0.5 : 0.42);
-        K.text(h, K.W / 2, cy - 70 * K.u, K.F("600", K.land ? 96 : 88), C_.ink, "center", K.W - 2 * K.pad, stA(t, 1)); K.text("contre", K.W / 2, cy, K.P("500", 36), C_.ink3, "center", 0, stA(t, 2));
-        K.text(a, K.W / 2, cy + 100 * K.u, K.F("600", K.land ? 96 : 88), C_.ink, "center", K.W - 2 * K.pad, stA(t, 3)); K.text(`Favori : ${fav[0]} (${pct(fav[1])})`, K.W / 2, cy + 200 * K.u, K.P("600", 36), C_.sig, "center", 0, stA(t, 4)); } },
+        K.text(h, K.W / 2, cy - 70 * K.u, K.fitF(h, "600", K.land ? 96 : 88, 50, K.W - 2 * K.pad), C_.ink, "center", K.W - 2 * K.pad, stA(t, 1)); K.text("contre", K.W / 2, cy, K.P("500", 36), C_.ink3, "center", 0, stA(t, 2));
+        K.text(a, K.W / 2, cy + 100 * K.u, K.fitF(a, "600", K.land ? 96 : 88, 50, K.W - 2 * K.pad), C_.ink, "center", K.W - 2 * K.pad, stA(t, 3)); K.text(`Favori : ${fav[0]} (${pct(fav[1])})`, K.W / 2, cy + 200 * K.u, K.P("600", 36), C_.sig, "center", 0, stA(t, 4)); } },
       { name: "Résultat", draw(K, t) { const y0 = K.head(ttl, "Qui gagne ?", stA(t, 0)); K.foot(); const w = K.W - 2 * K.pad;
         const yE = K.H - K.pad - 160 * K.u, yb = y0 + (yE - y0) * (K.land ? 0.15 : 0.32);
         K.tri(K.pad, yb, w, 36 * K.u, [H, D, A], [h, "Nul", a], stA(t, 1));
@@ -141,7 +153,7 @@ function stTemplate(tpl) {
     if (R) slides.push({ name: "Ma partie", draw(K, t) { const y0 = K.head(`Survivant · jour ${Math.floor((Date.now() - R.ts) / 864e5) + 1}`, R.status === "over" ? "Game Over" : "Toujours en vie", stA(t, 0)); const yE = K.foot();
       K.text(eur(R.bank * stA(t, 1)), K.pad, y0 + 140 * K.u, K.F("600", 120), R.status === "over" ? C_.bad : C_.ink, "left", 0, stA(t, 1));
       K.text(`départ ${eur(R.cap)} · ×${nf(R.bank / R.cap, 2)} · pic ${eur(R.peak)}`, K.pad, y0 + 200 * K.u, K.P("500", 34), C_.ink2, "left", 0, stA(t, 2));
-      const cv = R.curve || [R.cap], gx = K.pad, gy = y0 + 270 * K.u, gw = K.W - 2 * K.pad, gh = Math.max(160 * K.u, yE - gy - 40 * K.u), mx = Math.max(...cv, R.cap * 1.2), n = cv.length, k = stA(t, 3);
+      const cv = R.curve || [R.cap], gx = K.pad, gy = y0 + 270 * K.u, gw = K.W - 2 * K.pad, gh = Math.max(160 * K.u, yE - gy - 40 * K.u), mx = Math.max(...cv, R.cap * 1.2), n = cv.length, k = stA(t, 3); K.mark(gx, gy, gx + gw, gy + gh);
       K.x.strokeStyle = "rgba(255,107,107,.6)"; K.x.lineWidth = 2 * K.u; K.x.beginPath(); K.x.moveTo(gx, gy + gh); K.x.lineTo(gx + gw, gy + gh); K.x.stroke();
       K.x.strokeStyle = C_.sig; K.x.lineWidth = 6 * K.u; K.x.beginPath(); cv.slice(0, Math.max(2, Math.ceil(n * k))).forEach((v, i) => { const X = gx + gw * i / Math.max(1, n - 1), Y = gy + gh * (1 - v / mx); i ? K.x.lineTo(X, Y) : K.x.moveTo(X, Y); }); K.x.stroke(); } });
     if (B.length) slides.push({ name: "Classement", draw(K, t) { const y0 = K.head("Survivant", "Classement Monde", stA(t, 0)); const yE = K.foot(), rh = Math.min(130 * K.u, (yE - y0) / B.length), w = K.W - 2 * K.pad;
@@ -161,9 +173,10 @@ function stTemplate(tpl) {
   }
   if (tpl === "proof") {
     const bt = INS.backtest_top; if (!bt) return { empty: "Données de validation absentes." };
-    const s = { name: "Calibration", draw(K, t) { const y0 = K.head(`${nf(bt.n)} picks rejoués sur 2025-26`, "Nos probabilités tiennent", stA(t, 0)); const yE = K.foot(), w = K.W - 2 * K.pad, rh = Math.min(170 * K.u, (yE - y0) / bt.par_conf.length);
-      bt.par_conf.forEach((c, i) => { const a = stA(t, 1 + i * 0.7), y = y0 + i * rh; K.text(`Annoncé ${c.lab}`, K.pad, y + 44 * K.u, K.P("600", 32), C_.ink, "left", 0, a); K.text(`${c.n} picks`, K.pad + w, y + 44 * K.u, K.P("400", 26), C_.ink3, "right", 0, a);
-        K.bar(K.pad, y + 64 * K.u, w, 22 * K.u, c.p, C_.ink3, a); K.bar(K.pad, y + 96 * K.u, w, 22 * K.u, c.hit, C_.good, a); K.text(`${pct(c.p)} annoncé · ${pct(c.hit)} réalisé`, K.pad, y + 150 * K.u, K.P("500", 26), C_.ink2, "left", 0, a); }); } };
+    const s = { name: "Calibration", draw(K, t) { const y0 = K.head(`${nf(bt.n)} picks rejoués sur 2025-26`, "Nos probabilités tiennent", stA(t, 0), "Annoncé → réalisé, par niveau de confiance"); const yE = K.foot(), w = K.W - 2 * K.pad, rh = Math.min(170 * K.u, (yE - y0) / bt.par_conf.length);
+      bt.par_conf.forEach((c, i) => { const a = stA(t, 1 + i * 0.7), y = y0 + i * rh, u = K.u; K.text(`Annoncé ${c.lab}`, K.pad, y + 40 * u, K.P("600", 32), C_.ink, "left", w * 0.46, a);
+        K.text(`${pct(c.p)} → ${pct(c.hit)} · ${c.n} picks`, K.pad + w, y + 40 * u, K.P("500", 26), C_.ink2, "right", w * 0.52, a);
+        K.bar(K.pad, y + 60 * u, w, 20 * u, c.p, C_.ink3, a); K.bar(K.pad, y + 88 * u, w, 20 * u, c.hit, C_.good, a); }); } };
     return { slides: [s], subject: "Nos probabilités tiennent : la preuve sur une saison", lines: bt.par_conf.map(c => `${c.lab} annoncé : ${pct(c.hit, 1)} réalisé sur ${c.n} picks`) };
   }
   if (tpl === "value") {
@@ -173,7 +186,21 @@ function stTemplate(tpl) {
     const s = { name: "Marges", draw(K, t) { const y0 = K.head(dLab, "Ce que prend ton bookmaker", stA(t, 0), "Marge moyenne sur le 1N2"); const yE = K.foot(), w = K.W - 2 * K.pad, rh = Math.min(150 * K.u, (yE - y0) / rows.length), mx = Math.max(...rows.map(r => r[1]));
       rows.forEach(([b, m, n], i) => { const a = stA(t, 1 + i * 0.6), y = y0 + i * rh; K.text(b, K.pad, y + 50 * K.u, K.P("600", 38), C_.ink, "left", 0, a); K.text(pct(m, 1), K.pad + w, y + 50 * K.u, K.F("500", 40), i === 0 ? C_.good : C_.ink2, "right", 0, a);
         K.bar(K.pad, y + 72 * K.u, w, 22 * K.u, m / mx, i === 0 ? C_.good : C_.a, a); }); } };
-    return { slides: [s], subject: "Quel bookmaker te coûte le moins ?", lines: rows.map(([b, m, n]) => `${b} : ${pct(m, 1)} de marge sur ${n} matchs`) };
+    const slides = [s], lines = rows.map(([b, m, n]) => `${b} : ${pct(m, 1)} de marge sur ${n} matchs`);
+    const mm = L13?.meme_marque || [];
+    if (mm.length) { slides.push({ name: "France contre étranger", draw(K, t) { const y0 = K.head("Même bookmaker, autre pays", "La taxe France", stA(t, 0), "Marge moyenne sur le 1N2"); const yE = K.foot(), w = K.W - 2 * K.pad, rh = Math.min(220 * K.u, (yE - y0) / mm.length), mx = Math.max(...mm.map(r => r.marge_fr));
+      mm.forEach((r, i) => { const a = stA(t, 1 + i * 0.7), y = y0 + i * rh, u = K.u, cc = r.etranger.replace(/.*\((\w+)\)/, "$1"); K.text(r.fr.replace(" (FR)", ""), K.pad, y + 44 * u, K.P("600", 36), C_.ink, "left", w * 0.6, a); K.text(`+${nf((r.marge_fr - r.marge_etranger) * 100, 1)} pts en France`, K.pad + w, y + 44 * u, K.F("500", 34), C_.bad, "right", w * 0.4, a);
+        K.bar(K.pad, y + 66 * u, w, 22 * u, r.marge_fr / mx, C_.bad, a); K.text(`France ${pct(r.marge_fr, 1)}`, K.pad, y + 122 * u, K.P("500", 26), C_.ink2, "left", 0, a);
+        K.bar(K.pad, y + 134 * u, w, 22 * u, r.marge_etranger / mx, C_.good, a); K.text(`${cc} ${pct(r.marge_etranger, 1)}`, K.pad, y + 190 * u, K.P("500", 26), C_.ink2, "left", 0, a); }); } });
+      lines.push(...mm.map(r => `${r.fr} : ${pct(r.marge_fr, 1)} en France contre ${pct(r.marge_etranger, 1)} (${r.etranger})`)); }
+    const lv = bookLive().filter(r => S.cfg.myBooks.includes(r.b));
+    if (lv.length >= 2) { const pick = k => lv.filter(r => r.ev[k] != null).sort((a, b) => b.ev[k] - a.ev[k]);
+      slides.push({ name: "Où jouer quoi", draw(K, t) { const y0 = K.head(dLab, "Où jouer quoi", stA(t, 0), "Ce que rend chaque bookmaker, par type de pari"); const yE = K.foot(), w = K.W - 2 * K.pad, rh = Math.min(200 * K.u, (yE - y0) / BK_PROF.length);
+        BK_PROF.forEach(([k, l], i) => { const a = stA(t, 1 + i * 0.6), y = y0 + i * rh, u = K.u, P_ = pick(k), b0 = P_[0], b1 = P_[P_.length - 1]; if (!b0) return; K.card(K.pad, y + 6 * u, w, rh - 18 * u, a, C_.sig);
+          K.text(l, K.pad + 30 * u, y + 56 * u, K.P("600", 34), C_.ink, "left", w * 0.4, a); K.text(`${b0.b.replace(" (FR)", "")} ${sgn(b0.ev[k])}`, K.pad + w - 30 * u, y + 56 * u, K.F("500", 32), C_.good, "right", w * 0.55, a);
+          if (b1 && b1 !== b0) K.text(`le plus cher : ${b1.b.replace(" (FR)", "")} ${sgn(b1.ev[k])}`, K.pad + w - 30 * u, y + 100 * u, K.P("500", 26), C_.ink3, "right", w * 0.7, a); }); } });
+      lines.push(...BK_PROF.map(([k, l]) => { const P_ = pick(k); return P_[0] ? `${l} : ${P_[0].b} (${sgn(P_[0].ev[k])})` : ""; }).filter(Boolean)); }
+    return { slides, subject: "Quel bookmaker te coûte le moins ?", lines };
   }
   return { empty: "Modèle inconnu." };
 }
@@ -205,15 +232,32 @@ const ST_TPL_DESC = { top: "Les meilleures sélections du jour", combos: "Les co
 function stWithHook(T) {
   const hk = String(S.studio.hook || "").trim(); if (!hk || T.empty) return T;
   return { ...T, slides: [{ name: "Accroche", draw(K, t) { const a = stA(t, 0), cy = K.H * 0.45; K.wrap(hk, K.pad, cy - 60 * K.u, K.F("600", K.land ? 84 : 92), K.W - 2 * K.pad, (K.land ? 100 : 110) * K.u, C_.ink, 4, a);
-    K.x.fillStyle = C_.sig; K.x.globalAlpha = a; K.x.fillRect(K.pad, cy - 150 * K.u, 120 * K.u * a, 10 * K.u); K.x.globalAlpha = 1; K.foot(); } }, ...T.slides] };
+    K.x.fillStyle = C_.sig; K.x.globalAlpha = a; K.mark(K.pad, cy - 150 * K.u, K.pad + 120 * K.u, cy - 140 * K.u); K.x.fillRect(K.pad, cy - 150 * K.u, 120 * K.u * a, 10 * K.u); K.x.globalAlpha = 1; K.foot(); } }, ...T.slides] };
 }
 // ---------- Rendu, lecture, export ----------
+// Zone sûre : le corps de chaque diapo est mesuré dans son état final puis, s'il déborde sur l'en-tête, le pied (logo, avertissement) ou les bords,
+// remonté et réduit juste ce qu'il faut. Aucun texte ne recouvre le logo ni la mention 18+, quel que soit le format.
+const ST_MX = document.createElement("canvas"); ST_MX.width = ST_MX.height = 4;
+function stLayout(slide, fk) {
+  const key = `${fk}|${document.fonts?.status || ""}`; if (slide._fit?.key === key) return slide._fit;
+  const f = ST_FMT[fk], K = kit(ST_MX.getContext("2d"), f.w, f.h), I = () => ({ x0: Infinity, y0: Infinity, x1: -Infinity, y1: -Infinity });
+  K.bb = I(); K.hb = I(); K.fb = I(); slide.draw(K, 1);
+  const u = K.u, b = K.bb, TL = (isFinite(K.hb.y1) ? K.hb.y1 : K.pad) + 26 * u, BL = (isFinite(K.fb.y0) ? K.fb.y0 : f.h - K.pad) - 26 * u, LL = K.pad - 6 * u, RL = f.w - K.pad + 6 * u;
+  let s = 1, tx = 0, ty = 0;
+  if (isFinite(b.y0) && (b.y0 < TL || b.y1 > BL || b.x0 < LL || b.x1 > RL)) {
+    const h = b.y1 - b.y0, w = b.x1 - b.x0; s = Math.min(1, (BL - TL) / h, (RL - LL) / w);
+    const ny = Math.max(TL, Math.min(b.y0, BL - h * s)), cx = (b.x0 + b.x1) / 2, nx = Math.abs(cx - f.w / 2) < f.w * 0.04 ? f.w / 2 - w * s / 2 : Math.max(LL, Math.min(b.x0, RL - w * s));
+    tx = nx - b.x0 * s; ty = ny - b.y0 * s; }
+  else if (!K.land && isFinite(b.y0)) { const h = b.y1 - b.y0, room = BL - TL - h; if (room > (K.tall ? 120 : 160) * u) ty = Math.max(0, TL + room * 0.32 - b.y0); }
+  return slide._fit = { key, s, tx, ty, raw: { ...b }, TL, BL, LL, RL, head: { ...K.hb }, foot: { ...K.fb } };
+}
 function stDrawFrame(cv, T, time, scale = 1) {
   Object.assign(C_, ST_THEMES[S.studio.theme] || ST_THEMES.nuit);
   const f = ST_FMT[S.studio.fmt], x = cv.getContext("2d"); x.setTransform(scale, 0, 0, scale, 0, 0);
-  const K = kit(x, f.w, f.h); K.bg(); const n = T.slides.length, i = Math.min(n - 1, Math.floor(time / ST_DUR)), t = (time - i * ST_DUR) / ST_DUR;
-  T.slides[i].draw(K, Math.max(0, Math.min(1, t)));
-  if (n > 1) { const bw = (f.w - 2 * K.pad) / n; for (let k = 0; k < n; k++) { x.fillStyle = k < i ? C_.sig : k === i ? C_.sig : C_.line; x.globalAlpha = k === i ? 0.85 : k < i ? 1 : 0.6; x.fillRect(K.pad + k * bw + 3 * K.u, 22 * K.u, bw - 6 * K.u, 6 * K.u); } x.globalAlpha = 1; }
+  const K = kit(x, f.w, f.h); K.base = scale; K.bg(); const n = T.slides.length, i = Math.min(n - 1, Math.floor(time / ST_DUR)), t = (time - i * ST_DUR) / ST_DUR;
+  const L = stLayout(T.slides[i], S.studio.fmt); x.setTransform(scale * L.s, 0, 0, scale * L.s, scale * L.tx, scale * L.ty);
+  T.slides[i].draw(K, Math.max(0, Math.min(1, t))); x.setTransform(scale, 0, 0, scale, 0, 0);
+  if (n > 1) { const bw = (f.w - 2 * K.pad) / n; for (let k = 0; k < n; k++) { x.fillStyle = k < i ? C_.sig : k === i ? C_.sig : C_.line; x.globalAlpha = k === i ? 0.85 : k < i ? 1 : 0.6; x.fillRect(K.pad + k * bw + 3 * K.u, K.barY, bw - 6 * K.u, 6 * K.u); } x.globalAlpha = 1; }
   return i;
 }
 function stCur() { const T = stWithHook(stTemplate(S.studio.tpl)); return T; }

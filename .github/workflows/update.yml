@@ -2,9 +2,12 @@ name: Mise à jour Lambda 90
 on:
   schedule:
     - cron: "0 5 * * *"   # chaque jour 7 h (Paris, heure d'été)
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      cotes: { description: "Rafraîchir les cotes The Odds API (2 crédits par championnat qui joue dans les 48 h, 16 au plus)", type: boolean, default: true }
+      reglage: { description: "Réglage et backtest complets (environ 45 minutes)", type: boolean, default: false }
   push:
-    paths: ["lab/update_request.txt"]
+    paths: ["lab/update_request.txt", "lab/odds_request.txt"]
 concurrency: { group: lambda90-data, cancel-in-progress: false }
 permissions:
   contents: write
@@ -24,10 +27,12 @@ jobs:
       - name: Résultats récents (football-data.org)
         env: { FOOTBALL_DATA_TOKEN: "${{ secrets.FOOTBALL_DATA_TOKEN }}" }
         run: python pipeline/fetch_results.py
-      - name: Cotes (The Odds API)
-        env: { ODDS_API_KEY: "${{ secrets.ODDS_API_KEY }}" }
+      - name: Cotes (The Odds API sur demande uniquement ; Bet365 et Pinnacle gratuits chaque jour)
+        env:
+          ODDS_API_KEY: "${{ secrets.ODDS_API_KEY }}"
+          REFRESH: "${{ (github.event_name == 'workflow_dispatch' && inputs.cotes) || (github.event_name == 'push' && contains(toJSON(github.event.commits), 'lab/odds_request.txt')) }}"
         run: |
-          python pipeline/fetch_odds.py
+          if [ "$REFRESH" = "true" ]; then python pipeline/fetch_odds.py; else echo "The Odds API non appelée : rafraîchissement manuel uniquement (aucun crédit utilisé)"; fi
           python pipeline/fetch_fd_fixtures.py . || echo "cotes Bet365 indisponibles"
           python pipeline/odds_history.py .
           python pipeline/value_log.py .
@@ -40,12 +45,13 @@ jobs:
         run: python pipeline/fetch_lineups.py jour out
       - name: Réglage et backtest complets (le lundi)
         run: |
-          if [ "$(date -u +%u)" = "1" ] || [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+          if [ "$(date -u +%u)" = "1" ] || [ "${{ inputs.reglage }}" = "true" ]; then
             python engine3.py /tmp/xg/data /tmp/of out tune
             python engine3.py /tmp/xg/data /tmp/of out full
             python engine3_eval.py out
             python clv.py out data/closing.csv
             python lab11_props.py /tmp/xg/data out || echo "labo 11 indisponible"
+            python lab13_books.py . || echo "labo 13 indisponible"
           fi
       - name: Entraînement final et page
         run: |

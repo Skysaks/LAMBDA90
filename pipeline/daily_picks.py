@@ -1,6 +1,6 @@
 """Picks du jour, figés chaque matin puis réglés avec les résultats : le registre public honnête de Lambda 90.
 - Top Picks (6 à 8) : la sélection la plus probable de chaque match du jour (vraie cote ≥ 1,25 chez mes bookmakers), probabilité
-  = 90 % marché Pinnacle sans marge + 10 % modèle (meilleur mélange mesuré, labo 6). On garde aussi le pick « résultat » (1N2) et « double chance ».
+  = marché Pinnacle sans marge (Shin). Labo 13 : y mêler 5, 10 ou 20 % de modèle dégrade le RPS sur 2024-25 comme sur 2025-26. On garde aussi le pick « résultat » (1N2) et « double chance ».
 - Hot Picks : prix de mes bookmakers proche ou au-dessus du prix juste Pinnacle, modèle d'accord, ou cote en retard sur un mouvement Pinnacle.
 - Cold Games : matchs à éviter (issues trop serrées, modèle et marché en désaccord, marché qui a bougé fort, marge élevée chez mes bookmakers).
 Entrées : out/engine3_out.json, out/feed_odds.json, data/recent.csv. Sortie : data/daily_picks.json (90 derniers jours).
@@ -43,9 +43,15 @@ def model_probs(f):
     if f.get("ens") and len(f["ens"]) == 3: H, D, A = f["ens"]
     return {"H": H, "D": D, "A": A, "O25": O, "U25": 1 - O}
 
-def book_odds(e):
+MODEL_W = 0.0  # poids du modèle dans la probabilité des picks (labo 13 : 0 est le meilleur)
+FR_STALE_H = 30  # cotes françaises plus vieilles que ça : ignorées (elles ne sont rafraîchies qu'à la demande)
+def book_odds(e, now=None):
     out = {}
     for b in e.get("bookmakers", []):
+        if now is not None and b.get("key") in FRESH:
+            try: age = (now - datetime.fromisoformat(b.get("last_update", "").replace("Z", "+00:00"))).total_seconds() / 3600
+            except ValueError: age = 1e9
+            if age > FR_STALE_H: continue
         o = {}
         for m in b.get("markets", []):
             if m["key"] == "h2h":
@@ -84,9 +90,9 @@ def candidates(now):
         cands = [(i, f["home"], f["away"]) for i, f in enumerate(E) if f["league"] == lg and abs((datetime.fromisoformat(f["date"]) - datetime.fromisoformat(day)).days) <= 1]
         k = best_pair(e["home_team"], e["away_team"], cands)
         if k is None: continue
-        f = E[k]; B = book_odds(e); fair = fair_of(B.get("pinnacle"))
+        f = E[k]; B = book_odds(e, now); fair = fair_of(B.get("pinnacle"))
         if not fair: continue
-        pmod = model_probs(f); pr = {s: 0.9 * fair[s] + 0.1 * pmod[s] for s in fair}
+        pmod = model_probs(f); pr = {s: (1 - MODEL_W) * fair[s] + MODEL_W * pmod[s] for s in fair}
         best, bestfr = {}, {}
         for s in fair:
             o, bk = max(((B.get(key, {}).get(s, 0), t) for key, t in MY.items()), default=(0, None))

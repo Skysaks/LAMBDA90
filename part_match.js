@@ -83,7 +83,7 @@ function confidence(f) {
       out.push(gap < 0.05 ? ["good", `Modèle et marché alignés (écart ${nf(gap * 100)} pts)`] : gap < 0.1 ? ["warn", `Écart modéré avec le marché : ${nf(gap * 100)} pts`]
         : ["bad", `Écart fort avec le marché : ${nf(gap * 100)} pts. Le marché intègre sans doute une info absente du modèle (blessure, rotation, compo)`]);
       out.push(["ghost", `Marché ${sharp ? "Pinnacle" : "consensus"} : ${pct(ref[0])} / ${pct(ref[1])} / ${pct(ref[2])}`]);
-      if (S.oddsSource !== "demo") { const b = [0, 1, 2].map(i => 0.1 * [f.m.H, f.m.D, f.m.A][i] + 0.9 * ref[i]); out.push(["good", `Probabilité de référence (90 % marché, 10 % modèle) : ${pct(b[0])} / ${pct(b[1])} / ${pct(b[2])}. Plus fiable que le modèle seul sur le 1N2 avant-match`]); }
+      if (S.oddsSource !== "demo") { const b = ref; out.push(["good", `Probabilité de référence (marché Pinnacle sans marge) : ${pct(b[0])} / ${pct(b[1])} / ${pct(b[2])}. Plus fiable que le modèle, et que tout mélange avec lui, sur le 1N2 avant-match`]); }
     }
   } else out.push(["ghost", "Importe les cotes pour comparer le modèle au marché"]);
   if (f.known && !(f.known[0] && f.known[1])) out.push(["warn", "Une équipe sans historique récent : prudence"]);

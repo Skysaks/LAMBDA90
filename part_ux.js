@@ -10,6 +10,7 @@ function slipCalc() {
     const M = mktMatrix(f) || f.m.M, fns = L.map(s => selFn(s.sel)); if (fns.some(x => !x)) { ok = false; continue; }
     const pj = L90.joint(M, fns); p *= pj; if (L.length > 1) notes.push(`${short(f.home)} – ${short(f.away)} : ${L.length} sélections liées, probabilité jointe ${pct(pj, 1)}`);
   }
+  for (const s of S.slip) { const w = popTrap(FXK[s.key], s.sel); if (w) notes.push(w); }
   // meilleure cote combinée chez un seul de tes bookmakers (toutes les jambes doivent y être cotées)
   let best = null;
   for (const b of S.cfg.myBooks) { let o = 1; for (const s of S.slip) { const v = S.odds[s.key]?.[b]?.[s.sel]; if (!(v > 1)) { o = 0; break; } o *= v; } if (o > 1 && (!best || o > best.o)) best = { o, b }; }

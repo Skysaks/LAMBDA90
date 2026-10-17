@@ -35,7 +35,7 @@ const S = {
 const ls = { get(k, d) { try { const v = localStorage.getItem("l90:" + k); return v ? JSON.parse(v) : d; } catch { return d; } },
              set(k, v) { try { localStorage.setItem("l90:" + k, JSON.stringify(v)); } catch {} } };
 S.mode = ls.get("mode", "quant"); S.league = ls.get("league", "all"); S.favs = ls.get("favs", []); S.onboarded = ls.get("onboarded", false);
-S.api = ls.get("api", { key: "", region: "eu" }); S.hist = ls.get("hist", {}); S.kick = ls.get("kick", {}); S.oddsMeta = ls.get("oddsMeta", {});
+S.api = ls.get("api", { key: "", region: "eu" }); S.oddsSeen = ls.get("oddsSeen", {}); S.hist = ls.get("hist", {}); S.kick = ls.get("kick", {}); S.oddsMeta = ls.get("oddsMeta", {});
 const SPORTS = { "fr.1": "soccer_france_ligue_one", "en.1": "soccer_epl", "es.1": "soccer_spain_la_liga", "de.1": "soccer_germany_bundesliga", "it.1": "soccer_italy_serie_a", "pt.1": "soccer_portugal_primeira_liga", "nl.1": "soccer_netherlands_eredivisie", "en.2": "soccer_efl_champ" };
 const SPORT2LG = Object.fromEntries(Object.entries(SPORTS).map(([k, v]) => [v, k]));
 const apiUrl = lg => `https://api.the-odds-api.com/v4/sports/${SPORTS[lg]}/odds/?regions=${S.api.region}&markets=h2h,totals&oddsFormat=decimal&apiKey=${encodeURIComponent(S.api.key.trim())}`;
@@ -158,7 +158,7 @@ async function initStore() {
         else if (v.kind === "leagues") { S.fan.leagues = v.codes || []; if (!S.fan.active) S.fan.active = S.fan.leagues[0] || null; S.fan.leagues.forEach(watchLeague); } }
       S.bets = bets; S.picks = picks; render();
     }, () => { S.store = "memory"; render(); });
-    fanSubscribe(); survSubscribe();
+    fanSubscribe(); survSubscribe(); oddsSubscribe();
   } catch { S.store = "memory"; }
 }
 async function saveDoc(id, data) {
@@ -210,7 +210,7 @@ function renderNotice() {
   } else if (count && S.oddsSource === "import") {
     const ts = Object.values(S.oddsMeta), oldest = ts.length ? Math.min(...ts) : null, stale = oldest && Date.now() - oldest > 3600e3;
     n.className = "notice real quantonly";
-    b.innerHTML = `<span class="dot" style="${stale ? "background:var(--warn)" : ""}"></span><span><strong>Cotes réelles</strong> pour ${count} matchs, import le plus ancien ${oldest ? ago(oldest) : "–"}.${stale ? " Les cotes ont pu bouger : ré-importe avant de parier." : ""}</span><button class="btn small" data-act="goimport">Rafraîchir</button><button class="btn small" data-act="clearodds">Effacer les cotes</button>`;
+    b.innerHTML = `<span class="dot" style="${stale ? "background:var(--warn)" : ""}"></span><span><strong>Cotes réelles</strong> pour ${count} matchs, relevées ${oldest ? ago(oldest) : "–"}.${stale ? " Elles ont pu bouger : rafraîchis avant de parier." : ""}</span><button class="btn small" data-act="refreshodds">${S.refreshing ? "Rafraîchissement…" : `Rafraîchir · ${2 * soonLeagues().length} crédits`}</button><button class="btn small" data-act="clearodds">Effacer les cotes</button>`;
   } else if (count) {
     n.className = "notice quantonly";
     b.innerHTML = `<span class="dot"></span><span><strong>Cotes saisies à la main</strong> pour ${count} matchs.</span><button class="btn small" data-act="goimport">Brancher les vraies cotes</button><button class="btn small" data-act="clearodds">Effacer les cotes</button>`;
@@ -438,27 +438,70 @@ function renderValue() {
   $("#devig2").value = S.cfg.devig; $("#ref2").value = S.cfg.ref;
 }
 const avg = a => a.reduce((s, x) => s + x, 0) / a.length;
+function goImport() { go("value"); setTimeout(() => $("#import")?.scrollIntoView({ behavior: "smooth" }), 50); }
+const sportOfFeed = t => { try { const a = JSON.parse(t); return Array.isArray(a) && a.length && a.every(e => e.sport_key === a[0].sport_key) ? a[0].sport_key : null; } catch { return null; } };
+// Championnats qui jouent dans les 48 h : les seuls qui valent un appel payant
+function soonLeagues(h = 48) { const now = Date.now(), lim = now + h * 3600e3, set = new Set();
+  for (const f of FX) { const k = Date.parse(S.kick?.[f.key] || "") || Date.parse(`${f.date}T${f.time || "15:00"}:00`); if (k > now && k <= lim) set.add(f.league); }
+  return Object.keys(LG).filter(lg => set.has(lg)); }
+// Rafraîchissement des cotes : uniquement sur appui du bouton, jamais à l'ouverture ni au rechargement de la page
+async function refreshOdds() {
+  if (S.refreshing) return; const k = S.api.key.trim();
+  if (!k) { S.importMsg = "Saisis d'abord ta clé The Odds API (étape 1)."; goImport(); return; }
+  const lgs = soonLeagues(); if (!lgs.length) { toast("Aucun match dans les 48 h : rien à rafraîchir, aucun crédit utilisé"); return; }
+  S.refreshing = true; renderNotice(); let ok = 0, rem = null; const msgs = [];
+  for (const lg of lgs) {
+    let r; try { r = await fetch(apiUrl(lg), { cache: "no-store" }); } catch { S.netBlocked = true; break; }
+    rem = r.headers.get("x-requests-remaining") ?? rem; const txt = await r.text();
+    if (!r.ok) { msgs.push(`${LG[lg]} : refus de l'API (${r.status})`); if (r.status === 401 || r.status === 429) break; continue; }
+    msgs.push(importOdds(txt)); shareOdds(SPORTS[lg], txt); ok++;
+  }
+  S.refreshing = false; if (rem != null) { S.api.remaining = +rem; S.api.remTs = Date.now(); ls.set("api", S.api); }
+  if (!ok && S.netBlocked) { S.importMsg = "Cette vue de la page n'a pas accès à Internet : ouvre chaque championnat ci-dessous (étape 2) puis colle le texte (étape 3)."; goImport(); toast("Accès réseau bloqué ici : rafraîchissement par copier-coller"); }
+  else { S.importMsg = msgs.join(" "); toast(ok ? `Cotes rafraîchies : ${ok} championnat${ok > 1 ? "s" : ""}` : "Aucune cote rafraîchie"); }
+  render();
+}
+// Cotes partagées : rafraîchies une fois par le propriétaire, elles servent à tous les appareils et visiteurs sans nouveau crédit
+function compactFeed(txt) { try { const a = JSON.parse(txt); if (!Array.isArray(a)) return null;
+  return JSON.stringify(a.map(e => ({ id: e.id, sport_key: e.sport_key, commence_time: e.commence_time, home_team: e.home_team, away_team: e.away_team,
+    bookmakers: (e.bookmakers || []).map(b => ({ key: b.key, title: b.title, last_update: b.last_update, markets: (b.markets || []).filter(m => m.key === "h2h" || m.key === "totals").map(m => ({ key: m.key, outcomes: m.key === "totals" ? m.outcomes.filter(o => +o.point === 2.5) : m.outcomes })) })) }))); } catch { return null; } }
+async function shareOdds(sport, txt) {
+  if (!DB || !USER?.isOwner?.() || !sport) return; const ev = compactFeed(txt); if (!ev || ev.length > 240000) return;
+  try { const ts = Date.now(); await DB.doc("odds/" + sport).set({ ts, events: ev }); S.oddsSeen[sport] = ts; ls.set("oddsSeen", S.oddsSeen); } catch {}
+}
+function oddsSubscribe() {
+  if (!DB) return; S.oddsSeen = ls.get("oddsSeen", {});
+  DB.collection("odds").onSnapshot(snap => { let n = 0;
+    for (const d of snap.docs) { const v = d.data(); if (!v?.ts || !v.events || v.ts <= (S.oddsSeen[d.id] || 0)) continue; if (Date.now() - v.ts > 4 * 864e5) continue;
+      importOdds(v.events); S.oddsSeen[d.id] = v.ts; n++; }
+    if (n) { ls.set("oddsSeen", S.oddsSeen); render(); } }, () => {});
+}
 function apiPanel() {
-  const k = S.api.key.trim(), cost = S.api.region.split(",").length * 2;
-  return `<div class="panel" id="import"><header><h2>Brancher les vraies cotes</h2><span class="note">The Odds API, ${cost} crédits par championnat ouvert</span></header>
+  const k = S.api.key.trim(), cost = S.api.region.split(",").length * 2, soon = soonLeagues(), rem = S.api.remaining ?? (DATA.feed?.remaining != null ? +DATA.feed.remaining : null);
+  return `<div class="panel" id="import"><header><h2>Rafraîchir les cotes</h2><span class="note">The Odds API, ${cost} crédits par championnat</span></header>
+    <p class="lede" style="margin:0 0 10px">Les cotes ne sont jamais rafraîchies à l'ouverture ni au rechargement de la page : uniquement quand tu appuies sur le bouton. Seuls les championnats qui jouent dans les 48 h sont interrogés.</p>
+    <div class="row" style="align-items:center;gap:10px;flex-wrap:wrap"><button class="btn primary" data-act="refreshodds" ${k && soon.length ? "" : "disabled"}>${S.refreshing ? "Rafraîchissement…" : `Rafraîchir · ${soon.length * cost} crédits`}</button>
+      <span class="note">${soon.length ? soon.map(lg => LG[lg]).join(", ") : "aucun match dans les 48 h"}${rem != null ? ` · solde ${rem} crédits${S.api.remTs ? " " + ago(S.api.remTs) : ""}` : ""}${DB && USER?.isOwner?.() ? " · partagées avec tes appareils et les visiteurs" : ""}</span></div>
+    <div class="chips" style="margin:10px 0 4px">${Object.entries(LG).map(([lg, n]) => `<span class="chip" aria-pressed="${!!S.oddsMeta[SPORTS[lg]]}" title="Cotes relevées">${n} · ${S.oddsMeta[SPORTS[lg]] ? ago(S.oddsMeta[SPORTS[lg]]) : "jamais"}</span>`).join("")}</div>
+    <details ${S.netBlocked || !k ? "open" : ""} style="margin-top:8px"><summary class="note">Clé API et rafraîchissement par copier-coller (quand la page n'a pas accès à Internet)</summary>
     <ol class="steps">
       <li><strong>Ta clé API.</strong> Elle reste dans ce navigateur : elle n'est jamais enregistrée dans la page publiée.
         <div class="row" style="margin-top:8px"><input type="password" id="apikey" data-api="key" value="${esc(S.api.key)}" placeholder="Colle ta clé ici" autocomplete="off" style="width:min(100%,340px)">
         <label class="f" style="flex-direction:row;align-items:center;gap:8px;flex-wrap:wrap;max-width:100%">Bookmakers<select id="apiregion" style="max-width:100%;min-width:0" data-api="region"><option value="eu" ${S.api.region === "eu" ? "selected" : ""}>Europe (Pinnacle, Betclic, Winamax, Unibet, PMU…) : 2 crédits</option><option value="eu,fr" ${S.api.region === "eu,fr" ? "selected" : ""}>Europe + France (NetBet…) : 4 crédits</option></select></label></div></li>
       <li><strong>Ouvre un championnat.</strong> Chaque bouton ouvre un nouvel onglet avec les cotes en texte brut.
-        <div class="chips" style="margin-top:8px">${Object.entries(LG).map(([lg, n]) => k ? `<a class="chip" href="${esc(apiUrl(lg))}" target="_blank" rel="noopener noreferrer" aria-pressed="${!!S.oddsMeta[SPORTS[lg]]}">${n}${S.oddsMeta[SPORTS[lg]] ? ", " + ago(S.oddsMeta[SPORTS[lg]]) : ""}</a>` : `<span class="chip" aria-disabled="true" style="opacity:.5">${n}</span>`).join("")}</div>
+        <div class="chips" style="margin-top:8px">${Object.entries(LG).filter(([lg]) => !soon.length || soon.includes(lg)).map(([lg, n]) => k ? `<a class="chip" href="${esc(apiUrl(lg))}" target="_blank" rel="noopener noreferrer" aria-pressed="${!!S.oddsMeta[SPORTS[lg]]}">${n}${S.oddsMeta[SPORTS[lg]] ? ", " + ago(S.oddsMeta[SPORTS[lg]]) : ""}</a>` : `<span class="chip" aria-disabled="true" style="opacity:.5">${n}</span>`).join("")}</div>
         ${k ? "" : `<p class="note" style="margin-top:6px">Saisis d'abord ta clé.</p>`}</li>
       <li><strong>Copie tout, colle ici.</strong> Dans l'onglet ouvert, sélectionne tout (Ctrl+A, ou Cmd+A sur Mac), copie (Ctrl+C ou Cmd+C), reviens ici et colle dans le cadre (Ctrl+V ou Cmd+V). L'import se lance tout seul. Sur Firefox, clique d'abord sur « Données brutes ». Recommence pour chaque championnat : les imports s'additionnent.
         <textarea id="importbox" placeholder="Colle ici le texte copié, qui commence par [{" style="margin-top:8px"></textarea>
         <div class="row"><button class="btn small" data-act="import">Importer le texte collé</button><span id="importmsg" class="muted">${esc(S.importMsg || "")}</span></div></li>
-    </ol>
-    <p class="note">Offre gratuite : 500 crédits par mois, soit environ ${Math.floor(500 / (cost * 8))} rafraîchissements des 8 championnats. Les cotes bougent jusqu'au coup d'envoi : ré-importe peu avant le match pour mesurer ton CLV.</p></div>`;
+    </ol></details>
+    <p class="note">Offre gratuite : 500 crédits par mois, soit environ ${Math.floor(500 / (cost * 8))} rafraîchissements complets des 8 championnats, bien plus en ne visant que ceux qui jouent. Le registre du matin utilise chaque jour, sans crédit, les cotes Pinnacle et Bet365 de football-data. Rafraîchis peu avant un match pour mesurer ton CLV.</p></div>`;
 }
 function importOdds(txt) {
   let data; try { data = JSON.parse(txt.trim()); } catch { return "Texte illisible : copie toute la page de l'onglet ouvert, du premier [ au dernier ]."; }
   if (!Array.isArray(data)) { if (data && data.message) return "L'API a répondu : " + data.message; data = data?.data || [data]; }
   if (S.oddsSource !== "import") S.odds = {};
-  const now = Date.now(), lastDay = FX[FX.length - 1].date, per = {}; let matched = 0, outside = 0; const unmatched = [];
+  const now = Date.now(), lastDay = FX[FX.length - 1].date, per = {}, seen = {}; let matched = 0, outside = 0; const unmatched = [];
   for (const ev of data) {
     if (!ev?.home_team || !Array.isArray(ev.bookmakers)) continue;
     const d = (ev.commence_time || "").slice(0, 10);
@@ -473,6 +516,7 @@ function importOdds(txt) {
     if (!best) { unmatched.push(`${ev.home_team} – ${ev.away_team}`); continue; }
     const books = {};
     for (const bk of ev.bookmakers) {
+      if (bk.src !== "fd") { const lu = Date.parse(bk.last_update || "") || now; seen[ev.sport_key] = Math.max(seen[ev.sport_key] || 0, Math.min(lu, now)); }
       const o = {};
       for (const mk of bk.markets || []) {
         if (mk.key === "h2h") for (const oc of mk.outcomes) { if (oc.name === ev.home_team) o.H = oc.price; else if (oc.name === ev.away_team) o.A = oc.price; else o.D = oc.price; }
@@ -486,8 +530,9 @@ function importOdds(txt) {
       }
     }
     S.odds[best.key] = Object.assign(S.odds[best.key] || {}, books); S.kick[best.key] = ev.commence_time; matched++;
-    per[ev.sport_key] = (per[ev.sport_key] || 0) + 1; S.oddsMeta[ev.sport_key] = now;
+    per[ev.sport_key] = (per[ev.sport_key] || 0) + 1;
   }
+  for (const [k, t] of Object.entries(seen)) S.oddsMeta[k] = Math.max(S.oddsMeta[k] || 0, t);
   if (!matched && !data.length) return "Aucun match dans ce texte : le championnat n'a peut-être pas de rencontre programmée.";
   S.oddsSource = "import";
   ls.set("odds", { src: "import", odds: S.odds }); ls.set("hist", S.hist); ls.set("kick", S.kick); ls.set("oddsMeta", S.oddsMeta);
@@ -662,7 +707,7 @@ function deepRows() {
   if (g5) out.push(["Binomiale négative (surdispersion)", "Buts", `RPS ${nf(g5.binneg, 4)} contre ${nf(g5.poisson, 4)} pour Poisson`, "Rejeté"]);
   const l6 = d.lab6;
   if (l6) { out.push(["Modèle sur les tirs totaux", "1N2", `RPS ${nf(l6.rps_avec_tirs, 4)} contre ${nf(l6.rps_actuel, 4)} avec les seuls tirs cadrés`, "Rejeté"]);
-    out.push(["Mélange modèle + marché (Bet365)", "1N2", `meilleur poids du marché : ${pct(l6.melange.poids_marche_optimal)} ; RPS ${nf(l6.melange.rps_marche, 4)} contre ${nf(l6.melange.rps_modele, 4)} pour le modèle seul`, "Adopté : référence 90 % marché"]); }
+    out.push(["Mélange modèle + marché (Bet365)", "1N2", `meilleur poids du marché : ${pct(l6.melange.poids_marche_optimal)} ; RPS ${nf(l6.melange.rps_marche, 4)} contre ${nf(l6.melange.rps_modele, 4)} pour le modèle seul`, "Adopté : référence 100 % marché (confirmé par le labo 13)"]); }
   const l7 = d.lab7;
   if (l7) { const t = l7.par_tranche.find(x => x.tranche === "75-85 %"), c2 = l7.cote_2;
     if (t) out.push(["Paris annoncés à 75-85 %", "Calibration", `${nf(t.reussite * 100, 1)} % de réussite pour ${nf(t.proba_modele * 100, 1)} % annoncés sur ${nf(t.paris)} paris ; cote moyenne ${nf(t.cote_moy, 2)}, rendement ${sgn(t.rendement)}`, "Fiable, mais pas rentable"]);
@@ -690,6 +735,14 @@ function deepRows() {
   const l12 = d.lab12;
   if (l12?.B_multi_horizon) for (const [k, lab] of [["B_multi_horizon", "Ensemble multi-horizon (mémoire courte et longue)"], ["C_corners", "Domination aux corners dans le moteur"], ["D_ligue", "Constantes par championnat"], ["E_tout", "Toutes les pistes réunies"]]) { const r = l12[k];
     out.push([lab, "1N2", `RPS ${nf(r.rps, 4)} contre ${nf(l12.rps_base, 4)} (gain ${nf(r.gain * 1000, 2)} ‰, IC ${nf(r.ic95[0] * 1000, 1)} à ${nf(r.ic95[1] * 1000, 1)} ‰) ; ${nf(l12.n_test)} matchs 2025-26`, r.prouve ? "Adopté" : "Rejeté"]); }
+  const l13 = d.lab13;
+  if (l13?.devig_predictif) { const b = l13.devig_predictif.bet365_ouverture, sh = b.shin, pw = b.power;
+    out.push(["Retrait de marge : Shin et puissance contre proportionnel", "1N2", `cotes Bet365 : gain ${nf(pw.gain_vs_mult_pm, 2)} ‰ (puissance), ${nf(sh.gain_vs_mult_pm, 2)} ‰ (Shin), IC au-dessus de 0 ; ${nf(l13.n_matchs)} matchs`, "Shin confirmé"]);
+    const r = l13.reference_amelioree?.pistes; if (r) { const a = r["90 % Pinnacle + 10 % modèle (en place)"], bb = r["Pinnacle + Bet365"];
+      out.push(["Probabilité des picks : 90 % Pinnacle + 10 % modèle", "1N2", `${nf(a.gain_pm, 2)} ‰ face à Pinnacle seul (IC ${nf(a.ic_pm[0], 2)} à ${nf(a.ic_pm[1], 2)} ‰), perte aussi sur 2024-25 ; ${nf(l13.reference_amelioree.n_test)} matchs`, "Corrigé : 100 % Pinnacle"]);
+      out.push(["Pinnacle et Bet365 empilés", "1N2", `${nf(bb.gain_pm, 2)} ‰ (IC ${nf(bb.ic_pm[0], 2)} à ${nf(bb.ic_pm[1], 2)} ‰)`, "Rejeté"]); }
+    const m = (l13.test_argent_bet365 || []).find(x => x.moment === "ouverture" && x.seuil === 0); if (m) out.push(["Jouer Bet365 au-dessus du prix Pinnacle", "1N2", `${nf(m.paris)} paris, ROI ${sgn(m.roi)} (IC ${sgn(m.roi_ic[0])} à ${sgn(m.roi_ic[1])})`, m.roi_ic[0] > 0 ? "Prouvé" : "Non prouvé"]);
+    const pp = (l13.clubs_populaires || []).find(x => x.profil.startsWith("outsider") && x.cas === "contre le club populaire"); if (pp) out.push(["Outsider face à un club populaire (Bet365)", "1N2", `${sgn(pp.ev_attendu)} attendu, ${sgn(pp.roi_reel)} réalisé sur ${nf(pp.n)} paris (IC ${sgn(pp.roi_ic[0])} à ${sgn(pp.roi_ic[1])})`, pp.roi_ic[1] < 0 ? "Piège prouvé : signalé" : "Non prouvé"]); }
   const c = d.clv, cv = c && c["clv_seuil_1.05"];
   out.push(c ? ["Modèle face à la clôture Pinnacle", "1N2", `RPS ${nf(c.rps_modele, 4)} contre ${nf(c.rps_pinnacle_cloture, 4)} (clôture) ; CLV ${cv?.clv_moy != null ? `${sgn(cv.clv_moy)} sur ${nf(cv.n)} paris, IC ${sgn(cv.ic95[0])} à ${sgn(cv.ic95[1])}` : "trop peu de paris"}`,
     cv?.ic95 && cv.ic95[0] > 0 ? "Avantage prouvé" : "Pas d'avantage prouvé"] : ["Modèle face à la clôture Pinnacle (CLV)", "1N2", "calculé chaque lundi par la mise à jour automatique, dès que le dépôt GitHub tourne", "En attente"]);
@@ -819,8 +872,9 @@ document.addEventListener("click", e => {
   switch (d.act) {
     case "demo": S.odds = demoOdds(); S.oddsSource = "demo"; render(); break;
     case "clearodds": S.odds = {}; S.oddsSource = "none"; ls.set("odds", null); render(); break;
-    case "goimport": go("value"); setTimeout(() => $("#import")?.scrollIntoView({ behavior: "smooth" }), 50); break;
-    case "import": { S.importMsg = importOdds($("#importbox").value); render(); toast("Import terminé"); break; }
+    case "goimport": goImport(); break;
+    case "import": { const t = $("#importbox").value; S.importMsg = importOdds(t); shareOdds(sportOfFeed(t), t); render(); toast("Import terminé"); break; }
+    case "refreshodds": refreshOdds(); break;
     case "addbook": { const n = $("#newbook").value.trim(); if (!n) return; (S.odds[S.matchKey] ??= {})[n] = {}; if (S.oddsSource === "none") S.oddsSource = "manual"; render(); break; }
     case "ai": runAI(); break;
     case "onboarded": S.onboarded = true; ls.set("onboarded", true); render(); break;
@@ -869,7 +923,7 @@ function deferRender(el) { const id = el.id, pos = el.selectionStart; clearTimeo
 document.addEventListener("paste", e => {
   if (e.target.id !== "importbox") return;
   const txt = e.clipboardData?.getData("text"); if (!txt) return;
-  e.preventDefault(); S.importMsg = importOdds(txt); render(); toast(S.importMsg.startsWith("Importé") ? "Cotes importées" : "Import impossible");
+  e.preventDefault(); S.importMsg = importOdds(txt); shareOdds(sportOfFeed(txt), txt); render(); toast(S.importMsg.startsWith("Importé") ? "Cotes importées" : "Import impossible");
   setTimeout(() => $("#import")?.scrollIntoView({ block: "center" }), 30);
 });
 document.addEventListener("mouseover", e => { const t = e.target.closest("[data-tip]"); if (t) showTip(e, t.dataset.tip); });

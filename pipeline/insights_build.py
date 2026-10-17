@@ -1,7 +1,7 @@
 """Données d'aide à la décision calculées sur l'historique réel (data/closing.csv, out/engine3_preds.csv) :
 - twins : chaque match passé résumé par ses probabilités Pinnacle de clôture sans marge et son score, pour retrouver les « jumeaux » d'un match à venir ;
 - patience : comment bougent les cotes entre l'ouverture et la clôture (Pinnacle et Bet365), par profil d'issue : jouer tôt ou attendre ;
-- backtest_top : la règle des Top Picks (issue 1N2 la plus probable, 8 par jour) rejouée sur 2025-26 avec les cotes Bet365 d'ouverture.
+- backtest_top : la règle des Top Picks (issue 1N2 la plus probable, 8 par jour, probabilité Pinnacle sans marge) rejouée sur 2025-26 avec les cotes Bet365 d'ouverture.
 Sortie : out/insights.json. Usage : python pipeline/insights_build.py .
 """
 import json, math, sys
@@ -41,14 +41,14 @@ def main():
                              pin_move=float(np.mean(ps_c / ps_o - 1)), pin_short=float(np.mean(ps_c < ps_o)),
                              b365_open_ev=float(np.mean(fc[ok] * b_o[ok] - 1)), b365_close_ev=float(np.mean(fc[ok] * b_c[ok] - 1)),
                              b365_move=float(np.mean(b_c[ok] / b_o[ok] - 1))))
-    # Backtest de la règle Top Picks sur 2025-26 (probabilité = 90 % Pinnacle ouverture + 10 % modèle)
+    # Backtest de la règle Top Picks sur 2025-26 (probabilité = Pinnacle ouverture sans marge, comme les picks)
     P = pd.read_csv(ROOT / "out" / "engine3_preds.csv")
     P = P[P.season == 2025]
     C2 = C.rename(columns={"Date": "date", "HomeTeam": "home", "AwayTeam": "away"})
     D = P.merge(C2[["date", "home", "away", "PSH", "PSD", "PSA", "B365H", "B365D", "B365A"]], on=["date", "home", "away"], how="inner").dropna(subset=["PSH", "B365H"])
     bt = None
     if len(D) > 300:
-        M = shin(D[["PSH", "PSD", "PSA"]].to_numpy(float)); MOD = D[["pH", "pD", "pA"]].to_numpy(float); PR = 0.9 * M + 0.1 * MOD
+        M = shin(D[["PSH", "PSD", "PSA"]].to_numpy(float)); MOD = D[["pH", "pD", "pA"]].to_numpy(float); PR = M
         res = np.select([D.hg > D.ag, D.hg == D.ag], [0, 1], 2); B = D[["B365H", "B365D", "B365A"]].to_numpy(float)
         k = PR.argmax(1); p = PR[np.arange(len(D)), k]; o = B[np.arange(len(D)), k]; won = (k == res)
         dck = np.where(k == 0, 0, np.where(k == 2, 2, np.where(PR[:, 0] >= PR[:, 2], 0, 2)))  # double chance du côté de l'issue choisie (avec le nul)

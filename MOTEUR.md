@@ -8,7 +8,7 @@
 4. Recalage des totaux, ×1,12 sur les buts d'une équipe sans enjeu en fin de saison.
 5. Fourchette à 80 % par match : incertitude des forces des deux modèles (information de Fisher exacte, `uncert.py`) propagée à travers l'empilement.
 
-Score hors échantillon 2025-26 : RPS 0,2015. Bet365 (Shin) fait 0,1981, la clôture Pinnacle fait mieux encore. Sur le 1N2 avant-match, le modèle n'ajoute rien au marché (lab6) : quand de vraies cotes sont branchées, la page affiche une probabilité de référence à 90 % marché. La valeur propre du moteur est ailleurs : live, marchés dérivés cohérents (buts, mi-temps, handicaps, combinés d'un même match), scénarios, incertitude, explications.
+Score hors échantillon 2025-26 : RPS 0,2015. Bet365 (Shin) fait 0,1981, la clôture Pinnacle fait mieux encore. Sur le 1N2 avant-match, le modèle n'ajoute rien au marché (lab6) : quand de vraies cotes sont branchées, la probabilité de référence est le marché Pinnacle sans marge à 100 % (labo 13 : y mêler 5, 10 ou 20 % de modèle dégrade le RPS sur 2024-25 comme sur 2025-26). La valeur propre du moteur est ailleurs : live, marchés dérivés cohérents (buts, mi-temps, handicaps, combinés d'un même match), scénarios, incertitude, explications.
 
 ## Tests menés (`lab2.py`, `lab2b.py`, `lab3.py`, `lab4.py`)
 
@@ -23,7 +23,7 @@ Score hors échantillon 2025-26 : RPS 0,2015. Bet365 (Shin) fait 0,1981, la clô
 | Recalage du nombre total de buts (0 à 6+) | Gain de RPS significatif sur 3 386 matchs (IC du gain 0,4 à 0,7 ‰) ; 0-0 et 6+ moins fréquents que Poisson | Adopté |
 | Binomiale négative (surdispersion) | Pas meilleure que Poisson | Rejeté |
 | Modèle sur les tirs totaux | RPS 0,2019 contre 0,2015 avec les seuls tirs cadrés | Rejeté |
-| Mélange modèle + marché (Bet365) | Meilleur poids du marché : 100 % (RPS 0,1981 contre 0,2015 pour le modèle) | Référence affichée : 90 % marché, 10 % modèle |
+| Mélange modèle + marché (Bet365) | Meilleur poids du marché : 100 % (RPS 0,1981 contre 0,2015 pour le modèle) | Référence : 100 % marché (corrigé au labo 13 ; la règle 90/10 coûtait 0,17 à 0,29 ‰) |
 | Value du modèle face à la clôture Pinnacle (CLV, données réelles) | CLV −4,5 % (IC −5,0 à −4,1 %) sur 1 137 paris : la cote évolue contre le modèle | Ne pas parier la value du modèle seul |
 | Bet365 au-dessus du prix juste Pinnacle (4 369 matchs) | 88 paris, CLV −0,6 % (IC −3,2 à +1,7 %) | Pas d'avantage prouvé |
 | Paris annoncés à 75-85 % | 77,9 % réussis, cote moyenne 1,22, rendement −5 % | Calibré, pas rentable |
@@ -41,6 +41,24 @@ Score hors échantillon 2025-26 : RPS 0,2015. Bet365 (Shin) fait 0,1981, la clô
 | Toutes ces pistes réunies (`lab12_ensemble.py`, 2916 matchs 2025-26) | RPS 0,2043 contre 0,2018 ; gain -2,54 ‰ (IC -3,91 ‰ à -1,22 ‰) | Rejeté |
 | Régularisation de l'empilement (C de 0,05 à 5) | RPS de 0,2017 à 0,2018 | Sans effet utile |
 | Réglage de Dixon-Coles refait sur 2024-26 (`lab12b_tune.py`, 5829 matchs, 8 championnats) | meilleur : demi-vie plus longue (ξ 0,002, L2 0,2), RPS 0,2021 contre 0,2022 pour le réglage en place | Grille du réglage hebdomadaire élargie (36 réglages) et réglage sur deux saisons propres (2022-24, 3578 matchs) : ξ 0,003 et L2 0,1 restent les meilleurs (RPS 0,19921), ξ 0,002 y perd 0,3 ‰. Le gain de 2024-26 ne se réplique pas : réglage en place conservé |
+
+## Labo 13 : les algorithmes des bookmakers (`lab13_books.py`)
+
+Données : 4 369 matchs avec Pinnacle et Bet365 à l'ouverture et à la clôture (2024-26, football-data), 27 bookmakers du dernier relevé The Odds API, instantanés des bookmakers français.
+
+| Question | Résultat | Décision |
+| --- | --- | --- |
+| Retrait de marge le plus prédictif | Cotes Bet365 : puissance +0,25 ‰, Shin +0,20 ‰ face au proportionnel (IC au-dessus de 0) ; Pinnacle : Shin et rapport de cotes devant | Shin conservé |
+| Probabilité des picks : 90 % Pinnacle + 10 % modèle | −0,29 ‰ face à Pinnacle seul sur 2025-26 (IC −0,51 à −0,07), −0,17 ‰ sur 2024-25 | Corrigé : 100 % Pinnacle |
+| Pinnacle + Bet365 empilés ; + modèle | −0,12 ‰ (IC −0,72 à 0,45) ; +0,30 ‰ (IC −0,75 à 1,39) | Rejetés |
+| Répartition de la marge | Bet365 : rapport de cotes ou Shin (erreur 0,68 pt contre 0,92 pour le proportionnel) ; bookmakers français : Shin. La marge est chargée sur les outsiders | Profil affiché dans Outils |
+| Structure de la marge Bet365 (réalisée) | Favoris −1,4 %, nul −3,5 %, équilibrés −4,9 %, outsiders −19,9 % | Affiché |
+| Même marque, autre pays | Winamax 13,0 % en France contre 9,0 % en Allemagne (mêmes avis, écart 0,36 pt) ; Unibet 11,9 % contre 4,0 % en Suède | Affiché, Studio |
+| Qui copie qui | 1xBet et Marathon (0,06 pt), Betfair et Matchbook, Betsson et NordicBet, William Hill et 888sport, PMU et LeoVegas (0,20 pt) | Affiché |
+| Suivi de Pinnacle par les bookmakers français | Environ 70 % d'un mouvement Pinnacle repris au relevé suivant (32 mouvements) | Fenêtre des Hot Picks |
+| Outsider face à un club populaire (Bet365) | −15,0 % attendu, −29,5 % réalisé sur 1 176 paris (IC −42 à −16 %) | Piège signalé dans le ticket |
+| Jouer Bet365 au-dessus du prix Pinnacle | 244 paris, ROI +13,8 % (IC −9,6 à +36,1 %) ; à la clôture −3,0 % | Non prouvé |
+
 | Picks du jour (règle Top, rejouée sur 2025-26, 614 picks) | 60,6 % réussis pour 57,2 % annoncés ; rendement +1,2 % ± 6,8 pts aux cotes Bet365 | Calibré ; registre figé chaque matin depuis le 17 oct. 2026 |
 
 ## Tests en cours (GitHub Actions)

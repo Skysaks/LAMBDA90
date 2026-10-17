@@ -77,7 +77,7 @@ function livePicks() {
   const today = parisDay(), out = [];
   for (const f of FX) {
     if (started(f) || f.date !== today) continue; const fair = fairOf(f); if (!fair) continue;
-    const pr = {}; for (const k of B3_SEL) if (fair[k] != null) pr[k] = 0.9 * fair[k] + 0.1 * (k === "O25" ? f.m.O[2.5] : k === "U25" ? 1 - f.m.O[2.5] : f.m[k]);
+    const pr = {}; for (const k of B3_SEL) if (fair[k] != null) pr[k] = fair[k];  // 100 % marché : ajouter le modèle dégrade le RPS (labo 13)
     let best = null; for (const k of Object.keys(pr)) { const b = bestMine(f, k); if (b && b.o >= 1.25 && (!best || pr[k] > best.p)) best = { sel: k, p: pr[k], pm: fair[k], o: b.o, book: b.book }; }
     if (!best) continue; const res = ["H", "D", "A"].reduce((x, y) => pr[y] > pr[x] ? y : x, "H");
     out.push({ key: f.key, kick: S.kick[f.key] || `${f.date}T${f.time || "15:00"}:00`, home: f.home, away: f.away, league: f.league, ...best, ev: best.pm * best.o - 1, res: { sel: res, p: pr[res] } });
@@ -111,7 +111,7 @@ function renderDaily() {
     <div class="panel"><header><h2>Top Picks du jour</h2><div class="topn" role="group" aria-label="Nombre de Top Picks"><button class="btn small" data-topn="-1" aria-label="Moins">−</button><b class="num">${S.topN}</b><button class="btn small" data-topn="+1" aria-label="Plus">+</button>${[5, 8, 10, 15].map(n => `<button class="chip" data-topn="=${n}" aria-pressed="${S.topN === n}">${n}</button>`).join("")}</div></header>
       <p class="note" style="margin:-4px 0 10px">${live ? "Calcul en direct : le registre de ce matin n'est pas encore publié" : `Figés le ${new Date(D.made).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`} · ${top.length} sur ${all15.length} disponibles · classés par probabilité</p>
       ${top.length ? `<ol class="tp">${top.map((x, i) => pickRowDaily(x, i)).join("")}</ol>` : `<div class="empty">Aucun match coté par Pinnacle aujourd'hui.</div>`}
-      <p class="note" style="margin-top:8px">Probabilité : 90 % marché Pinnacle sans marge + 10 % modèle, le meilleur mélange mesuré. Une sélection par match, cote réelle d'au moins 1,25 chez tes bookmakers. Plus haut ne veut pas dire rentable : c'est le Hot qui parle du prix.</p></div>
+      <p class="note" style="margin-top:8px">Probabilité : marché Pinnacle sans marge (Shin). Y ajouter 10 % de modèle dégrade la précision sur 2024-25 comme sur 2025-26 (labo 13). Une sélection par match, cote réelle d'au moins 1,25 chez tes bookmakers. Plus haut ne veut pas dire rentable : c'est le Hot qui parle du prix.</p></div>
     ${combosBlock(D, all15)}
     ${spot ? spotlight(spot) : ""}
     <div class="grid2" style="align-items:start">

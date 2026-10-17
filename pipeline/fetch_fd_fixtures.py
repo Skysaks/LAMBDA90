@@ -11,7 +11,11 @@ ROOT = Path(sys.argv[1]) if len(sys.argv) > 1 else Path(".")
 FEED = ROOT / "out" / "feed_odds.json"
 DIV = {"F1": "soccer_france_ligue_one", "E0": "soccer_epl", "SP1": "soccer_spain_la_liga", "D1": "soccer_germany_bundesliga", "I1": "soccer_italy_serie_a",
        "P1": "soccer_portugal_primeira_liga", "N1": "soccer_netherlands_eredivisie", "E1": "soccer_efl_champ"}
-BOOKS = {"Bet365": ("B365H", "B365D", "B365A", "B365>2.5", "B365<2.5"), "Moyenne du marché": ("AvgH", "AvgD", "AvgA", "Avg>2.5", "Avg<2.5")}
+BOOKS = {"Bet365": ("B365H", "B365D", "B365A", "B365>2.5", "B365<2.5"), "Moyenne du marché": ("AvgH", "AvgD", "AvgA", "Avg>2.5", "Avg<2.5"),
+         "Pinnacle": ("PSH", "PSD", "PSA", "P>2.5", "P<2.5")}
+KEYS = {"Bet365": "bet365", "Moyenne du marché": "market_avg", "Pinnacle": "pinnacle"}
+# Pinnacle de fixtures.csv sert de référence gratuite quand The Odds API n'a pas été rafraîchi depuis plus de 24 h (rafraîchissement manuel uniquement)
+PIN_STALE_H = 24
 
 def load_fixtures():
     raw = urllib.request.urlopen(urllib.request.Request("https://www.football-data.co.uk/fixtures.csv", headers={"User-Agent": "lambda90"}), timeout=40).read()
@@ -39,7 +43,8 @@ def main():
     try: F = load_fixtures()
     except Exception as e: print("fixtures.csv indisponible :", e); return
     feed = json.load(open(FEED)) if FEED.exists() else {"ts": int(time.time() * 1000), "events": []}
-    ev = feed["events"]; added = merged = 0
+    nowz = datetime.utcnow(); cut = (nowz - timedelta(days=3)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    ev = feed["events"] = [e for e in feed["events"] if e.get("commence_time", "") >= cut]; added = merged = 0; pin = 0
     for r in F.to_dict("records"):
         sport = DIV[r["Div"]]; ct = kickoff(r); day = ct[:10]
         cands = [(i, e["home_team"], e["away_team"]) for i, e in enumerate(ev) if e.get("sport_key") == sport and abs((datetime.fromisoformat(e["commence_time"][:10]) - datetime.fromisoformat(day)).days) <= 1]
@@ -51,10 +56,14 @@ def main():
         for title, cols in BOOKS.items():
             mk = markets(r, home, away, cols)
             if not mk: continue
-            key = "bet365" if title == "Bet365" else "market_avg"
-            e["bookmakers"] = [b for b in e["bookmakers"] if b.get("key") != key] + [{"key": key, "title": title, "last_update": datetime.utcnow().strftime("%Y-%m-%dT%H:%M:%SZ"), "markets": mk}]
-    feed["fd_fixtures"] = dict(lignes=int(len(F)), fusionnes=merged, ajoutes=added)
+            key = KEYS[title]
+            if key == "pinnacle":
+                cur = next((b for b in e["bookmakers"] if b.get("key") == "pinnacle" and b.get("src") != "fd"), None)
+                if cur and (nowz - datetime.strptime(cur.get("last_update", "2000-01-01T00:00:00Z")[:19], "%Y-%m-%dT%H:%M:%S")).total_seconds() < PIN_STALE_H * 3600: continue
+                pin += 1
+            e["bookmakers"] = [b for b in e["bookmakers"] if b.get("key") != key] + [{"key": key, "title": title, "last_update": nowz.strftime("%Y-%m-%dT%H:%M:%SZ"), "src": "fd", "markets": mk}]
+    feed["fd_fixtures"] = dict(lignes=int(len(F)), fusionnes=merged, ajoutes=added, pinnacle_fd=pin)
     FEED.parent.mkdir(exist_ok=True); json.dump(feed, open(FEED, "w"))
-    print(f"football-data : {len(F)} matchs, {merged} fusionnés avec The Odds API, {added} ajoutés")
+    print(f"football-data : {len(F)} matchs, {merged} fusionnés avec The Odds API, {added} ajoutés, Pinnacle de secours sur {pin}")
 
 if __name__ == "__main__": main()
