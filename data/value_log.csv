@@ -339,3 +339,21 @@ vu_le,event_id,sport_key,commence_time,home,away,market,point,outcome,book,fr,pr
 2026-10-17T09:09+00:00,b6bf48e65d78b5615da5f3ab904fa5d4,soccer_efl_champ,2026-10-17T14:00:00Z,Swansea City,West Ham United,h2h,,West Ham United,leovegas_se,0,2.23,2.09,0.46642,0.04012
 2026-10-17T09:09+00:00,b6bf48e65d78b5615da5f3ab904fa5d4,soccer_efl_champ,2026-10-17T14:00:00Z,Swansea City,West Ham United,h2h,,West Ham United,gtbets,0,2.24,2.09,0.46642,0.04479
 2026-10-17T09:09+00:00,b6bf48e65d78b5615da5f3ab904fa5d4,soccer_efl_champ,2026-10-17T14:00:00Z,Swansea City,West Ham United,h2h,,West Ham United,betfair_ex_eu,0,2.18,2.09,0.46642,0.0168
+2026-10-17T09:27+00:00,f3034246520a2ee4ff0ac0d5074966f8,soccer_france_ligue_one,2026-10-17T15:15:00Z,Strasbourg,Paris Saint Germain,h2h,,Strasbourg,unibet_se,0,7.5,6.76,0.1383,0.03727
+2026-10-17T09:27+00:00,f3034246520a2ee4ff0ac0d5074966f8,soccer_france_ligue_one,2026-10-17T15:15:00Z,Strasbourg,Paris Saint Germain,h2h,,Strasbourg,leovegas_se,0,7.5,6.76,0.1383,0.03727
+2026-10-17T09:27+00:00,764e6513cb3f348881503df70ccb90e0,soccer_epl,2026-10-17T11:30:00Z,Everton,Chelsea,h2h,,Draw,marathonbet,0,3.78,3.6,0.26916,0.01742
+2026-10-17T09:27+00:00,764e6513cb3f348881503df70ccb90e0,soccer_epl,2026-10-17T11:30:00Z,Everton,Chelsea,h2h,,Everton,market_avg,0,3.13,2.99,0.32545,0.01864
+2026-10-17T09:27+00:00,8f1945e7272bc7e89016439f5ab321c7,soccer_epl,2026-10-17T14:00:00Z,Brentford,Liverpool,h2h,,Brentford,unibet_nl,0,2.5,2.41,0.40496,0.0124
+2026-10-17T09:27+00:00,8f1945e7272bc7e89016439f5ab321c7,soccer_epl,2026-10-17T14:00:00Z,Brentford,Liverpool,h2h,,Brentford,unibet_se,0,2.5,2.41,0.40496,0.0124
+2026-10-17T09:27+00:00,7895f97f2f9577f3b13287a3d086859d,soccer_epl,2026-10-17T14:00:00Z,Fulham,Hull City,h2h,,Fulham,market_avg,0,1.7,1.62,0.60282,0.0248
+2026-10-17T09:27+00:00,d1bbbdcd3d430e70091b518369b559cf,soccer_epl,2026-10-17T16:30:00Z,Newcastle United,Aston Villa,h2h,,Aston Villa,gtbets,0,3.12,3.0,0.32404,0.01101
+2026-10-17T09:27+00:00,9a64448205fdc4b95f45641bb946706c,soccer_germany_bundesliga,2026-10-17T16:30:00Z,Bayern Munich,RB Leipzig,h2h,,Bayern Munich,gtbets,0,1.24,1.2,0.81741,0.01359
+2026-10-17T09:27+00:00,18d478f469da3bcc654dd4555b85c7e3,soccer_italy_serie_a,2026-10-17T18:45:00Z,AS Roma,Genoa,h2h,,Genoa,betfair_ex_eu,0,6.6,6.1,0.15379,0.01499
+2026-10-17T09:27+00:00,18d478f469da3bcc654dd4555b85c7e3,soccer_italy_serie_a,2026-10-17T18:45:00Z,AS Roma,Genoa,h2h,,Genoa,matchbook,0,6.6,6.1,0.15379,0.01499
+2026-10-17T09:27+00:00,18d478f469da3bcc654dd4555b85c7e3,soccer_italy_serie_a,2026-10-17T18:45:00Z,AS Roma,Genoa,h2h,,Draw,gtbets,0,4.31,4.06,0.23539,0.01452
+2026-10-17T09:27+00:00,fc96145ee5d186e331503870bfef8020,soccer_netherlands_eredivisie,2026-10-17T19:00:00Z,Sparta Rotterdam,Willem II,h2h,,Willem II,matchbook,0,5.5,5.11,0.18496,0.01729
+2026-10-17T09:27+00:00,4419c1c886cc6f3ad0c00f0d6cfe2b62,soccer_efl_champ,2026-10-17T11:30:00Z,Watford,Charlton Athletic,h2h,,Watford,matchbook,0,2.76,2.64,0.36764,0.01467
+2026-10-17T09:27+00:00,899f15da06998732d951a91ed8f5e32f,soccer_efl_champ,2026-10-17T14:00:00Z,Southampton,Bolton Wanderers,h2h,,Bolton Wanderers,betfair_ex_eu,0,7.8,6.81,0.13606,0.06129
+2026-10-17T09:27+00:00,899f15da06998732d951a91ed8f5e32f,soccer_efl_champ,2026-10-17T14:00:00Z,Southampton,Bolton Wanderers,h2h,,Bolton Wanderers,matchbook,0,7.8,6.81,0.13606,0.06129
+2026-10-17T09:27+00:00,530a906583ad9f1e013f382e2fe19c5e,soccer_efl_champ,2026-10-17T14:00:00Z,Bristol City,Sheffield United,totals,2.5,Under,bet365,0,2.0,1.9,0.51157,0.02314
+2026-10-17T09:27+00:00,b6bf48e65d78b5615da5f3ab904fa5d4,soccer_efl_champ,2026-10-17T14:00:00Z,Swansea City,West Ham United,h2h,,West Ham United,matchbook,0,2.2,2.09,0.46642,0.02613
