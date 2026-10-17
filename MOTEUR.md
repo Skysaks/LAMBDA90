@@ -35,6 +35,12 @@ Score hors échantillon 2025-26 : RPS 0,2015. Bet365 (Shin) fait 0,1981, la clô
 | Corners : forces d'équipe rapprochées à moitié de la moyenne, binomiale négative | Gain +0,7 ‰ de Brier (IC -1,3 ‰ à +2,7 ‰) | Adopté sur la page : au moins aussi bon, gain non prouvé |
 | Cartons : même méthode | Gain +1,2 ‰ (IC -0,6 ‰ à +3,1 ‰) ; moyennes brutes 0,2215 contre 0,2157 | Adopté sur la page, gain non prouvé |
 | Elo des clubs (ClubElo) ajouté à l'empilement | RPS 0,2023 contre 0,2018 sans (2916 matchs) | Rejeté : les pi-ratings captent déjà cette information |
+| Ensemble multi-horizon : Dixon-Coles à mémoire courte et longue en plus (`lab12_ensemble.py`, 2916 matchs 2025-26) | RPS 0,2017 contre 0,2018 ; gain +0,02 ‰ (IC -0,22 ‰ à +0,25 ‰) | Rejeté |
+| Domination aux corners ajoutée au moteur (`lab12_ensemble.py`, 2916 matchs 2025-26) | RPS 0,2021 contre 0,2018 ; gain -0,32 ‰ (IC -0,88 ‰ à +0,24 ‰) | Rejeté |
+| Constantes par championnat dans l'empilement (`lab12_ensemble.py`, 2916 matchs 2025-26) | RPS 0,2040 contre 0,2018 ; gain -2,21 ‰ (IC -3,43 ‰ à -0,98 ‰) | Rejeté |
+| Toutes ces pistes réunies (`lab12_ensemble.py`, 2916 matchs 2025-26) | RPS 0,2043 contre 0,2018 ; gain -2,54 ‰ (IC -3,91 ‰ à -1,22 ‰) | Rejeté |
+| Régularisation de l'empilement (C de 0,05 à 5) | RPS de 0,2017 à 0,2018 | Sans effet utile |
+| Réglage de Dixon-Coles refait sur 2024-26 (`lab12b_tune.py`, 5829 matchs, 8 championnats) | meilleur : demi-vie plus longue (ξ 0,002, L2 0,2), RPS 0,2021 contre 0,2022 pour le réglage en place | Grille du réglage hebdomadaire élargie vers les mémoires longues, réglage sur deux saisons (2022-24) |
 | Picks du jour (règle Top, rejouée sur 2025-26, 614 picks) | 60,6 % réussis pour 57,2 % annoncés ; rendement +1,2 % ± 6,8 pts aux cotes Bet365 | Calibré ; registre figé chaque matin depuis le 17 oct. 2026 |
 
 ## Tests en cours (GitHub Actions)

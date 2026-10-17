@@ -184,13 +184,14 @@ def walk(code, test_seasons, xi, l2, joint, with_sot, step_days=7):
 
 res = {}
 if MODE in ("tune", "full"):
-    # ---------- réglage des hyperparamètres sur 2023-24 (jamais vu par le test) ----------
-    grid = [(xi, l2, j) for xi in (0.0019, 0.003, 0.0042, 0.006) for l2 in (0.1, 0.25, 0.5) for j in (False, True)]
+    # ---------- réglage des hyperparamètres sur 2022-23 et 2023-24 (jamais vus par le test) ----------
+    # grille élargie vers les mémoires longues : le labo 12 b montre que 0,002 fait mieux que 0,003 sur 2024-26
+    grid = [(xi, l2, j) for xi in (0.0012, 0.0016, 0.002, 0.0025, 0.003, 0.0042) for l2 in (0.1, 0.2, 0.4) for j in (False, True)]
     tune = []
     for xi, l2, j in grid:
         rows = []
         for code in ["fr.1", "en.1", "es.1", "de.1", "it.1"]:
-            rows += walk(code, [2023], xi, l2, j, False, step_days=14)
+            rows += walk(code, [2022, 2023], xi, l2, j, False, step_days=14)
         D = pd.DataFrame(rows); O = np.stack([D.hg > D.ag, D.hg == D.ag, D.hg < D.ag], 1).astype(float)
         s = float(rps(D[["pH", "pD", "pA"]].to_numpy(), O).mean()); tune.append(dict(xi=xi, l2=l2, joint=j, rps=s, n=len(D)))
         print("réglage", xi, l2, j, round(s, 5), flush=True)

@@ -83,3 +83,20 @@ function briefBlock() {
   if (!out.length) return "";
   return `<div class="brief"><span class="eyebrow">Pour toi aujourd'hui</span><ul>${out.map(([t, x, tab]) => `<li>${tab ? `<button class="linkish" data-tab="${tab}">` : `<span>`}<strong>${esc(t)}</strong> ${esc(x)}${tab ? "</button>" : "</span>"}</li>`).join("")}</ul></div>`;
 }
+// ---------- Navigation groupée : Paris et Jeux ----------
+const NAV_GROUPS = {
+  paris: [["value", "Value et arbitrage", "Paris au-dessus du prix juste, arbitrages"], ["ladder", "Objectif ×2", "Montante intégrale, sélections sûres"], ["tools", "Outils", "Boosts, freebets, couverture, marges 3D"], ["bank", "Bankroll", "Journal, CLV, coach anti-tilt"]],
+  jeux: [["survivor", "Survivant", "Bankroll à faire grossir, classements"], ["fan", "Défis", "Pronostics entre amis, ligues"]]
+};
+function openMenu(btn) {
+  const g = btn.dataset.menu; let m = $("#tmenu"); if (m && m.dataset.g === g) { closeMenu(); return; } closeMenu();
+  m = document.createElement("div"); m.id = "tmenu"; m.dataset.g = g; m.setAttribute("role", "menu");
+  const items = NAV_GROUPS[g].filter(([t]) => S.mode !== "fan" || !["value", "ladder", "tools", "bank", "survivor"].includes(t));
+  m.innerHTML = items.map(([t, l, d]) => `<button role="menuitem" data-tab="${t}" aria-current="${S.tab === t}">${esc(l)}<small>${esc(d)}</small></button>`).join("");
+  document.body.append(m); const r = btn.getBoundingClientRect(); m.style.top = r.bottom + 6 + "px"; m.style.left = Math.max(8, Math.min(innerWidth - m.offsetWidth - 8, r.left)) + "px";
+  btn.setAttribute("aria-expanded", "true"); m.querySelector("button")?.focus();
+}
+function closeMenu() { $("#tmenu")?.remove(); document.querySelectorAll("[data-menu]").forEach(b => b.setAttribute("aria-expanded", "false")); }
+document.addEventListener("click", e => { const b = e.target.closest("[data-menu]"); if (b) { e.stopPropagation(); openMenu(b); return; } if (!e.target.closest("#tmenu") || e.target.closest("[data-tab]")) closeMenu(); }, true);
+document.addEventListener("keydown", e => { if (e.key === "Escape") closeMenu(); });
+addEventListener("scroll", () => closeMenu(), { passive: true });

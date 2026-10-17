@@ -18,9 +18,14 @@ function ring(p, size = 64, col = "var(--good)", txt) {
 }
 
 // ---------- Jumeaux historiques : les matchs passés aux cotes de clôture les plus proches ----------
+const TWC = new Map();
 function twinsOf(f, k = 150) {
   const T = INS.twins; if (!T?.n || !f?.m) return null;
-  const fair = fairOf(f), h0 = (fair?.H ?? f.m.H) * 1000, a0 = (fair?.A ?? f.m.A) * 1000, o0 = (fair?.O25 ?? f.m.O[2.5]) * 1000;
+  const fair = fairOf(f), ck = f.key + "|" + k + "|" + (fair ? [fair.H, fair.A, fair.O25].map(v => v?.toFixed(3)).join(",") : "m"); if (TWC.has(ck)) return TWC.get(ck);
+  const res = twinsCalc(f, k, fair, T); TWC.set(ck, res); return res;
+}
+function twinsCalc(f, k, fair, T) {
+  const _u = 0, h0 = (fair?.H ?? f.m.H) * 1000, a0 = (fair?.A ?? f.m.A) * 1000, o0 = (fair?.O25 ?? f.m.O[2.5]) * 1000;
   const d = new Float64Array(T.n); for (let i = 0; i < T.n; i++) { const x = T.h[i] - h0, y = T.a[i] - a0, z = T.o[i] - o0; d[i] = x * x + y * y + 0.5 * z * z; }
   const idx = [...d.keys()].sort((x, y) => d[x] - d[y]).slice(0, k), sc = idx.map(i => [T.s[i] >> 4, T.s[i] & 15]);
   const rate = fn => sc.filter(([i, j]) => fn(i, j)).length / sc.length, cnt = {};
@@ -77,18 +82,19 @@ function livePicks() {
     if (!best) continue; const res = ["H", "D", "A"].reduce((x, y) => pr[y] > pr[x] ? y : x, "H");
     out.push({ key: f.key, kick: S.kick[f.key] || `${f.date}T${f.time || "15:00"}:00`, home: f.home, away: f.away, league: f.league, ...best, ev: best.pm * best.o - 1, res: { sel: res, p: pr[res] } });
   }
-  return out.sort((a, b) => b.p - a.p).slice(0, 8);
+  return out.sort((a, b) => b.p - a.p).slice(0, 15);
 }
+S.topN = Math.max(1, Math.min(15, +ls.get("topN", 8) || 8)); S.cb = Object.assign({ legs: 3, mode: "safe", target: 3 }, ls.get("cb", {}));
 function dayRecap() {
   const days = Object.keys(DAILY).sort(), today = parisDay(), rows = [];
-  for (const d of days) { const T = (DAILY[d].top || []).filter(x => "won" in x); if (!T.length) continue;
-    rows.push({ d, n: T.length, w: T.filter(x => x.won).length, rn: T.filter(x => x.res).length, rw: T.filter(x => x.res?.won).length, dw: T.filter(x => x.dc?.won).length, T }); }
+  for (const d of days) { const T = (DAILY[d].top || []).slice(0, S.topN).filter(x => "won" in x); if (!T.length) continue; const CB = (DAILY[d].combos || []).filter(c => "won" in c);
+    rows.push({ d, n: T.length, w: T.filter(x => x.won).length, rn: T.filter(x => x.res).length, rw: T.filter(x => x.res?.won).length, dw: T.filter(x => x.dc?.won).length, cn: CB.length, cw: CB.filter(c => c.won).length, T }); }
   return { last: rows.filter(r => r.d < today).pop() || rows[rows.length - 1], rows, today };
 }
 
 // ---------- Rendu ----------
 function renderDaily() {
-  const today = parisDay(), D = DAILY[today], live = !D?.top?.length, top = live ? livePicks() : D.top, hot = D?.hot || [], cold = D?.cold || [];
+  const today = parisDay(), D = DAILY[today], live = !D?.top?.length, all15 = live ? livePicks() : D.top, top = all15.slice(0, S.topN), hot = D?.hot || [], cold = D?.cold || [];
   const R = dayRecap(), bt = INS.backtest_top, L = R.last;
   const spot = top[0] && FXK[top[0].key] ? top[0] : null;
   const tot = R.rows.reduce((a, r) => ({ n: a.n + r.n, w: a.w + r.w }), { n: 0, w: 0 });
@@ -98,23 +104,25 @@ function renderDaily() {
       <div class="row"><button class="btn small" data-studio='{"tpl":"top"}'>Studio</button><button class="btn small" data-share="top" ${top.length ? "" : "disabled"}>Image du Top</button>${L ? `<button class="btn small" data-share="recap">Image du bilan</button>` : ""}</div></div>
     <div class="recap">${L ? `<div class="recap-ring">${ring(L.w / L.n, 132, "var(--good)", `${L.w}/${L.n}`)}</div>
         <div><span class="eyebrow">Bilan · ${new Date(L.d + "T12:00").toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })}</span><h2 class="recap-t">picks justes</h2>
-          <p class="muted" style="margin:4px 0 0">Résultat (1N2) : <b>${L.rw}/${L.rn}</b> · Double chance : <b>${L.dw}/${L.rn}</b>${R.rows.length > 1 ? ` · Depuis l'ouverture : <b>${tot.w}/${tot.n}</b> (${pct(tot.w / tot.n)})` : ""}</p>
+          <p class="muted" style="margin:4px 0 0">Résultat (1N2) : <b>${L.rw}/${L.rn}</b> · Double chance : <b>${L.dw}/${L.rn}</b>${L.cn ? ` · Combinés : <b>${L.cw}/${L.cn}</b>` : ""}${R.rows.length > 1 ? ` · Depuis l'ouverture : <b>${tot.w}/${tot.n}</b> (${pct(tot.w / tot.n)})` : ""}</p>
           <div class="recap-list">${L.T.map(x => `<span class="rc ${x.won ? "ok" : "ko"}" title="${esc(SELF(fxOf(x), x.sel))}">${esc(short(x.home))} ${x.hg}-${x.ag} ${esc(short(x.away))}</span>`).join("")}</div></div>`
       : `<div class="recap-ring">${bt ? ring(bt.hit, 132, "var(--signal)", pct(bt.hit)) : ""}</div><div><span class="eyebrow">Registre ouvert le 17 octobre 2026</span><h2 class="recap-t">Premier bilan dès les premiers résultats</h2>
           ${bt ? `<p class="muted" style="margin:4px 0 0">En attendant : la même règle rejouée sur 2025-26 (${nf(bt.n)} picks, ${bt.jours} journées) : <b>${pct(bt.hit, 1)}</b> de réussite pour ${pct(bt.p_moy, 1)} annoncés, double chance <b>${pct(bt.dc_hit, 1)}</b>, rendement aux cotes Bet365 ${sgn(bt.roi)} (± ${nf(bt.roi_ic * 100, 1)} pts : non distinguable de zéro).</p>` : ""}</div>`}</div>
-    <div class="panel"><header><h2>Top Picks du jour</h2><span class="note">${live ? "Calcul en direct : le registre de ce matin n'est pas encore publié" : `Figés le ${new Date(D.made).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`} · ${top.length} sélection${top.length > 1 ? "s" : ""}</span></header>
+    <div class="panel"><header><h2>Top Picks du jour</h2><div class="topn" role="group" aria-label="Nombre de Top Picks"><button class="btn small" data-topn="-1" aria-label="Moins">−</button><b class="num">${S.topN}</b><button class="btn small" data-topn="+1" aria-label="Plus">+</button>${[5, 8, 10, 15].map(n => `<button class="chip" data-topn="=${n}" aria-pressed="${S.topN === n}">${n}</button>`).join("")}</div></header>
+      <p class="note" style="margin:-4px 0 10px">${live ? "Calcul en direct : le registre de ce matin n'est pas encore publié" : `Figés le ${new Date(D.made).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}`} · ${top.length} sur ${all15.length} disponibles · classés par probabilité</p>
       ${top.length ? `<ol class="tp">${top.map((x, i) => pickRowDaily(x, i)).join("")}</ol>` : `<div class="empty">Aucun match coté par Pinnacle aujourd'hui.</div>`}
       <p class="note" style="margin-top:8px">Probabilité : 90 % marché Pinnacle sans marge + 10 % modèle, le meilleur mélange mesuré. Une sélection par match, cote réelle d'au moins 1,25 chez tes bookmakers. Plus haut ne veut pas dire rentable : c'est le Hot qui parle du prix.</p></div>
+    ${combosBlock(D, all15)}
     ${spot ? spotlight(spot) : ""}
-    <div class="grid2">
+    <div class="grid2" style="align-items:start">
       <div class="panel hotp"><header><h2>Hot Picks</h2><span class="note">Prix intéressant au vu du marché</span></header>
         ${hot.length ? hot.map(x => hotCard(x)).join("") : `<div class="empty">${live ? "Publiés avec le registre du matin." : "Aucune sélection au prix juste aujourd'hui chez tes bookmakers."}</div>`}
         <p class="note">Critères, sur les 48 prochaines heures : meilleure cote du jour chez Winamax, Betclic ou Unibet à moins de 4 % du prix juste Pinnacle (ou au-dessus), modèle pas plus prudent de 5 points, bonus si la cote est en retard sur un mouvement Pinnacle. Bet365 n'entre pas dans le calcul (cotes jusqu'à 4 jours). Hot ne veut pas dire sûr.</p></div>
       <div class="panel coldp"><header><h2>Cold Games</h2><span class="note">Matchs à laisser passer</span></header>
         ${cold.length ? cold.map(x => coldCard(x)).join("") : `<div class="empty">${live ? "Publiés avec le registre du matin." : "Aucun match signalé."}</div>`}
         <p class="note">Score d'alerte : issues serrées, désaccord modèle-marché, incertitude du modèle, marge élevée, mouvement de cote. Chaque critère est affiché.</p></div></div>
-    ${R.rows.length ? `<div class="panel"><header><h2>Registre</h2><span class="note">${R.rows.length} journée${R.rows.length > 1 ? "s" : ""} réglée${R.rows.length > 1 ? "s" : ""}</span></header><div class="scroll"><table><thead><tr><th>Jour</th><th class="r">Picks</th><th class="r">Résultat 1N2</th><th class="r">Double chance</th><th class="r">Proba moyenne</th></tr></thead><tbody>
-      ${R.rows.slice().reverse().map(r => `<tr><td>${new Date(r.d + "T12:00").toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })}</td><td class="r num">${r.w}/${r.n}</td><td class="r num">${r.rw}/${r.rn}</td><td class="r num">${r.dw}/${r.rn}</td><td class="r num">${pct(r.T.reduce((s, x) => s + x.p, 0) / r.n)}</td></tr>`).join("")}</tbody></table></div></div>` : ""}
+    ${R.rows.length ? `<div class="panel"><header><h2>Registre</h2><span class="note">${R.rows.length} journée${R.rows.length > 1 ? "s" : ""} réglée${R.rows.length > 1 ? "s" : ""}</span></header><div class="scroll"><table><thead><tr><th>Jour</th><th class="r">Picks</th><th class="r">Résultat 1N2</th><th class="r">Double chance</th><th class="r">Combinés</th><th class="r">Proba moyenne</th></tr></thead><tbody>
+      ${R.rows.slice().reverse().map(r => `<tr><td>${new Date(r.d + "T12:00").toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })}</td><td class="r num">${r.w}/${r.n}</td><td class="r num">${r.rw}/${r.rn}</td><td class="r num">${r.dw}/${r.rn}</td><td class="r num">${r.cn ? `${r.cw}/${r.cn}` : "–"}</td><td class="r num">${pct(r.T.reduce((s, x) => s + x.p, 0) / r.n)}</td></tr>`).join("")}</tbody></table></div></div>` : ""}
     ${bt ? `<div class="panel"><header><h2>La règle rejouée sur 2025-26</h2><span class="note">${nf(bt.n)} picks, cotes Bet365 d'ouverture</span></header><div class="scroll"><table><thead><tr><th>Confiance annoncée</th><th class="r">Picks</th><th class="r">Annoncé</th><th class="r">Réalisé</th><th class="r">Rendement</th></tr></thead><tbody>
       ${bt.par_conf.map(c => `<tr><td>${esc(c.lab)}</td><td class="r num">${c.n}</td><td class="r num">${pct(c.p, 1)}</td><td class="r num"><strong>${pct(c.hit, 1)}</strong></td><td class="r num">${sgn(c.roi)}</td></tr>`).join("")}</tbody></table></div>
       <p class="note" style="margin-top:8px">Annoncé et réalisé se suivent : les probabilités sont calibrées. Le rendement oscille autour de zéro, comme attendu face à un marché efficient ; les écarts par tranche viennent du faible nombre de paris.</p></div>` : ""}
@@ -200,3 +208,49 @@ document.addEventListener("click", async e => {
   if (!dl) { const u = URL.createObjectURL(blob); const w = window.open(u, "_blank"); if (!w) toast("Téléchargement indisponible dans cette vue"); return; }
   try { await dl.save({ filename: `lambda90-${b.dataset.share}-${parisDay()}.png`, data: blob }); } catch (er) { if (er?.code !== "cancelled") toast("Téléchargement refusé"); }
 });
+
+// ---------- Top Picks Combinés ----------
+function comboPrice(legs) {
+  let best = null;
+  for (const b of S.cfg.myBooks) { let o = 1; for (const l of legs) { const v = S.odds[l.key]?.[b]?.[l.sel]; if (!(v > 1)) { o = 0; break; } o *= v; } if (o > 1 && (!best || o > best.o)) best = { o, book: b }; }
+  return best;
+}
+function comboFair(legs) { let p = 1; for (const l of legs) { const f = FXK[l.key], fr = f && fairOf(f); const v = fr?.[l.sel] ?? l.pm; if (!(v > 0)) return null; p *= v; } return p; }
+function buildCombo(cands, k, mode, target) {
+  const C = cands.slice(0, 15); if (C.length < k) return null;
+  if (mode === "safe") { const legs = C.slice(0, k); return { legs, p: legs.reduce((s, l) => s * l.p, 1), pr: comboPrice(legs) }; }
+  let best = null; const idx = [];
+  const rec = (start, depth) => {
+    if (depth === k) { const legs = idx.map(i => C[i]), pr = comboPrice(legs); if (!pr || pr.o < target * 0.85 || pr.o > target * 1.3) return; const p = legs.reduce((s, l) => s * l.p, 1);
+      if (!best || p > best.p) best = { legs, p, pr }; return; }
+    for (let i = start; i < C.length; i++) { idx.push(i); rec(i + 1, depth + 1); idx.pop(); } };
+  rec(0, 0); return best;
+}
+function comboCard(c, frozen) {
+  const legs = c.legs, pm = frozen ? c.pm : comboFair(legs), o = frozen ? c.o : c.pr?.o, book = frozen ? c.book : c.pr?.book, p = c.p, ev = pm && o ? pm * o - 1 : null;
+  return `<div class="cb ${"won" in c ? (c.won ? "ok" : "ko") : ""}"><div class="cb-top"><div><strong>${esc(c.lab || `Combiné ${legs.length} matchs`)}</strong><span class="faint">${legs.length} sélections${book ? ` · ${esc(book.replace(" (FR)", ""))}` : ""}</span></div>
+      <div class="cb-n">${ring(p, 58, p >= 0.5 ? "var(--good)" : p >= 0.3 ? "var(--signal)" : "var(--warn)")}<div><b class="num">${o ? odd(o) : "–"}</b><span class="faint">${p ? `1 sur ${nf(1 / p, 1)}` : ""}</span></div></div></div>
+    <ul class="cb-legs">${legs.map(l => { const f = fxOf(l); return `<li><span>${esc(SELF(f, l.sel))}</span><span class="faint">${esc(short(f.home))} – ${esc(short(f.away))}</span></li>`; }).join("")}</ul>
+    <div class="row" style="justify-content:space-between;margin-top:8px"><span class="note">${ev == null ? "Pas de cote commune chez un seul de tes bookmakers" : ev >= 0 ? `Au-dessus du prix juste : ${sgn(ev)}` : `Marge du bookmaker sur ce combiné : ${pct(-ev, 1)}`}${"won" in c ? ` · <b>${c.won ? "Gagné" : "Perdu"}</b>` : ""}</span>
+      ${"won" in c ? "" : `<button class="btn small" data-slipcombo2='${esc(JSON.stringify(legs.map(l => ({ key: l.key, sel: l.sel }))))}'>+ Ticket</button>`}</div></div>`;
+}
+function combosBlock(D, all15) {
+  const frozen = D?.combos || [], cands = all15.filter(x => FXK[x.key] && !started(FXK[x.key])), B = S.cb, mine = buildCombo(cands, B.legs, B.mode, +B.target || 3);
+  return `<div class="panel"><header><h2>Top Picks Combinés</h2><span class="note">Matchs différents, traités comme indépendants</span></header>
+    ${frozen.length ? `<div class="cb-grid">${frozen.map(c => comboCard(c, true)).join("")}</div>` : `<p class="muted">Les combinés figés du jour sont publiés avec le registre du matin.</p>`}
+    <div class="cb-build"><div class="st-h"><strong>Ton combiné</strong><span class="faint">tiré des ${cands.length} Top Picks encore à jouer</span></div>
+      <div class="row" style="align-items:flex-end;gap:14px">
+        <div class="chips" role="group" aria-label="Nombre de sélections">${[2, 3, 4, 5, 6].map(n => `<button class="chip" data-cb="legs" data-v="${n}" aria-pressed="${B.legs === n}">${n} matchs</button>`).join("")}</div>
+        <div class="chips" role="group" aria-label="Méthode"><button class="chip" data-cb="mode" data-v="safe" aria-pressed="${B.mode === "safe"}">Les plus sûrs</button><button class="chip" data-cb="mode" data-v="target" aria-pressed="${B.mode === "target"}">Cote visée</button></div>
+        ${B.mode === "target" ? `<label class="f">Cote visée<input type="number" step="0.1" min="1.2" id="cb-target" data-cbtarget="1" value="${esc(B.target)}"></label>` : ""}</div>
+      ${mine ? comboCard({ ...mine, lab: B.mode === "safe" ? `Les ${B.legs} plus sûrs` : `Le plus probable autour de ${odd(+B.target)}` }, false) : `<p class="muted" style="margin-top:8px">Pas de combinaison de ${B.legs} matchs ${B.mode === "target" ? `autour de la cote ${odd(+B.target)} ` : ""}chez un seul de tes bookmakers.</p>`}</div>
+    <p class="note" style="margin-top:8px">Chaque sélection ajoutée multiplie la marge du bookmaker : un combiné de 4 matchs à 5 % de marge chacun coûte environ 19 %. Les combinés figés du matin entrent dans le registre et sont réglés avec les résultats.</p></div>`;
+}
+document.addEventListener("click", e => {
+  const b = e.target.closest("[data-topn],[data-cb],[data-slipcombo2]"); if (!b) return; const d = b.dataset;
+  if (d.topn) { const v = d.topn; S.topN = Math.max(1, Math.min(15, v[0] === "=" ? +v.slice(1) : S.topN + +v)); ls.set("topN", S.topN); }
+  else if (d.cb) { S.cb[d.cb] = d.cb === "legs" ? +d.v : d.v; ls.set("cb", S.cb); }
+  else if (d.slipcombo2) { for (const l of JSON.parse(d.slipcombo2)) if (!S.slip.some(s => s.key === l.key && s.sel === l.sel)) S.slip.push({ key: l.key, sel: l.sel }); saveSlip(); toast(`Ticket : ${S.slip.length} sélections`); renderSlip(); return; }
+  render();
+});
+document.addEventListener("input", e => { if (!e.target.dataset.cbtarget) return; const v = parseFloat(String(e.target.value).replace(",", ".")); if (v > 1) { S.cb.target = v; ls.set("cb", S.cb); deferRender(e.target); } });

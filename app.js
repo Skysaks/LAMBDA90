@@ -683,6 +683,13 @@ function deepRows() {
   if (l10?.tout_au_dela_ouverture) { const t = l10.tout_au_dela_ouverture, c = l10.tout_au_dela_cloture;
     out.push(["Valeur du onze aligné (Transfermarkt)", "1N2", `gain ${nf(t.gain * 1000, 2)} ‰ au-delà de l'ouverture (IC ${nf(t.ic95[0] * 1000, 1)} à ${nf(t.ic95[1] * 1000, 1)} ‰)${c ? ` ; au-delà de la clôture ${nf(c.gain * 1000, 2)} ‰` : ""} ; ${nf(l10.matchs_testables)} matchs`, t.prouve ? (c?.prouve ? "Avantage prouvé, même face à la clôture" : "Prouvé avant les compos") : "Non prouvé"]); }
   else out.push(["Valeur du onze aligné (Transfermarkt)", "1N2", l10?.erreur || "test prêt, lancé par le labo données", l10?.erreur ? "Erreur" : "En attente"]);
+  const l11 = d.lab11;
+  if (l11?.corners) for (const [k, lab] of [["corners", "Corners"], ["cartons", "Cartons"]]) { const r = l11[k];
+    out.push([`${lab} : forces d'équipe rapprochées de la moyenne`, `+/− ${k === "corners" ? "9,5" : "4,5"}`, `Brier, gain ${nf(r.gain_vs_ligue * 1000, 2)} ‰ face à la moyenne du championnat (IC ${nf(r.ic95[0] * 1000, 1)} à ${nf(r.ic95[1] * 1000, 1)} ‰) ; moyennes brutes : pire`, r.prouve ? "Adopté, prouvé" : "Adopté, gain non prouvé"]); }
+  if (l11?.elo?.rps_avec) out.push(["Elo des clubs ajouté au moteur", "1N2", `RPS ${nf(l11.elo.rps_avec, 4)} contre ${nf(l11.elo.rps_sans, 4)} sur ${nf(l11.elo.n_test)} matchs`, l11.elo.prouve ? "Adopté" : "Rejeté"]);
+  const l12 = d.lab12;
+  if (l12?.B_multi_horizon) for (const [k, lab] of [["B_multi_horizon", "Ensemble multi-horizon (mémoire courte et longue)"], ["C_corners", "Domination aux corners dans le moteur"], ["D_ligue", "Constantes par championnat"], ["E_tout", "Toutes les pistes réunies"]]) { const r = l12[k];
+    out.push([lab, "1N2", `RPS ${nf(r.rps, 4)} contre ${nf(l12.rps_base, 4)} (gain ${nf(r.gain * 1000, 2)} ‰, IC ${nf(r.ic95[0] * 1000, 1)} à ${nf(r.ic95[1] * 1000, 1)} ‰) ; ${nf(l12.n_test)} matchs 2025-26`, r.prouve ? "Adopté" : "Rejeté"]); }
   const c = d.clv, cv = c && c["clv_seuil_1.05"];
   out.push(c ? ["Modèle face à la clôture Pinnacle", "1N2", `RPS ${nf(c.rps_modele, 4)} contre ${nf(c.rps_pinnacle_cloture, 4)} (clôture) ; CLV ${cv?.clv_moy != null ? `${sgn(cv.clv_moy)} sur ${nf(cv.n)} paris, IC ${sgn(cv.ic95[0])} à ${sgn(cv.ic95[1])}` : "trop peu de paris"}`,
     cv?.ic95 && cv.ic95[0] > 0 ? "Avantage prouvé" : "Pas d'avantage prouvé"] : ["Modèle face à la clôture Pinnacle (CLV)", "1N2", "calculé chaque lundi par la mise à jour automatique, dès que le dépôt GitHub tourne", "En attente"]);
@@ -776,11 +783,12 @@ function render() {
   document.body.classList.toggle("fan", S.mode === "fan");
   if (S.mode === "fan" && ["value", "bank", "ladder", "tools", "survivor"].includes(S.tab)) S.tab = "daily";
   if (S.tab === "fan") S.fan.joinCode = S.fan.joinCode || "";
-  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.tab === S.tab));
+  document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.menu ? (NAV_GROUPS[t.dataset.menu] || []).some(x => x[0] === S.tab) : t.dataset.tab === S.tab));
   document.querySelectorAll(".mode button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === S.mode));
   for (const v of VIEWS) $("#v-" + v).hidden = v !== S.tab;
   renderNotice();
   renderSlip();
+  { const hd = document.querySelector("header.top"), nt = $("#notice"); document.documentElement.style.setProperty("--hdr", ((hd?.offsetHeight || 64) + (nt && !nt.hidden ? nt.offsetHeight : 0)) + "px"); }
   ({ daily: renderDaily, survivor: renderSurvivor, studio: renderStudio, radar: renderRadar, match: renderMatch, season: renderSeason, fan: renderFan, value: renderValue, ladder: renderLadder, tools: renderTools, bank: renderBank, proof: renderProof })[S.tab]();
 }
 const VIEWS = ["daily", "radar", "match", "season", "fan", "value", "ladder", "survivor", "tools", "studio", "bank", "proof"];

@@ -8,7 +8,7 @@ Principe : chaque chiffre affiché est mesuré hors échantillon, et la platefor
 
 | Onglet | Contenu |
 | --- | --- |
-| Jour (accueil) | Brief personnel ; Top Picks du jour (6 à 8) avec arguments chiffrés ; pick du jour (1N2, buts, les deux marquent, corners, cartons) ; Hot Picks (prix proche du juste chez Winamax, Betclic, Unibet) ; Cold Games (matchs à éviter, raisons affichées) ; bilan de la veille et registre figé chaque matin, réglé avec les résultats officiels |
+| Jour (accueil) | Brief personnel ; Top Picks du jour, de 1 à 15 au choix, avec arguments chiffrés ; Top Picks Combinés (combiné sûr, cotes 2, 3 et 5, figés et réglés) et constructeur de combiné (nombre de matchs, plus sûrs ou cote visée, meilleur bookmaker commun) ; pick du jour (1N2, buts, les deux marquent, corners, cartons) ; Hot Picks ; Cold Games ; bilan de la veille et registre figé chaque matin, réglé avec les résultats officiels |
 | Radar | Les matchs à venir, probabilités, valeur et arbitrages repérés |
 | Match | Probabilités et fourchette à 80 %, scores exacts, jumeaux historiques (les 150 matchs passés aux cotes de clôture les plus proches), buts par tranche, scénarios « et si », tous les marchés, corners et cartons, créateur de paris recalé sur Pinnacle, compositions et absences, live minute par minute avec terrain 3D, mouvement des cotes, stories 3D |
 | Saison | 10 000 saisons simulées par championnat : titre, places, relégation, Predictor, Power Index |
@@ -17,17 +17,17 @@ Principe : chaque chiffre affiché est mesuré hors échantillon, et la platefor
 | Objectif ×2 | Montante intégrale de 5 à 10 paliers enchaînés dans le temps, escalier 3D, sélections les plus probables |
 | Survivant | Faire grossir une bankroll sans jamais passer sous la mise minimale (Game Over) : 48 plans simulés (Monte Carlo) et surface 3D, plan optimal selon le risque toléré, partie réglée automatiquement ; parties classées et classements Monde, Amis et Ville |
 | Outils | Relief 3D de la valeur et des marges, prix de la patience (ouverture contre clôture, biais favori-outsider), cotes boostées, conversion de freebets et de paris remboursés, couverture et cash-out, dutching |
-| Studio | Vidéos et visuels prêts à publier pour YouTube, Shorts, Reels, TikTok, posts et carrousels : Top du jour, bilan, avant-match, Hot et Cold, Survivant, saison, preuves de calibration, marges des bookmakers ; titres, descriptions avec chapitres, légendes et scripts de voix off |
+| Studio | Atelier plein écran : 9 contenus (Top, combinés, bilan, avant-match, Hot et Cold, Survivant, saison, calibration, marges) en 4 formats (YouTube 16:9, Shorts/Reels/TikTok 9:16, post 1:1, carrousel 4:5) ; aperçu net ajusté à l'écran, frise des diapos, lecture et curseur ; accroche d'ouverture, @compte, 3 thèmes, durée par diapo ; export image, carrousel, vidéo et pack complet (images + textes) ; titre, légende, description avec chapitres et script modifiables |
 | Bankroll | Journal avec CLV et règlement automatique, courbe de bankroll, disjoncteur, coach anti-tilt (chasse aux pertes, glissement vers les grosses cotes, rafales de paris) |
 | Registre | Calibration, RPS, laboratoire : chaque signal testé, adopté ou rejeté |
 
-Partout : ticket de pari (probabilité jointe exacte, meilleure cote chez un seul bookmaker, espérance), recherche universelle (Ctrl+K ou /), modes Fan et Quant, affichage mobile.
+Navigation : Jour, Radar, Match, Saison, menus Paris (Value, Objectif ×2, Outils, Bankroll) et Jeux (Survivant, Défis), Studio, Registre. Partout : ticket de pari (probabilité jointe exacte, meilleure cote chez un seul bookmaker, espérance), recherche universelle (Ctrl+K ou /), modes Fan et Quant, affichage mobile.
 
 ## Le moteur en bref
 
 - Dixon-Coles pondéré dans le temps sur les buts et sur les tirs cadrés, pi-ratings, empilement logistique appris sur les seules saisons passées ; fourchette d'incertitude par match.
 - RPS hors échantillon 2025-26 : 0,2015 pour le moteur, 0,1981 pour le marché. Les probabilités affichées pour les picks mélangent 90 % de marché Pinnacle sans marge et 10 % de modèle, le meilleur poids mesuré.
-- Testés et rejetés, entre autres : xG, valeur du onze, enjeux, Elo, gradient boosting, moyennes brutes de corners. Détail et chiffres : [MOTEUR.md](MOTEUR.md).
+- Testés et rejetés, entre autres : xG, valeur du onze, enjeux, Elo, gradient boosting, ensemble multi-horizon, corners dans le moteur, constantes par championnat, moyennes brutes de corners. Détail et chiffres : [MOTEUR.md](MOTEUR.md).
 
 ## Chaîne de mise à jour (GitHub Actions)
 

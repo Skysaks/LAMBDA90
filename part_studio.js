@@ -1,11 +1,12 @@
 // ---------- Studio : contenus prêts à publier (YouTube, Shorts, Reels, TikTok, posts, carrousels) depuis toutes les parties de la plateforme ----------
 const ST_FMT = { short: { w: 1080, h: 1920, lab: "Short · Reel · TikTok · Story", ratio: "9:16" }, yt: { w: 1920, h: 1080, lab: "YouTube", ratio: "16:9" },
   post: { w: 1080, h: 1080, lab: "Post carré", ratio: "1:1" }, portrait: { w: 1080, h: 1350, lab: "Post portrait · carrousel", ratio: "4:5" } };
-const ST_TPL = { top: "Top du jour", recap: "Bilan de la veille", match: "Avant-match", hotcold: "Hot & Cold", survivor: "Survivant", season: "Saison simulée", proof: "Nos probabilités tiennent", value: "Le prix des bookmakers" };
-const ST_DUR = 3.8;
-S.studio = Object.assign({ tpl: "top", fmt: "short", match: null, lg: "fr.1" }, ls.get("studio", {}));
+const ST_TPL = { top: "Top du jour", combos: "Combinés du jour", recap: "Bilan de la veille", match: "Avant-match", hotcold: "Hot & Cold", survivor: "Survivant", season: "Saison simulée", proof: "Nos probabilités tiennent", value: "Le prix des bookmakers" };
+let ST_DUR = 3.8;
+S.studio = Object.assign({ tpl: "top", fmt: "short", match: null, lg: "fr.1", theme: "nuit", dur: 3.8, hook: "", handle: "" }, ls.get("studio", {}));
+ST_DUR = Math.max(2, Math.min(8, +S.studio.dur || 3.8));
 const STX = { t0: 0, playing: false, raf: 0, rec: null, slide: 0 };
-const C_ = { bg0: "#0b1426", bg1: "#070b14", ink: "#E9EEFB", ink2: "#A6B1CC", ink3: "#7C88A8", sig: "#9FE7F5", good: "#3DDC97", warn: "#FFC857", bad: "#FF6B6B", h: "#2399B3", a: "#C4732A", d: "#8569D1", line: "rgba(43,58,93,.9)", card: "rgba(18,27,48,.88)" };
+const C_ = { glow: "159,231,245", markInk: "#06212A", bg0: "#0b1426", bg1: "#070b14", ink: "#E9EEFB", ink2: "#A6B1CC", ink3: "#7C88A8", sig: "#9FE7F5", good: "#3DDC97", warn: "#FFC857", bad: "#FF6B6B", h: "#2399B3", a: "#C4732A", d: "#8569D1", line: "rgba(43,58,93,.9)", card: "rgba(18,27,48,.88)" };
 const ez = x => { x = Math.max(0, Math.min(1, x)); return 1 - Math.pow(1 - x, 3); };
 
 // ---------- Kit de dessin ----------
@@ -14,8 +15,8 @@ function kit(x, W, H) {
   const F = (w, s) => `${w} ${s * u}px "Unbounded","Segoe UI",sans-serif`, P = (w, s) => `${w} ${s * u}px "IBM Plex Sans","Segoe UI",sans-serif`;
   const K = { x, W, H, u, land, pad, F, P };
   K.bg = () => { const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, C_.bg0); g.addColorStop(1, C_.bg1); x.fillStyle = g; x.fillRect(0, 0, W, H);
-    const r = x.createRadialGradient(W * 0.82, H * 0.08, 10, W * 0.82, H * 0.08, Math.max(W, H) * 0.7); r.addColorStop(0, "rgba(159,231,245,.16)"); r.addColorStop(1, "rgba(159,231,245,0)"); x.fillStyle = r; x.fillRect(0, 0, W, H);
-    x.strokeStyle = "rgba(159,231,245,.05)"; x.lineWidth = 2 * u; x.beginPath(); x.arc(W / 2, H * 0.62, Math.min(W, H) * 0.34, 0, 7); x.stroke(); x.beginPath(); x.moveTo(0, H * 0.62); x.lineTo(W, H * 0.62); x.stroke(); };
+    const r = x.createRadialGradient(W * 0.82, H * 0.08, 10, W * 0.82, H * 0.08, Math.max(W, H) * 0.7); r.addColorStop(0, `rgba(${C_.glow},.16)`); r.addColorStop(1, `rgba(${C_.glow},0)`); x.fillStyle = r; x.fillRect(0, 0, W, H);
+    x.strokeStyle = `rgba(${C_.glow},.06)`; x.lineWidth = 2 * u; x.beginPath(); x.arc(W / 2, H * 0.62, Math.min(W, H) * 0.34, 0, 7); x.stroke(); x.beginPath(); x.moveTo(0, H * 0.62); x.lineTo(W, H * 0.62); x.stroke(); };
   K.text = (s, X, Y, font, col = C_.ink, align = "left", maxW = 0, alpha = 1) => { x.save(); x.globalAlpha = alpha; x.font = font; x.fillStyle = col; x.textAlign = align; x.textBaseline = "alphabetic";
     let t = String(s ?? ""); if (maxW) while (t.length > 3 && x.measureText(t).width > maxW) t = t.slice(0, -2).trimEnd() + "…"; x.fillText(t, X, Y); x.restore(); };
   K.wrap = (s, X, Y, font, maxW, lh, col = C_.ink2, maxLines = 3, alpha = 1) => { x.save(); x.font = font; const words = String(s).split(" "), lines = []; let cur = "";
@@ -37,7 +38,8 @@ function kit(x, W, H) {
     if (sub) K.text(sub, pad, y0 + (land ? 146 : 162) * u, P("500", 34), C_.ink2, "left", W - 2 * pad, k);
     return y0 + (sub ? (land ? 190 : 210) : (land ? 140 : 160)) * u; };
   K.foot = () => { const y = H - pad - (land ? 10 : 46) * u; x.fillStyle = C_.sig; x.beginPath(); x.roundRect(pad, y - 54 * u, 58 * u, 58 * u, 13 * u); x.fill();
-    K.text("λ", pad + 29 * u, y - 12 * u, F("700", 34), "#06212A", "center"); K.text("Lambda 90", pad + 76 * u, y - 13 * u, F("600", 34), C_.ink);
+    K.text("λ", pad + 29 * u, y - 12 * u, F("700", 34), C_.markInk, "center"); K.text("Lambda 90", pad + 76 * u, y - 13 * u, F("600", 34), C_.ink);
+    if (S.studio.handle) { x.font = F("600", 34); const wb = x.measureText("Lambda 90").width; K.text("· @" + String(S.studio.handle).replace(/^@/, "").slice(0, 30), pad + 76 * u + wb + 14 * u, y - 13 * u, P("600", 28), C_.sig); }
     const disc = "Probabilités, pas de certitudes · 18+ · Jouer comporte des risques : 09 74 75 13 13";
     if (land) K.text(disc, W - pad, y - 16 * u, P("400", 21), C_.ink3, "right"); else K.text(disc, pad, y + 40 * u, P("400", 22), C_.ink3, "left", W - 2 * pad); return y - 80 * u; };
   return K;
@@ -50,7 +52,7 @@ function stMatch() { return FXK[S.studio.match] && !started(FXK[S.studio.match])
 function stTemplate(tpl) {
   const today = parisDay(), dLab = new Date(today + "T12:00").toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
   if (tpl === "top") {
-    const T = stDayTop().slice(0, 6);
+    const T = stDayTop().slice(0, Math.min(S.topN || 8, ["short", "portrait"].includes(S.studio.fmt) ? 8 : 6));
     const rows = T.map(x => ({ x, f: fxOf(x), sel: SELF(fxOf(x), x.sel) }));
     const list = { name: "Le Top", draw(K, t) { const y0 = K.head(dLab, `Top ${rows.length} du jour`, stA(t, 0), "Les sélections les plus solides"); const yE = K.foot(), n = Math.max(1, rows.length), rh = Math.min(150 * K.u, (yE - y0) / n), w = K.W - 2 * K.pad;
       rows.forEach((r, i) => { const a = stA(t, i + 1), y = y0 + i * rh, xx = K.pad + (1 - a) * 80 * K.u; K.card(xx, y + 6 * K.u, w, rh - 16 * K.u, a);
@@ -64,6 +66,16 @@ function stTemplate(tpl) {
       K.text(`Cote ${odd(r.x.o)} · ${(r.x.book || "").replace(" (FR)", "")}`, bx, by, K.F("500", 40), C_.sig, "left", bw, stA(t, 2)); let yy = by + 60 * K.u;
       why.forEach((w_, j) => { yy += K.wrap("• " + w_, bx, yy, K.P("500", 30), bw, 40 * K.u, C_.ink2, 3, stA(t, 3 + j)) + 14 * K.u; }); } }));
     return { slides: [list, ...det], subject: `Top ${rows.length} du ${dLab}`, lines: rows.map((r, i) => `${i + 1}. ${r.sel} (${short(r.f.home)} – ${short(r.f.away)}) : ${pct(r.x.p)}, cote ${odd(r.x.o)}`) };
+  }
+  if (tpl === "combos") {
+    const CB = (DAILY[today]?.combos || []).slice(0, 4); if (!CB.length) return { empty: "Les combinés sont publiés avec le registre du matin." };
+    const slides = CB.map((c, ci) => ({ name: c.lab, draw(K, t) { const y0 = K.head(dLab, c.lab, stA(t, 0), `${c.legs.length} sélections · cote ${odd(c.o)} · ${(c.book || "").replace(" (FR)", "")}`); const yE = K.foot();
+      const R = (K.land ? 150 : 170) * K.u, cx = K.land ? K.W - K.pad - R - 20 * K.u : K.W / 2, cy = K.land ? y0 + R + 40 * K.u : y0 + R + 30 * K.u; K.ring(cx, cy, R, c.p, C_.good, stA(t, 1), null, 20);
+      K.text(`1 chance sur ${nf(1 / c.p, 1)}`, cx, cy + R + 56 * K.u, K.P("600", 30), C_.ink2, "center", 0, stA(t, 1));
+      const lx = K.pad, ly = K.land ? y0 + 30 * K.u : cy + R + 120 * K.u, lw = K.land ? cx - R - 80 * K.u - K.pad : K.W - 2 * K.pad, rh = Math.min((K.land ? 130 : 180) * K.u, (yE - ly) / c.legs.length);
+      c.legs.forEach((l, i) => { const a = stA(t, 2 + i * 0.5), y = ly + i * rh, f = fxOf(l); K.card(lx, y, lw, rh - 14 * K.u, a, C_.sig); K.text(SELF(f, l.sel), lx + 30 * K.u, y + rh * 0.42, K.P("600", 34), C_.ink, "left", lw - 60 * K.u, a);
+        K.text(`${short(f.home)} – ${short(f.away)} · ${pct(l.p)}`, lx + 30 * K.u, y + rh * 0.42 + 38 * K.u, K.P("400", 26), C_.ink3, "left", lw - 60 * K.u, a); }); } }));
+    return { slides, subject: `Les combinés du ${dLab}`, lines: CB.map(c => `${c.lab} : ${c.legs.map(l => SELF(fxOf(l), l.sel)).join(" + ")} · cote ${odd(c.o)} · ${pct(c.p)}`) };
   }
   if (tpl === "recap") {
     const L = dayRecap().last; if (!L) return { empty: "Pas encore de journée réglée : le premier bilan arrive avec les premiers résultats." };
@@ -170,7 +182,7 @@ function nbCdf(k, mu, r) { if (!r) return poisCdf(k, mu); let p = Math.pow(r / (
 
 // ---------- Textes d'accompagnement ----------
 function stTexts(T, fmt) {
-  const tag = { top: "#pronostics #football #paris", recap: "#bilan #pronostics #football", match: "#avantmatch #football #pronostic", hotcold: "#paris #cotes #football", survivor: "#survivant #challenge #football", season: "#football #simulation #classement", proof: "#data #football #probabilites", value: "#cotes #bookmakers #paris" }[S.studio.tpl];
+  const tag = { combos: "#combine #pronostics #football", top: "#pronostics #football #paris", recap: "#bilan #pronostics #football", match: "#avantmatch #football #pronostic", hotcold: "#paris #cotes #football", survivor: "#survivant #challenge #football", season: "#football #simulation #classement", proof: "#data #football #probabilites", value: "#cotes #bookmakers #paris" }[S.studio.tpl];
   let t = 0; const chap = T.slides.map(s => { const m = Math.floor(t / 60), sc = Math.floor(t % 60); t += ST_DUR; return `${m}:${String(sc).padStart(2, "0")} ${s.name}`; });
   const body = T.lines.join("\n");
   return {
@@ -181,41 +193,92 @@ function stTexts(T, fmt) {
   };
 }
 
+// ---------- Thèmes ----------
+const ST_THEMES = {
+  nuit: { glow: "159,231,245", markInk: "#06212A", bg0: "#0b1426", bg1: "#070b14", ink: "#E9EEFB", ink2: "#A6B1CC", ink3: "#7C88A8", sig: "#9FE7F5", good: "#3DDC97", warn: "#FFC857", bad: "#FF6B6B", h: "#2399B3", a: "#C4732A", card: "rgba(18,27,48,.88)", line: "rgba(43,58,93,.9)" },
+  ardoise: { glow: "255,200,87", markInk: "#1a1205", bg0: "#1b1d22", bg1: "#0e0f12", ink: "#F3F1EC", ink2: "#BDB8AC", ink3: "#8E8A80", sig: "#FFC857", good: "#7BE495", warn: "#FFC857", bad: "#FF7A6B", h: "#5AB0C8", a: "#E0894A", card: "rgba(36,38,44,.9)", line: "rgba(80,80,90,.7)" },
+  clair: { glow: "14,116,144", markInk: "#FFFFFF", bg0: "#F7F9FC", bg1: "#E6EBF4", ink: "#0B1220", ink2: "#3D4A66", ink3: "#6B7690", sig: "#0E7490", good: "#0F9D6B", warn: "#B7791F", bad: "#D64545", h: "#1F7A93", a: "#B5651D", card: "rgba(255,255,255,.92)", line: "rgba(16,24,40,.14)" }
+};
+const ST_TPL_DESC = { top: "Les meilleures sélections du jour", combos: "Les combinés figés du matin", recap: "Le score de la veille, en toute transparence", match: "Probabilités, buts, scores, jumeaux", hotcold: "Les bons prix et les pièges du jour",
+  survivor: "Ta partie et le classement", season: "Titre et relégation, 10 000 saisons", proof: "Annoncé contre réalisé", value: "Ce que chaque bookmaker prélève" };
+// Accroche facultative en ouverture (les 2 premières secondes décident d'un Short)
+function stWithHook(T) {
+  const hk = String(S.studio.hook || "").trim(); if (!hk || T.empty) return T;
+  return { ...T, slides: [{ name: "Accroche", draw(K, t) { const a = stA(t, 0), cy = K.H * 0.45; K.wrap(hk, K.pad, cy - 60 * K.u, K.F("600", K.land ? 84 : 92), K.W - 2 * K.pad, (K.land ? 100 : 110) * K.u, C_.ink, 4, a);
+    K.x.fillStyle = C_.sig; K.x.globalAlpha = a; K.x.fillRect(K.pad, cy - 150 * K.u, 120 * K.u * a, 10 * K.u); K.x.globalAlpha = 1; K.foot(); } }, ...T.slides] };
+}
 // ---------- Rendu, lecture, export ----------
 function stDrawFrame(cv, T, time, scale = 1) {
+  Object.assign(C_, ST_THEMES[S.studio.theme] || ST_THEMES.nuit);
   const f = ST_FMT[S.studio.fmt], x = cv.getContext("2d"); x.setTransform(scale, 0, 0, scale, 0, 0);
   const K = kit(x, f.w, f.h); K.bg(); const n = T.slides.length, i = Math.min(n - 1, Math.floor(time / ST_DUR)), t = (time - i * ST_DUR) / ST_DUR;
-  T.slides[i].draw(K, Math.max(0, Math.min(1, t))); STX.slide = i;
-  if (n > 1) { x.fillStyle = "rgba(159,231,245,.25)"; const bw = (f.w - 2 * K.pad) / n; for (let k = 0; k < n; k++) { x.fillStyle = k < i ? C_.sig : k === i ? "rgba(159,231,245,.8)" : "rgba(124,136,168,.3)"; x.fillRect(K.pad + k * bw + 3 * K.u, 22 * K.u, bw - 6 * K.u, 6 * K.u); } }
+  T.slides[i].draw(K, Math.max(0, Math.min(1, t)));
+  if (n > 1) { const bw = (f.w - 2 * K.pad) / n; for (let k = 0; k < n; k++) { x.fillStyle = k < i ? C_.sig : k === i ? C_.sig : C_.line; x.globalAlpha = k === i ? 0.85 : k < i ? 1 : 0.6; x.fillRect(K.pad + k * bw + 3 * K.u, 22 * K.u, bw - 6 * K.u, 6 * K.u); } x.globalAlpha = 1; }
+  return i;
 }
+function stCur() { const T = stWithHook(stTemplate(S.studio.tpl)); return T; }
 function renderStudio() {
-  const s = S.studio, f = ST_FMT[s.fmt], T = stTemplate(s.tpl), up = FX.filter(m => !started(m));
-  const TX = T.empty ? null : stTexts(T, s.fmt);
-  $("#v-studio").innerHTML = `<div class="stack">
-    <div><span class="eyebrow">Création de contenu</span><h1>Studio</h1><p class="lede">Des vidéos et des visuels prêts à publier, tirés des vraies données de la plateforme : YouTube, Shorts, Reels, TikTok, posts et carrousels, avec titre, description, chapitres, légende et script de voix off.</p></div>
-    <div class="panel"><div class="studio">
-      <div class="st-side">
-        <h3>Contenu</h3><div class="chips wrap">${Object.entries(ST_TPL).map(([k, v]) => `<button class="chip" data-sttpl="${k}" aria-pressed="${s.tpl === k}">${v}</button>`).join("")}</div>
-        ${s.tpl === "match" ? `<label class="f" style="margin-top:10px">Match<select data-stsel="match">${up.slice(0, 60).map(m => `<option value="${esc(m.key)}" ${stMatch()?.key === m.key ? "selected" : ""}>${esc(short(m.home))} – ${esc(short(m.away))} · ${esc(m.date.slice(5))}</option>`).join("")}</select></label>` : ""}
-        ${s.tpl === "season" ? `<label class="f" style="margin-top:10px">Championnat<select data-stsel="lg">${Object.entries(LG).map(([k, v]) => `<option value="${k}" ${s.lg === k ? "selected" : ""}>${v}</option>`).join("")}</select></label>` : ""}
-        <h3 style="margin-top:16px">Format</h3><div class="chips wrap">${Object.entries(ST_FMT).map(([k, v]) => `<button class="chip" data-stfmt="${k}" aria-pressed="${s.fmt === k}">${v.lab} <span class="faint">${v.ratio}</span></button>`).join("")}</div>
-        ${T.empty ? "" : `<div class="row" style="margin-top:16px"><button class="btn primary" data-stact="play">${STX.playing ? "Pause" : "Lecture"}</button><button class="btn" data-stact="png">Image (diapo affichée)</button>
-          ${T.slides.length > 1 ? `<button class="btn" data-stact="zip">Carrousel (${T.slides.length} images)</button>` : ""}<button class="btn" data-stact="video">${STX.rec ? "Enregistrement…" : `Vidéo ${nf(T.slides.length * ST_DUR, 0)} s`}</button></div>
-          <p class="note">Vidéo : ${typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported?.("video/mp4") ? "MP4" : "WebM (accepté par YouTube ; à convertir en MP4 pour Instagram si besoin)"}, 30 images par seconde, ${f.w}×${f.h}.</p>`}
-      </div>
-      <div class="st-stage" style="aspect-ratio:${f.w}/${f.h}">${T.empty ? `<div class="empty">${esc(T.empty)}</div>` : `<canvas id="stc" width="${Math.round(f.w / 2)}" height="${Math.round(f.h / 2)}" aria-label="Aperçu du contenu"></canvas>`}</div></div></div>
-    ${TX ? `<div class="grid2">${[["titre", "Titre"], ["legende", "Légende Instagram / TikTok"], ["description", s.fmt === "yt" ? "Description YouTube avec chapitres" : "Description"], ["script", "Script de voix off"]].map(([k, l]) => `<div class="panel"><header><h2>${l}</h2><button class="btn small" data-stcopy="${k}">Copier</button></header><pre class="st-txt">${esc(TX[k])}</pre></div>`).join("")}</div>` : ""}
-    <p class="note">Chaque visuel porte la mention de jeu responsable et le numéro d'aide. Vérifie les règles de la plateforme de diffusion sur les contenus de paris (âge, pays) avant de publier.</p>
-  </div>`;
-  STX.T = T; STX.TX = TX;
-  if (!T.empty) { if (!STX.playing) { STX.t0 = performance.now() - Math.min(STX.slide, T.slides.length - 1) * ST_DUR * 1000 - (ST_DUR - 0.01) * 1000; } stLoop(); }
+  ST_DUR = Math.max(2, Math.min(8, +S.studio.dur || 3.8));
+  const s = S.studio, f = ST_FMT[s.fmt], T = stCur(), up = FX.filter(m => !started(m)), TX = T.empty ? null : stTexts(T, s.fmt), tot = T.empty ? 0 : T.slides.length * ST_DUR;
+  STX.T = T; STX.TX = TX; if (STX.slide >= (T.slides?.length || 1)) STX.slide = 0; if (!STX.playing) STX.time = Math.min(STX.time ?? (ST_DUR - 0.01), Math.max(0, tot - 0.01));
+  const avail = Object.fromEntries(Object.keys(ST_TPL).map(k => [k, k === s.tpl ? !T.empty : !stTemplate(k).empty]));
+  const ed = k => STX.edits?.[`${s.tpl}|${s.fmt}|${k}`] ?? TX?.[k] ?? "";
+  $("#v-studio").innerHTML = `<div class="studio-app">
+    <aside class="st-lib" aria-label="Contenus">
+      <div class="st-h"><span class="eyebrow">Studio</span><strong>Contenus</strong></div>
+      <div class="st-cards">${Object.entries(ST_TPL).map(([k, v]) => `<button class="st-card" data-sttpl="${k}" aria-pressed="${s.tpl === k}" ${avail[k] ? "" : 'data-off="1"'}><b>${v}</b><span>${avail[k] ? ST_TPL_DESC[k] : "Pas encore disponible"}</span></button>`).join("")}</div>
+      ${s.tpl === "match" ? `<label class="f">Match<select data-stsel="match">${up.slice(0, 80).map(m => `<option value="${esc(m.key)}" ${stMatch()?.key === m.key ? "selected" : ""}>${esc(short(m.home))} – ${esc(short(m.away))} · ${esc(m.date.slice(8))}/${esc(m.date.slice(5, 7))}</option>`).join("")}</select></label>` : ""}
+      ${s.tpl === "season" ? `<label class="f">Championnat<select data-stsel="lg">${Object.entries(LG).map(([k, v]) => `<option value="${k}" ${s.lg === k ? "selected" : ""}>${v}</option>`).join("")}</select></label>` : ""}
+      <div class="st-h" style="margin-top:6px"><strong>Personnaliser</strong></div>
+      <label class="f">Accroche d'ouverture<input type="text" id="st-hook" maxlength="90" data-stin="hook" value="${esc(s.hook)}" placeholder="ex. 3 matchs à ne pas jouer ce soir"></label>
+      <label class="f">Ton compte<input type="text" id="st-handle" maxlength="30" data-stin="handle" value="${esc(s.handle)}" placeholder="@toncompte"></label>
+      <div class="chips" role="group" aria-label="Thème">${Object.keys(ST_THEMES).map(k => `<button class="chip" data-sttheme="${k}" aria-pressed="${s.theme === k}">${{ nuit: "Nuit", ardoise: "Ardoise", clair: "Clair" }[k]}</button>`).join("")}</div>
+      <label class="f">Durée par diapo : <b id="st-durv">${nf(ST_DUR, 1)} s</b><input type="range" min="2" max="8" step="0.2" id="st-dur" data-stin="dur" value="${ST_DUR}"></label>
+    </aside>
+    <section class="st-center" aria-label="Aperçu">
+      <div class="st-stage" id="st-stage">${T.empty ? `<div class="empty">${esc(T.empty)}</div>` : `<canvas id="stc" aria-label="Aperçu ${esc(ST_TPL[s.tpl])}"></canvas>`}</div>
+      ${T.empty ? "" : `<div class="st-tl"><button class="btn primary st-play" data-stact="play" aria-label="${STX.playing ? "Pause" : "Lecture"}">${STX.playing ? "❚❚" : "▶"}</button>
+        <input type="range" id="st-scrub" min="0" max="${tot.toFixed(2)}" step="0.05" value="${(STX.time || 0).toFixed(2)}" aria-label="Position"><span class="num faint" id="st-time">${nf(STX.time || 0, 1)} / ${nf(tot, 1)} s</span></div>
+      <div class="st-strip" id="st-strip">${T.slides.map((sl, i) => `<button class="st-th" data-stslide="${i}" aria-pressed="${i === STX.slide}" title="${esc(sl.name)}"><canvas data-thumb="${i}"></canvas><span>${i + 1}. ${esc(sl.name)}</span></button>`).join("")}</div>`}
+    </section>
+    <aside class="st-out" aria-label="Export">
+      <div class="st-h"><strong>Format</strong></div>
+      <div class="st-fmts">${Object.entries(ST_FMT).map(([k, v]) => `<button class="st-fmt" data-stfmt="${k}" aria-pressed="${s.fmt === k}"><i style="aspect-ratio:${v.w}/${v.h}"></i><b>${v.ratio}</b><span>${v.lab}</span></button>`).join("")}</div>
+      ${T.empty ? "" : `<div class="st-h"><strong>Exporter</strong><span class="faint">${f.w}×${f.h}</span></div>
+      <div class="st-exp"><button class="btn" data-stact="png">Image</button>${T.slides.length > 1 ? `<button class="btn" data-stact="zip">Carrousel · ${T.slides.length}</button>` : ""}
+        <button class="btn primary" data-stact="video">${STX.rec ? `Enregistrement ${Math.round((STX.recP || 0) * 100)} %` : `Vidéo · ${nf(tot, 0)} s`}</button><button class="btn" data-stact="pack">Pack complet</button></div>
+      <p class="note">Vidéo ${typeof MediaRecorder !== "undefined" && MediaRecorder.isTypeSupported?.("video/mp4") ? "MP4" : "WebM (YouTube l'accepte ; à convertir en MP4 pour Instagram)"} à 30 images/s. Pack : toutes les images et les textes dans une archive.</p>
+      <div class="st-h"><strong>Textes</strong></div>
+      <div class="chips" role="tablist">${[["titre", "Titre"], ["legende", "Légende"], ["description", "Description"], ["script", "Script"]].map(([k, l]) => `<button class="chip" data-sttxt="${k}" aria-pressed="${(STX.txt || "legende") === k}">${l}</button>`).join("")}</div>
+      <textarea class="st-ta" id="st-ta" data-stedit="${STX.txt || "legende"}" spellcheck="true">${esc(ed(STX.txt || "legende"))}</textarea>
+      <div class="row"><button class="btn small" data-stcopy="${STX.txt || "legende"}">Copier</button><span class="note">Modifiable avant de copier.</span></div>`}
+      <p class="note">Chaque visuel porte la mention 18+ et le numéro d'aide. Vérifie les règles de la plateforme de diffusion sur les contenus de paris.</p>
+    </aside></div>`;
+  if (!T.empty) { stFit(); stThumbs(); STX.dirty = true; stLoop(); }
+}
+// Le canevas d'aperçu épouse la place disponible (format entier visible, net sur écran haute densité)
+function stFit() {
+  const st = $("#st-stage"), cv = $("#stc"); if (!st || !cv) return; const f = ST_FMT[S.studio.fmt];
+  if (innerWidth < 980) st.style.height = Math.round(Math.min(innerHeight * 0.72, (st.clientWidth - 24) * f.h / f.w + 24)) + "px"; else st.style.height = "";
+  const W = st.clientWidth - 24, H = st.clientHeight - 24, k = Math.max(0.05, Math.min(W / f.w, H / f.h)), dpr = Math.min(2, devicePixelRatio || 1);
+  cv.style.width = Math.round(f.w * k) + "px"; cv.style.height = Math.round(f.h * k) + "px";
+  const iw = Math.round(Math.min(f.w, f.w * k * dpr)); if (cv.width !== iw) { cv.width = iw; cv.height = Math.round(f.h * iw / f.w); }
+  STX.scale = iw / f.w; STX.dirty = true;
+  if (!STX.ro) { STX.ro = new ResizeObserver(() => { if (S.tab === "studio") stFit(); }); } STX.ro.disconnect(); STX.ro.observe(st);
+}
+function stThumbs() {
+  const T = STX.T, f = ST_FMT[S.studio.fmt], run = () => document.querySelectorAll("[data-thumb]").forEach(c => { const i = +c.dataset.thumb, h = 64, w = Math.round(h * f.w / f.h); c.width = w * 2; c.height = h * 2; c.style.width = w + "px"; c.style.height = h + "px"; stDrawFrame(c, T, i * ST_DUR + ST_DUR - 0.01, (w * 2) / f.w); });
+  (window.requestIdleCallback || (fn => setTimeout(fn, 60)))(run);
 }
 function stLoop() {
-  if (STX.raf) return;
+  if (STX.raf) return; STX.last = performance.now();
   const step = now => { const cv = $("#stc"); if (!cv || S.tab !== "studio" || !STX.T?.slides) { STX.raf = 0; return; }
-    const T = STX.T, tot = T.slides.length * ST_DUR; let time = (now - STX.t0) / 1000;
-    if (STX.playing) { if (time >= tot) { if (STX.rec) { stopStRec(); time = tot - 0.01; } else { STX.t0 = now; time = 0; } } } else time = Math.min(time, tot - 0.01);
-    stDrawFrame(cv, T, Math.max(0, time), 0.5); STX.raf = requestAnimationFrame(step); };
+    const T = STX.T, tot = T.slides.length * ST_DUR, dt = (now - STX.last) / 1000; STX.last = now;
+    if (STX.playing) { STX.time = (STX.time || 0) + dt; if (STX.time >= tot) STX.time = 0; STX.dirty = true; }
+    if (STX.dirty) { const i = stDrawFrame(cv, T, Math.min(STX.time || 0, tot - 0.01), STX.scale || 0.5); STX.dirty = false;
+      if (i !== STX.slide) { STX.slide = i; document.querySelectorAll("[data-stslide]").forEach(b => b.setAttribute("aria-pressed", +b.dataset.stslide === i)); $(`[data-stslide="${i}"]`)?.scrollIntoView({ block: "nearest", inline: "nearest" }); }
+      const sc = $("#st-scrub"); if (sc && document.activeElement !== sc) sc.value = (STX.time || 0).toFixed(2); const tt = $("#st-time"); if (tt) tt.textContent = `${nf(STX.time || 0, 1)} / ${nf(tot, 1)} s`; }
+    STX.raf = requestAnimationFrame(step); };
   STX.raf = requestAnimationFrame(step);
 }
 async function stSave(blob, name) {
@@ -225,14 +288,15 @@ async function stSave(blob, name) {
 const stName = ext => `lambda90-${S.studio.tpl}-${S.studio.fmt}-${parisDay()}.${ext}`;
 function stFull(i) { const f = ST_FMT[S.studio.fmt], c = document.createElement("canvas"); c.width = f.w; c.height = f.h; stDrawFrame(c, STX.T, i * ST_DUR + ST_DUR - 0.01, 1); return c; }
 let JSZIP_P = null;
-function loadZip() { return JSZIP_P ??= new Promise((ok, ko) => { if (window.JSZip) return ok(window.JSZip); const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"; s.onload = () => ok(window.JSZip); s.onerror = ko; document.head.append(s); }); }
-function stopStRec() { const r = STX.rec; if (r && r.state !== "inactive") r.stop(); }
+function loadZip() { return JSZIP_P ??= new Promise((ok, ko) => { if (window.JSZip) return ok(window.JSZip); const s = document.createElement("script"); s.src = "https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"; s.onload = () => ok(window.JSZip); s.onerror = () => { JSZIP_P = null; ko(); }; document.head.append(s); }); }
+const toBlob = c => new Promise(r => c.toBlob(r, "image/png"));
 async function stAction(a) {
   const T = STX.T; if (!T || T.empty) return; await document.fonts?.ready;
-  if (a === "play") { STX.playing = !STX.playing; if (STX.playing) STX.t0 = performance.now() - STX.slide * ST_DUR * 1000; render(); return; }
-  if (a === "png") { const c = stFull(STX.slide); stSave(await new Promise(r => c.toBlob(r, "image/png")), stName("png")); return; }
-  if (a === "zip") { let Z; try { Z = await loadZip(); } catch { toast("Archive indisponible : export image par image"); for (let i = 0; i < T.slides.length; i++) { const c = stFull(i); await stSave(await new Promise(r => c.toBlob(r, "image/png")), stName(`${i + 1}.png`)); } return; }
-    const z = new Z(); for (let i = 0; i < T.slides.length; i++) { const c = stFull(i); z.file(`${String(i + 1).padStart(2, "0")}.png`, await new Promise(r => c.toBlob(r, "image/png"))); }
+  if (a === "play") { STX.playing = !STX.playing; if (STX.playing) { const i = Math.floor((STX.time || 0) / ST_DUR); STX.time = (STX.time || 0) >= (i + 1) * ST_DUR - 0.05 ? i * ST_DUR : STX.time; if (STX.time >= T.slides.length * ST_DUR - 0.05) STX.time = 0; } const b = $(".st-play"); if (b) { b.textContent = STX.playing ? "❚❚" : "▶"; b.setAttribute("aria-label", STX.playing ? "Pause" : "Lecture"); } return; }
+  if (a === "png") { stSave(await toBlob(stFull(STX.slide)), stName("png")); return; }
+  if (a === "zip" || a === "pack") { let Z; try { Z = await loadZip(); } catch { toast("Archive indisponible : export image par image"); for (let i = 0; i < T.slides.length; i++) await stSave(await toBlob(stFull(i)), stName(`${i + 1}.png`)); return; }
+    const z = new Z(); for (let i = 0; i < T.slides.length; i++) z.file(`${String(i + 1).padStart(2, "0")}-${T.slides[i].name.replace(/[^\p{L}\d]+/gu, "-")}.png`, await toBlob(stFull(i)));
+    if (a === "pack") { const ed = k => STX.edits?.[`${S.studio.tpl}|${S.studio.fmt}|${k}`] ?? STX.TX[k]; for (const k of ["titre", "legende", "description", "script"]) z.file(`${k}.txt`, ed(k)); }
     stSave(await z.generateAsync({ type: "blob" }), stName("zip")); return; }
   if (a === "video") {
     if (STX.rec) return; if (typeof MediaRecorder === "undefined" || !HTMLCanvasElement.prototype.captureStream) { toast("Export vidéo non pris en charge par ce navigateur"); return; }
@@ -240,18 +304,28 @@ async function stAction(a) {
     const type = ["video/mp4;codecs=avc1", "video/mp4", "video/webm;codecs=vp9", "video/webm"].find(t => MediaRecorder.isTypeSupported(t)); if (!type) { toast("Aucun format vidéo disponible"); return; }
     const rec = new MediaRecorder(c.captureStream(30), { mimeType: type, videoBitsPerSecond: 10e6 }), chunks = [], t0 = performance.now(), tot = T.slides.length * ST_DUR;
     rec.ondataavailable = e => e.data.size && chunks.push(e.data);
-    rec.onstop = () => { STX.rec = null; render(); stSave(new Blob(chunks, { type }), stName(type.includes("mp4") ? "mp4" : "webm")); };
-    STX.rec = rec; rec.start(250); toast(`Enregistrement de ${nf(tot)} secondes…`); render();
-    const loop = () => { const time = (performance.now() - t0) / 1000; if (time >= tot) { rec.stop(); return; } stDrawFrame(c, T, time, 1); requestAnimationFrame(loop); }; loop();
+    rec.onstop = () => { STX.rec = null; STX.recP = 0; render(); stSave(new Blob(chunks, { type }), stName(type.includes("mp4") ? "mp4" : "webm")); };
+    STX.rec = rec; rec.start(250); toast(`Enregistrement de ${nf(tot)} secondes…`);
+    const btn = $('[data-stact="video"]'); const loop = () => { const time = (performance.now() - t0) / 1000; STX.recP = time / tot; if (btn) btn.textContent = `Enregistrement ${Math.min(99, Math.round(STX.recP * 100))} %`;
+      if (time >= tot) { rec.stop(); return; } stDrawFrame(c, T, time, 1); requestAnimationFrame(loop); }; loop();
   }
 }
 document.addEventListener("click", e => {
-  const b = e.target.closest("[data-sttpl],[data-stfmt],[data-stact],[data-stcopy],[data-studio]"); if (!b) return; const d = b.dataset;
-  if (d.studio) { Object.assign(S.studio, JSON.parse(d.studio)); ls.set("studio", S.studio); STX.slide = 0; go("studio"); return; }
-  if (d.sttpl) { S.studio.tpl = d.sttpl; STX.slide = 0; }
+  const b = e.target.closest("[data-sttpl],[data-stfmt],[data-stact],[data-stcopy],[data-studio],[data-sttheme],[data-stslide],[data-sttxt]"); if (!b) return; const d = b.dataset;
+  if (d.studio) { Object.assign(S.studio, JSON.parse(d.studio)); ls.set("studio", S.studio); STX.slide = 0; STX.time = ST_DUR - 0.01; go("studio"); return; }
+  if (d.stact) { stAction(d.stact); return; }
+  if (d.stslide != null) { STX.playing = false; STX.time = +d.stslide * ST_DUR + ST_DUR - 0.01; STX.dirty = true; const pb = $(".st-play"); if (pb) pb.textContent = "▶"; return; }
+  if (d.stcopy) { const v = $("#st-ta")?.value ?? ""; navigator.clipboard?.writeText(v).then(() => toast("Copié"), () => toast("Copie impossible : sélectionne le texte")); return; }
+  if (d.sttxt) { STX.txt = d.sttxt; }
+  else if (d.sttpl) { if (b.dataset.off) { toast("Ce contenu n'a pas encore de données"); } S.studio.tpl = d.sttpl; STX.slide = 0; STX.time = ST_DUR - 0.01; STX.playing = false; }
   else if (d.stfmt) S.studio.fmt = d.stfmt;
-  else if (d.stact) { stAction(d.stact); return; }
-  else if (d.stcopy) { navigator.clipboard?.writeText(STX.TX?.[d.stcopy] || "").then(() => toast("Copié"), () => toast("Copie impossible : sélectionne le texte")); return; }
+  else if (d.sttheme) S.studio.theme = d.sttheme;
   ls.set("studio", S.studio); render();
 });
-document.addEventListener("change", e => { const d = e.target.dataset; if (d.stsel == null) return; S.studio[d.stsel] = e.target.value; ls.set("studio", S.studio); STX.slide = 0; render(); });
+document.addEventListener("input", e => { const d = e.target.dataset;
+  if (e.target.id === "st-scrub") { STX.playing = false; STX.time = +e.target.value; STX.dirty = true; const pb = $(".st-play"); if (pb) pb.textContent = "▶"; return; }
+  if (d.stedit) { (STX.edits ??= {})[`${S.studio.tpl}|${S.studio.fmt}|${d.stedit}`] = e.target.value; return; }
+  if (d.stin) { S.studio[d.stin] = d.stin === "dur" ? +e.target.value : e.target.value; ls.set("studio", S.studio);
+    if (d.stin === "dur") { ST_DUR = +e.target.value; const v = $("#st-durv"); if (v) v.textContent = nf(ST_DUR, 1) + " s"; }
+    clearTimeout(window._stin); window._stin = setTimeout(() => deferRender(e.target), d.stin === "dur" ? 250 : 400); } });
+document.addEventListener("change", e => { const d = e.target.dataset; if (d.stsel == null) return; S.studio[d.stsel] = e.target.value; ls.set("studio", S.studio); STX.slide = 0; STX.time = ST_DUR - 0.01; render(); });
