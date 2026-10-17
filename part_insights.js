@@ -172,6 +172,7 @@ function comboBlock(f) {
           <div class="ro"><span>Cote proposée par ton bookmaker</span><input type="number" step="0.01" id="cbo-in" data-cbo="${esc(f.key + "|" + ck)}" value="${oo > 1 ? oo : ""}" placeholder="créateur de paris" style="margin-top:4px;width:100%"></div>
           <div class="ro"><span>${e == null ? "Espérance" : e >= 0 ? "Espérance" : "Marge prélevée"}</span><b class="${e > 0 ? "pos" : ""}">${e == null ? "–" : e >= 0 ? sgn(e) : pct(-e, 1)}</b></div></div>
           <p class="note" style="margin-top:6px">La matrice des scores du modèle est ajustée pour reproduire exactement les probabilités Pinnacle sans marge (1X2 et ±2,5 buts) ; la corrélation entre sélections reste celle du modèle. Les créateurs de paris prélèvent souvent 15 à 30 % : compare avant de jouer.</p>`; })()}
+      ${pj > 0 ? `<div class="row" style="margin-top:8px"><button class="btn small" data-slipcombo='${esc(JSON.stringify({ key: f.key, sels: chosen.map(x => x[0]) }))}'>Ajouter au ticket</button></div>` : ""}
       <p class="note" style="margin-top:6px">${pj === 0 ? "Combinaison impossible." : chosen.length > 1 ? "Les sélections d'un même match ne sont pas indépendantes : la probabilité vient directement de la matrice des scores. Compare la cote juste à celle proposée par ton bookmaker sur son « créateur de paris »." : "Ajoute une deuxième sélection pour voir l'effet de corrélation."}</p>`
       : `<p class="note" style="margin-top:8px">Choisis jusqu'à 4 sélections sur ce match.</p>`}`;
 }

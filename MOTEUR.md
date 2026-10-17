@@ -31,6 +31,11 @@ Score hors échantillon 2025-26 : RPS 0,2015. Bet365 (Shin) fait 0,1981, la clô
 | xG Understat (16 408 matchs, 5 championnats) : ajoutés au moteur, ou à la place des tirs cadrés | RPS 0,2016 et 0,2019 contre 0,2012 ; rien au-delà du marché | Rejeté : les tirs cadrés captent déjà l'information |
 | Valeur du onze aligné, jeu de données ouvert Transfermarkt (11 960 matchs) | +0,31 ‰ au-delà du modèle (IC −0,66 à +1,27 ‰) ; rien au-delà de l'ouverture ni de la clôture Pinnacle | Non prouvé : la composition est déjà dans les cotes |
 | Rotation (onze du jour contre onze habituel) | −0,28 ‰ | Rejeté |
+| Corners par équipe, moyennes brutes (`lab11_props.py`, 2844 matchs 2025-26) | Brier 0,2438 contre 0,2388 pour la moyenne du championnat | Rejeté : pire que la moyenne |
+| Corners : forces d'équipe rapprochées à moitié de la moyenne, binomiale négative | Gain +0,7 ‰ de Brier (IC -1,3 ‰ à +2,7 ‰) | Adopté sur la page : au moins aussi bon, gain non prouvé |
+| Cartons : même méthode | Gain +1,2 ‰ (IC -0,6 ‰ à +3,1 ‰) ; moyennes brutes 0,2215 contre 0,2157 | Adopté sur la page, gain non prouvé |
+| Elo des clubs (ClubElo) ajouté à l'empilement | RPS 0,2023 contre 0,2018 sans (2916 matchs) | Rejeté : les pi-ratings captent déjà cette information |
+| Picks du jour (règle Top, rejouée sur 2025-26, 614 picks) | 60,6 % réussis pour 57,2 % annoncés ; rendement +1,2 % ± 6,8 pts aux cotes Bet365 | Calibré ; registre figé chaque matin depuis le 17 oct. 2026 |
 
 ## Tests en cours (GitHub Actions)
 

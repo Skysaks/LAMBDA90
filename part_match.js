@@ -136,11 +136,11 @@ function renderMatch() {
     <div class="panel"><header><h2>Statistiques des deux équipes</h2><div class="legend"><span><i class="key h"></i>${esc(h)}</span><span><i class="key a"></i>${esc(a)}</span></div></header>${statsBlock(f)}</div></div>
     <div class="panel"><header><h2>Ton pronostic</h2><button class="btn small" data-tab="fan">Ouvrir les défis</button></header>${pickWidget(f, pick)}</div>
     <div class="panel"><header><h2>Analyse IA du match</h2><button class="btn primary" data-act="ai">Générer l'analyse</button></header>
-      <div class="ai" id="aiout">${S.ai[f.key] ? S.ai[f.key] : `<p class="muted">l'assistant rédige une lecture du match à partir des seuls chiffres affichés ici. Il n'a accès à aucune actualité (blessures, compositions).</p>`}</div></div>`;
+      <div class="ai" id="aiout">${S.ai[f.key] ? S.ai[f.key] : `<p class="muted">L'IA rédige une lecture du match à partir des seuls chiffres affichés ici. Elle n'a accès à aucune actualité (blessures, compositions).</p>`}</div></div>`;
   else if (mt === "buts") body = goalsBlock(f);
   else if (mt === "scenarios") body = `<div class="panel"><header><h2>Et si…</h2><span class="note">Probabilités recalculées selon le déroulé du match</span></header>${scenarioBlock(f)}</div>
     <div class="panel"><header><h2>Combiné même match</h2><span class="note">Probabilité exacte, corrélations comprises</span></header>${comboBlock(f)}</div>`;
-  else if (mt === "marches") body = `<div class="panel"><header><h2>Combiné même match</h2><span class="note">Probabilité exacte, corrélations comprises</span></header>${comboBlock(f)}</div>` + marketsFull(f, an);
+  else if (mt === "marches") body = `<div class="panel"><header><h2>Combiné même match</h2><span class="note">Probabilité exacte, corrélations comprises</span></header>${comboBlock(f)}</div>` + cornersBlock(f) + marketsFull(f, an);
   else if (mt === "joueurs") body = `<div class="stack">${newsBlock(f)}${playersBlock(f)}</div>`;
   else if (mt === "live") body = `<div class="panel"><header><h2>Suivi live</h2><span class="note">Moteur minute par minute calibré sur ${LIVE.n_matches} matchs et ${LIVE.n_reds} cartons rouges</span></header>${liveBlock(f)}</div>`;
   else body = `${marketMove(f)}<div class="panel"><header><h2>Cotes des bookmakers</h2>
@@ -151,7 +151,7 @@ function renderMatch() {
       <h3 style="margin:16px 0 8px">Valeur et arbitrage sur ce match</h3>${valueBlock(f, an)}</div>`;
   $("#v-match").innerHTML = `
   <div class="stack">
-    <div class="mhead"><button class="btn small" data-tab="radar">Retour au radar</button><span class="muted">${LG[f.league]}, ${esc(f.round.replace("Matchday", "journée"))}, ${dayName(f.date)} ${esc(f.time || "")}</span></div>
+    <div class="mhead"><button class="btn small" data-tab="radar">Retour au radar</button><button class="btn small" data-studio='${esc(JSON.stringify({ tpl: "match", match: f.key }))}'>Créer un contenu</button><span class="muted">${LG[f.league]}, ${esc(f.round.replace("Matchday", "journée"))}, ${dayName(f.date)} ${esc(f.time || "")}</span></div>
     <div class="panel hero-panel" style="padding:20px">
       <div class="versus"><div class="t">${esc(f.home)} <button class="star" data-fav="${esc(f.home)}" aria-pressed="${S.favs.includes(f.home)}" aria-label="Suivre ${esc(f.home)}">★</button></div><div class="x">contre</div><div class="t e"><button class="star" data-fav="${esc(f.away)}" aria-pressed="${S.favs.includes(f.away)}" aria-label="Suivre ${esc(f.away)}">★</button> ${esc(f.away)}</div></div>
       <div class="versus" style="margin-top:2px"><div class="xg">Buts attendus <strong class="num">${nf(f.lam, 2)}</strong></div><div></div><div class="xg" style="text-align:right">Buts attendus <strong class="num">${nf(f.mu, 2)}</strong></div></div>

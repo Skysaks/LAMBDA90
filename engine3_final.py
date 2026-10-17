@@ -136,7 +136,7 @@ for code, (d1, d2) in COUNTRIES.items():
                   lam=round(lam * k * kh, 4), mu=round(mu * k * ka, 4), band=band, stakes=[sh_, sa_], rho=round(float(m["rho"]), 4), ens=[round(float(v), 4) for v in q], pi=round(pi, 3),
                   sot=[round(sl, 2), round(sm, 2)], known=[h in m["idx"], a in m["idx"]])
         for kk, mm in side.items(): fx[kk] = [round(v, 2) for v in rates(mm, h, a)]
-        fx["stats"] = [tstats(h), tstats(a)]
+        fx["stats"] = [tstats(h), tstats(a)]; fx["xn"] = [h, a]  # noms football-data, pour relier les autres modèles (corners, cartons)
         hh = M[((M.home == h) & (M.away == a)) | ((M.home == a) & (M.away == h))].sort_values("date").tail(6)
         fx["h2h"] = [[d_.strftime("%Y-%m-%d"), int(x_ == h), int(g1), int(g2)] for d_, x_, g1, g2 in zip(hh.date, hh.home, hh.hg, hh.ag)]
         def form(t):

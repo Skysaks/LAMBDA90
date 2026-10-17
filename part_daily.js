@@ -92,10 +92,10 @@ function renderDaily() {
   const R = dayRecap(), bt = INS.backtest_top, L = R.last;
   const spot = top[0] && FXK[top[0].key] ? top[0] : null;
   const tot = R.rows.reduce((a, r) => ({ n: a.n + r.n, w: a.w + r.w }), { n: 0, w: 0 });
-  $("#v-daily").innerHTML = `<div class="stack">
+  $("#v-daily").innerHTML = `<div class="stack">${briefBlock()}
     <div class="day-head"><div><span class="eyebrow">${new Date(today + "T12:00").toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</span><h1>Le jour en un coup d'œil</h1>
       <p class="lede">Les sélections les plus solides, celles où le prix est intéressant, et les matchs à laisser passer. Tout est figé chaque matin à 7 h puis réglé avec les vrais résultats : le registre ne peut pas être retouché après coup.</p></div>
-      <div class="row"><button class="btn small" data-share="top" ${top.length ? "" : "disabled"}>Image du Top</button>${L ? `<button class="btn small" data-share="recap">Image du bilan</button>` : ""}</div></div>
+      <div class="row"><button class="btn small" data-studio='{"tpl":"top"}'>Studio</button><button class="btn small" data-share="top" ${top.length ? "" : "disabled"}>Image du Top</button>${L ? `<button class="btn small" data-share="recap">Image du bilan</button>` : ""}</div></div>
     <div class="recap">${L ? `<div class="recap-ring">${ring(L.w / L.n, 132, "var(--good)", `${L.w}/${L.n}`)}</div>
         <div><span class="eyebrow">Bilan · ${new Date(L.d + "T12:00").toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })}</span><h2 class="recap-t">picks justes</h2>
           <p class="muted" style="margin:4px 0 0">Résultat (1N2) : <b>${L.rw}/${L.rn}</b> · Double chance : <b>${L.dw}/${L.rn}</b>${R.rows.length > 1 ? ` · Depuis l'ouverture : <b>${tot.w}/${tot.n}</b> (${pct(tot.w / tot.n)})` : ""}</p>
@@ -127,12 +127,13 @@ function pickRowDaily(x, i) {
     <div class="tp-odds"><b class="num">${odd(x.o)}</b><span class="faint">${esc((x.book || "").replace(" (FR)", ""))}${x.ofr && x.bookfr !== x.book ? ` · ${odd(x.ofr)} ${esc(x.bookfr.replace(" (FR)", ""))}` : ""}</span>${done ? `<span class="pill ${x.won ? "good" : "bad"}">${x.hg}-${x.ag}</span>` : ""}</div>
     <div class="tp-ring">${ring(x.p, 62, x.p >= 0.7 ? "var(--good)" : x.p >= 0.55 ? "var(--signal)" : "var(--warn)")}</div>
     <div class="tp-act">${done ? "" : `<button class="btn small" data-survadd='${esc(JSON.stringify({ key: x.key, sel: x.sel, o: x.o, p: x.p, book: x.book, kick: x.kick }))}'>Survivant</button>
-      <button class="btn small" data-bet='${esc(JSON.stringify({ matchKey: x.key, label: short(f.home) + " – " + short(f.away), market: /O|U/.test(x.sel) ? "OU25" : "1X2", sel: x.sel, book: x.book, odds: x.o, stake: Math.round(S.cfg.bank * L90.kelly(x.pm || x.p, x.o, S.cfg.kfrac, S.cfg.cap) * 100) / 100, p: x.pm || x.p }))}'>Journal</button>`}</div></li>`;
+      ${slipBtn(x.key, x.sel, x.o, x.book)}<button class="btn small" data-bet='${esc(JSON.stringify({ matchKey: x.key, label: short(f.home) + " – " + short(f.away), market: /O|U/.test(x.sel) ? "OU25" : "1X2", sel: x.sel, book: x.book, odds: x.o, stake: Math.round(S.cfg.bank * L90.kelly(x.pm || x.p, x.o, S.cfg.kfrac, S.cfg.cap) * 100) / 100, p: x.pm || x.p }))}'>Journal</button>`}</div></li>`;
 }
 function hotCard(x) {
   const f = fxOf(x);
   return `<div class="hc"><div class="hc-top"><div><strong>${esc(SELF(f, x.sel))}</strong><span class="faint">${esc(short(f.home))} – ${esc(short(f.away))} · ${esc(kickLab(x.kick))}</span></div>
       <div class="hc-n"><b class="num">${odd(x.o)}</b><span class="faint">juste ${odd(1 / x.pm)}</span><span class="pill ${x.ev >= 0 ? "good" : "ghost"}">${sgn(x.ev)}</span>${x.lag ? `<span class="pill info">cote en retard</span>` : ""}${"won" in x ? `<span class="pill ${x.won ? "good" : "bad"}">${x.hg}-${x.ag}</span>` : ""}</div></div>
+    ${"won" in x ? "" : `<div class="row" style="margin:6px 0 0">${slipBtn(x.key, x.sel, x.o, x.book)}<button class="btn small" data-survadd='${esc(JSON.stringify({ key: x.key, sel: x.sel, o: x.o, p: x.p, book: x.book, kick: x.kick }))}'>Survivant</button></div>`}
     <ul class="hc-why">${argsFor(f._ghost ? { ...f, m: null } : f, x.sel, x).slice(0, 4).map(a => `<li>${esc(a)}</li>`).join("")}</ul></div>`;
 }
 function coldCard(x) {
@@ -148,17 +149,18 @@ function spotlight(x) {
   const f = FXK[x.key], M = mktMatrix(f) || f.m.M, J = fn => L90.joint(M, [fn]), H = J((i, j) => i > j), Dd = J((i, j) => i === j), A = 1 - H - Dd;
   const O = J((i, j) => i + j > 2), BY = J((i, j) => i > 0 && j > 0), st = f.stats || [], h = short(f.home), a = short(f.away);
   let corners = "", cards = "";
-  if (st[0] && st[1]) {
-    const ch = (st[0].co + st[1].coa) / 2, ca = (st[1].co + st[0].coa) / 2, [mh, ml, ma] = moreOf(ch, ca), pc = 1 - poisCdf(9, ch + ca), kc = st[0].ca + st[1].ca, pk = poisCdf(4, kc);
-    corners = `<div class="sp-card"><span>Corners</span><div class="sp-ring">${ring(pc, 76, "var(--warn)")}<b>Plus de 9,5</b></div><small>${nf(ch + ca, 1)} attendus</small></div>
-      <div class="sp-card"><span>Cartons</span><div class="sp-ring">${ring(pk, 76, "var(--warn)")}<b>Moins de 4,5</b></div><small>${nf(kc, 1)} attendus</small></div>`;
+  const pp = propsOf(f);
+  if (pp) {
+    const c = pp.corners, k = pp.cartons, pc = 1 - nbCdf(9, c.h + c.a, c.r), pk = nbCdf(4, k.h + k.a, k.r), [mh, ml, ma] = moreOf(c.h, c.a);
+    corners = `<div class="sp-card"><span>Corners</span><div class="sp-ring">${ring(pc, 76, "var(--warn)")}<b>Plus de 9,5</b></div><small>${nf(c.h + c.a, 1)} attendus</small></div>
+      <div class="sp-card"><span>Cartons</span><div class="sp-ring">${ring(pk, 76, "var(--warn)")}<b>Moins de 4,5</b></div><small>${nf(k.h + k.a, 1)} attendus</small></div>`;
     cards = `<div class="sp-wide"><span>Plus de corners</span>${triBar(mh, ml, ma, h, "Égalité", a)}</div>`;
   }
   return `<div class="panel spot"><header><div><span class="eyebrow">Pick du jour</span><h2>${esc(h)} – ${esc(a)}</h2><span class="faint">${esc(LG[f.league])} · ${esc(kickLab(x.kick))}</span></div><button class="btn small" data-open="${esc(f.key)}">Analyse complète</button></header>
     <div class="sp-wide"><span>Résultat · notre pick : ${esc(SELF(f, x.sel))}</span>${triBar(H, Dd, A, h, "Nul", a)}</div>
     <div class="sp-grid"><div class="sp-card"><span>Buts</span><div class="sp-ring">${ring(O, 76, "var(--warn)")}<b>Plus de 2,5</b></div><small>${nf(f.lam + f.mu, 2)} attendus</small></div>
       <div class="sp-card"><span>Les deux marquent</span><div class="sp-ring">${ring(BY, 76, "var(--warn)")}<b>Oui</b></div><small>${pct(1 - BY)} non</small></div>${corners}</div>${cards}
-    <p class="note">Résultat, buts et « les deux marquent » : matrice des scores recalée sur Pinnacle. Corners et cartons : estimation de Poisson sur les moyennes des deux équipes cette saison, moins fiable (non validée sur historique).</p></div>`;
+    <p class="note">Résultat, buts et « les deux marquent » : matrice des scores recalée sur Pinnacle. Corners et cartons : forces des équipes rapprochées de la moyenne du championnat, loi binomiale négative (labo 11 : au moins aussi bon que la moyenne, gain non prouvé).</p></div>`;
 }
 const triBar = (p1, p2, p3, l1, l2, l3) => `<div class="tri"><i style="flex:${p1};background:var(--good)"></i><i style="flex:${p2};background:var(--ink3)"></i><i style="flex:${p3};background:#7FA3FF"></i></div>
   <div class="tri-l"><span><b class="num">${pct(p1)}</b>${esc(l1)}</span><span style="text-align:center"><b class="num">${pct(p2)}</b>${esc(l2)}</span><span style="text-align:right"><b class="num">${pct(p3)}</b>${esc(l3)}</span></div>`;
@@ -193,7 +195,7 @@ function shareCanvas(kind) {
 document.addEventListener("click", async e => {
   const b = e.target.closest("[data-share]"); if (!b) return;
   const c = shareCanvas(b.dataset.share); if (!c) return;
-  let dl = null; try { dl = await globalThis[["cl","aude"].join("")]?.use?.("downloads"); } catch {}
+  const dl = await hostUse("downloads");
   const blob = await new Promise(r => c.toBlob(r, "image/png"));
   if (!dl) { const u = URL.createObjectURL(blob); const w = window.open(u, "_blank"); if (!w) toast("Téléchargement indisponible dans cette vue"); return; }
   try { await dl.save({ filename: `lambda90-${b.dataset.share}-${parisDay()}.png`, data: blob }); } catch (er) { if (er?.code !== "cancelled") toast("Téléchargement refusé"); }

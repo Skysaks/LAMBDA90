@@ -133,6 +133,7 @@ function renderTools() {
     side = `<div class="b3-legend">${tot.map(([b, v]) => `<span><i style="background:${b3Hex(b3Color(b))}"></i>${esc(b.replace(" (FR)", ""))} <b class="num">${pct(avg(v), 1)}</b></span>`).join("")}</div>
       <p class="note">Marge moyenne 1X2 par championnat ; plus la barre est basse, moins le bookmaker prélève. Barre cerclée : le moins cher de tes bookmakers dans ce championnat.</p>`; }
   $("#v-tools").innerHTML = `<div class="stack">
+    <div class="row" style="justify-content:flex-end"><button class="btn small" data-studio='{"tpl":"value"}'>Créer un contenu</button></div>
     <div><h1>Outils de paris</h1><p class="lede">Les cotes réelles de tes bookmakers, face au prix juste de Pinnacle. Les seuls avantages durables à la portée d'un parieur en France sont là : cotes boostées, freebets, bonus de remboursement, et choisir le bookmaker le moins cher pour chaque pari.</p></div>
     <div class="panel"><header><h2>${val ? "Relief de la valeur" : "Marges par championnat"}</h2><div class="chips"><button class="chip" data-toolv="v" data-v="value" aria-pressed="${val}">Valeur</button><button class="chip" data-toolv="v" data-v="margin" aria-pressed="${!val}">Marges</button></div></header>
       ${val ? `<p class="muted" style="margin:0 0 8px">Chaque barre : la meilleure cote de tes bookmakers sur une issue, comparée à la cote juste Pinnacle. Au-dessus du plan lumineux, le pari a une espérance positive ; en dessous, tu paies la marge. Couleur : le bookmaker qui offre cette cote.</p>` : ""}

@@ -13,6 +13,7 @@ function renderSeason() {
   const opts = sel => [...rt].sort((x, y) => x.team.localeCompare(y.team)).map(r => `<option value="${esc(r.team)}" ${r.team === sel ? "selected" : ""}>${esc(short(r.team))}</option>`).join("");
   $("#v-season").innerHTML = `
   <div class="stack">
+    <div class="row" style="justify-content:flex-end"><button class="btn small" data-studio='${esc(JSON.stringify({ tpl: "season", lg }))}'>Créer un contenu</button></div>
     <div><h1>Saison 2026-27 simulée</h1><p class="lede">${nf(sim.N)} saisons rejouées match par match avec les forces actuelles des équipes et leur incertitude statistique. ${sim.n_played} matchs joués intégrés, ${sim.n_remaining} restants simulés, dont ${sim.n_missing} déjà joués mais sans résultat dans nos données : ils sont traités comme inconnus.</p></div>
     <div class="chips" role="group" aria-label="Championnat">${chips}</div>
     <div class="panel"><header><h2>Classement projeté</h2><div class="legend"><span>Bande : probabilité de chaque place, de 1 à ${n}</span></div></header>

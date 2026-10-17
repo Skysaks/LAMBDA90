@@ -1,5 +1,5 @@
 """Cotes d'ouverture et de clôture Pinnacle et Bet365 (football-data.co.uk, gratuit), saisons récentes.
-Sortie : data/closing.csv. Lancé par GitHub Actions (le bac à sable de l'assistant n'a pas accès à ce site).
+Sortie : data/closing.csv. Lancé par GitHub Actions (l'environnement de développement n'a pas accès à ce site).
 """
 import io, sys, urllib.request
 from pathlib import Path

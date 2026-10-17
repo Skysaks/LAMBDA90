@@ -239,7 +239,7 @@ function tickStory(now) {
 }
 function closeStory() { if (ST.rec) stopRecording(true); ST.open = false; cancelAnimationFrame(ST.raf); const el = $("#story"); if (el) el.hidden = true; document.body.style.overflow = ""; }
 async function saveBlob(blob, ext) {
-  let dl = null; try { dl = await globalThis[["cl","aude"].join("")]?.use?.("downloads"); } catch {}
+  const dl = await hostUse("downloads");
   if (!dl) { toast("Téléchargement indisponible dans cette vue"); return; }
   const f = FXK[ST.key];
   try { await dl.save({ filename: `lambda90-${short(f.home)}-${short(f.away)}-${ST.t ? "min" + ST.t : "avant-match"}${ext === "png" ? "-" + (ST.i + 1) : ""}.${ext}`.replace(/\s+/g, "-").toLowerCase(), data: blob }); } catch (e) { if (e?.code !== "cancelled") toast("Téléchargement refusé"); }

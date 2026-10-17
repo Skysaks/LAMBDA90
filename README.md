@@ -1,52 +1,83 @@
 # Lambda 90
 
-Plateforme de probabilités football : moteur Dixon-Coles + tirs cadrés + pi-ratings, live minute par minute, value betting, arbitrage, bankroll, défis entre amis, stories 3D.
+Plateforme indépendante de probabilités football pour les fans et les parieurs : prévisions avant-match et live, prix justes face aux cotes réelles des bookmakers, outils de paris, jeux entre amis et création de contenu. Huit championnats : Ligue 1, Premier League, LaLiga, Bundesliga, Serie A, Liga Portugal, Eredivisie, Championship.
 
-Onglet Outils (cotes réelles de Bet365, Winamax, Betclic, Unibet face au prix juste Pinnacle) : relief 3D de la valeur, marges 3D par championnat,
-cote boostée rentable ou pas, conversion de freebets et de paris remboursés en gain garanti, couverture et cash-out, dutching.
-Onglet Objectif ×2 : montante intégrale 5 à 10 paliers, enchaînée dans le temps, avec son escalier 3D (capital et chance d'y arriver).
-Onglet Match : créateur de paris avec matrice des scores recalée sur Pinnacle et marge du bookmaker ; jumeaux historiques (les 150 matchs passés aux cotes de clôture les plus proches).
-Onglet Jour (page d'accueil) : Top Picks 6 à 8, Hot Picks, Cold Games argumentés, figés chaque matin par pipeline/daily_picks.py dans data/daily_picks.json
-et réglés avec les résultats : registre public non modifiable, bilan de la veille, images à partager.
-Onglet Survivant : bankroll, objectif, durée, mise minimale ; 48 plans simulés (Monte Carlo), surface 3D, plan optimal selon le risque toléré, partie jouée sur les vrais matchs avec Game Over.
-Bankroll : coach anti-tilt (chasse aux pertes, glissement vers les grosses cotes, rafales, CLV) et règlement automatique du journal.
-Outils : prix de la patience (cotes d'ouverture et de clôture, biais favori-outsider) calculé par pipeline/insights_build.py.
+Principe : chaque chiffre affiché est mesuré hors échantillon, et la plateforme dit quand le marché a raison contre elle. Le moteur, ses tests et leurs résultats sont détaillés dans [MOTEUR.md](MOTEUR.md).
 
-## Mise à jour automatique (coût : 0 € au départ)
+## Ce que contient la page
 
-Chaque matin, GitHub Actions récupère les résultats et les cotes, ré-entraîne le moteur et reconstruit `lambda-90.html`. Le lundi, il relance aussi le réglage complet et le backtest.
+| Onglet | Contenu |
+| --- | --- |
+| Jour (accueil) | Brief personnel ; Top Picks du jour (6 à 8) avec arguments chiffrés ; pick du jour (1N2, buts, les deux marquent, corners, cartons) ; Hot Picks (prix proche du juste chez Winamax, Betclic, Unibet) ; Cold Games (matchs à éviter, raisons affichées) ; bilan de la veille et registre figé chaque matin, réglé avec les résultats officiels |
+| Radar | Les matchs à venir, probabilités, valeur et arbitrages repérés |
+| Match | Probabilités et fourchette à 80 %, scores exacts, jumeaux historiques (les 150 matchs passés aux cotes de clôture les plus proches), buts par tranche, scénarios « et si », tous les marchés, corners et cartons, créateur de paris recalé sur Pinnacle, compositions et absences, live minute par minute avec terrain 3D, mouvement des cotes, stories 3D |
+| Saison | 10 000 saisons simulées par championnat : titre, places, relégation, Predictor, Power Index |
+| Défis | Pronostics entre amis, ligues privées, classement contre le modèle |
+| Value et arbitrage | Paris au-dessus du prix juste, arbitrages, calculateurs, mise de Kelly, mes bookmakers |
+| Objectif ×2 | Montante intégrale de 5 à 10 paliers enchaînés dans le temps, escalier 3D, sélections les plus probables |
+| Survivant | Faire grossir une bankroll sans jamais passer sous la mise minimale (Game Over) : 48 plans simulés (Monte Carlo) et surface 3D, plan optimal selon le risque toléré, partie réglée automatiquement ; parties classées et classements Monde, Amis et Ville |
+| Outils | Relief 3D de la valeur et des marges, prix de la patience (ouverture contre clôture, biais favori-outsider), cotes boostées, conversion de freebets et de paris remboursés, couverture et cash-out, dutching |
+| Studio | Vidéos et visuels prêts à publier pour YouTube, Shorts, Reels, TikTok, posts et carrousels : Top du jour, bilan, avant-match, Hot et Cold, Survivant, saison, preuves de calibration, marges des bookmakers ; titres, descriptions avec chapitres, légendes et scripts de voix off |
+| Bankroll | Journal avec CLV et règlement automatique, courbe de bankroll, disjoncteur, coach anti-tilt (chasse aux pertes, glissement vers les grosses cotes, rafales de paris) |
+| Registre | Calibration, RPS, laboratoire : chaque signal testé, adopté ou rejeté |
 
-1. Crée un dépôt **privé** sur GitHub et dépose tout le contenu de ce dossier.
-2. Dans *Settings → Secrets and variables → Actions*, ajoute les secrets :
-   - `ODDS_API_KEY` : ta clé The Odds API (offre gratuite, 500 crédits par mois, soit 16 crédits par passage et environ 31 passages par mois) ;
-   - `FOOTBALL_DATA_TOKEN` : jeton gratuit à créer sur football-data.org (12 compétitions, 10 appels par minute, scores différés) ;
-   - `API_FOOTBALL_KEY` (facultatif) : clé API-Football (dashboard.api-football.com). Blessures et suspensions chaque matin, compositions officielles toutes les heures de 12 h 40 à 23 h 40 (heure de Paris, été). L’offre gratuite (100 appels par jour) sert à tester, si elle couvre la saison en cours (à vérifier sur leur page tarifs) ; la Pro (7 500 par jour, 19 $/mois) pour la production. Sans cette clé, les étapes sont simplement ignorées.
-3. Onglet *Actions* → « Mise à jour Lambda 90 » → *Run workflow* pour le premier passage, d'environ 5 minutes.
-4. Donne le nom du dépôt à l'assistant : il programme une tâche qui republie chaque jour la page sur la plateforme d'hébergement à partir du fichier construit.
+Partout : ticket de pari (probabilité jointe exacte, meilleure cote chez un seul bookmaker, espérance), recherche universelle (Ctrl+K ou /), modes Fan et Quant, affichage mobile.
 
-Les minutes GitHub Actions gratuites des dépôts privés (2 000 par mois) couvrent le passage quotidien (environ 5 minutes, 20 le lundi) et le passage horaire des compositions (moins d'une minute, environ 12 par jour).
+## Le moteur en bref
 
-Le lundi, la chaîne télécharge aussi les cotes de clôture Pinnacle (football-data.co.uk) et calcule la CLV du modèle (`clv.py`) : c'est la mesure de confiance de référence, visible dans le Registre.
+- Dixon-Coles pondéré dans le temps sur les buts et sur les tirs cadrés, pi-ratings, empilement logistique appris sur les seules saisons passées ; fourchette d'incertitude par match.
+- RPS hors échantillon 2025-26 : 0,2015 pour le moteur, 0,1981 pour le marché. Les probabilités affichées pour les picks mélangent 90 % de marché Pinnacle sans marge et 10 % de modèle, le meilleur poids mesuré.
+- Testés et rejetés, entre autres : xG, valeur du onze, enjeux, Elo, gradient boosting, moyennes brutes de corners. Détail et chiffres : [MOTEUR.md](MOTEUR.md).
 
-## Héberger la page pour le public
+## Chaîne de mise à jour (GitHub Actions)
 
-Le fichier `lambda-90.html` construit dans le dépôt est autonome. Pour l'ouvrir au public avant l'application complète : Cloudflare Pages, connecté au dépôt privé (gratuit), avec le domaine choisi.
+| Workflow | Quand | Ce qu'il fait |
+| --- | --- | --- |
+| `update.yml` « Mise à jour Lambda 90 » | chaque jour vers 7 h (Paris) | résultats, cotes (The Odds API + Bet365 par football-data), historique des cotes, journal de value, clôtures, blessures ; entraînement final ; corners et cartons ; jumeaux et prix de la patience ; picks du jour figés et réglés ; reconstruction de `lambda-90.html`. Le lundi : réglage complet, backtest, CLV, labo corners et cartons |
+| `lineups.yml` « Compositions officielles » | toutes les heures, 12 h 40 à 23 h 40 | compositions confirmées (API-Football) |
+| `lab.yml` « Labo API » | chaque nuit | tests sur les données API-Football |
+| `lab_data.yml` « Labo données gratuites » | le lundi | xG Understat, valeur des effectifs |
 
-## Sources de données, de la moins chère à la plus précise
+Les minutes gratuites de GitHub Actions pour un dépôt privé (2 000 par mois) couvrent l'ensemble.
 
-| Source | Coût | Apporte | Statut |
-| --- | --- | --- | --- |
-| openfootball/football.json | gratuit (CC0) | Calendrier, résultats (mises à jour irrégulières) | branché |
-| Club Football Match Data (xgabora) | gratuit (MIT ; données football-data.co.uk) | 238 858 matchs : tirs, tirs cadrés, corners, cartons, cotes Bet365 et meilleures cotes | branché |
-| football-data.org, offre gratuite | 0 € | Résultats des 8 championnats, différés | branché dans la chaîne |
-| The Odds API, Starter | 0 € | Cotes de 20+ bookmakers, 1 mise à jour par jour | branché dans la chaîne |
-| The Odds API 20K | 30 $/mois | Cotes toutes les heures | à activer selon les abonnés |
-| football-data.org avec scores live | 12 €/mois | Scores en direct | optionnel |
-| API-Football (gratuit pour tester, Pro 19 $/mois) | 0 à 19 $/mois | Compositions confirmées, blessures, suspensions | branché dans la chaîne (secret `API_FOOTBALL_KEY`), affiché sur la page match, pas encore dans les probabilités |
-| football-data.co.uk, cotes de clôture | gratuit | Clôture Pinnacle et Bet365 pour la CLV | branché (le lundi) |
-| Sportmonks + module xG | dès 29 €/mois + 24 €/mois | xG | plus tard |
+## Installation
 
-Vérifie les conditions d'usage commercial de chaque source avant le lancement payant.
+1. Dépôt privé sur GitHub contenant ce dossier.
+2. *Settings → Secrets and variables → Actions*, trois secrets :
+   - `ODDS_API_KEY` : The Odds API (offre gratuite : 500 crédits par mois) ;
+   - `FOOTBALL_DATA_TOKEN` : football-data.org (gratuit, résultats différés) ;
+   - `API_FOOTBALL_KEY` (facultatif) : API-Football, pour les blessures, suspensions et compositions. Sans elle, ces étapes sont ignorées.
+3. Onglet *Actions* → « Mise à jour Lambda 90 » → *Run workflow* pour le premier passage (environ 5 minutes).
+4. Le fichier `lambda-90.html` construit dans le dépôt est autonome : il s'héberge tel quel (Cloudflare Pages, Netlify, ou la plateforme d'hébergement de ton choix). Les fonctions partagées (ligues, classements Survivant, journal synchronisé, téléchargements, analyse IA) demandent un hébergeur qui fournit comptes et stockage ; sans lui, la page fonctionne en mode local (navigateur).
+
+Ne mets jamais une clé API dans un fichier du dépôt : seulement dans les secrets.
+
+## Sources de données
+
+| Source | Coût | Apporte |
+| --- | --- | --- |
+| [Club Football Match Data](https://github.com/xgabora/Club-Football-Match-Data-2000-2025) (football-data.co.uk + ClubElo) | gratuit | historique depuis 2000 : buts, tirs, corners, cartons, cotes, Elo |
+| [openfootball](https://github.com/openfootball/football.json) | gratuit (CC0) | calendrier et résultats |
+| football-data.org | gratuit | résultats récents des 8 championnats |
+| The Odds API | gratuit puis 30 $/mois | cotes de 20+ bookmakers dont Pinnacle, Winamax, Betclic, Unibet, PMU |
+| football-data.co.uk (fixtures.csv, clôtures) | gratuit | cotes Bet365 et moyenne du marché, clôtures Pinnacle et Bet365 pour la CLV |
+| API-Football | gratuit pour tester, Pro 19 $/mois | compositions, blessures, suspensions |
+| Understat, jeu ouvert Transfermarkt | gratuit | xG et valeurs des joueurs, utilisés au laboratoire |
+
+Vérifie les conditions d'usage commercial de chaque source avant un lancement payant.
+
+## Structure du dépôt
+
+| Fichiers | Rôle |
+| --- | --- |
+| `engine3.py`, `engine3_final.py`, `uncert.py`, `dc_core.py` | moteur avant-match, entraînement final, incertitude |
+| `model_live.py`, `model_prematch.py`, `model_extra.py` | moteur live minute par minute et données annexes |
+| `pipeline/` | collecte (résultats, cotes, Bet365, clôtures, compositions), journal de value, picks du jour, corners et cartons, jumeaux et prix de la patience |
+| `lab*.py`, `clv.py`, `engine3_eval.py` | laboratoire : chaque signal testé hors échantillon |
+| `core.js`, `app.js`, `part_*.js`, `template.html` | la page (noyau quant, onglets, 3D, Studio) |
+| `build.py`, `mk.sh` | assemblage de `lambda-90.html` |
+| `data/`, `out/` | données collectées, sorties du moteur, registre des picks (`data/daily_picks.json`) |
+| `founder/` | dossier de lancement |
 
 ## Construire à la main
 
@@ -54,9 +85,12 @@ Vérifie les conditions d'usage commercial de chaque source avant le lancement p
 git clone --depth 1 https://github.com/xgabora/Club-Football-Match-Data-2000-2025.git /tmp/xg
 git clone --depth 1 https://github.com/openfootball/football.json.git /tmp/of
 python engine3_final.py /tmp/xg/data /tmp/of out
+python pipeline/props_build.py /tmp/xg/data out
+python pipeline/insights_build.py .
+python pipeline/daily_picks.py .
 bash mk.sh         # assemble app_full.js et écrit lambda-90.html
 ```
 
-Ne mets jamais une clé API dans un fichier du dépôt : seulement dans les secrets.
+## Jeu responsable
 
-Le moteur de prédiction, ses tests et sa feuille de route sont décrits dans MOTEUR.md.
+Lambda 90 publie des probabilités et des calculs, pas des certitudes ; elle ne prend aucun pari. Le jeu est interdit aux mineurs. Jouer comporte des risques : endettement, isolement, dépendance. Pour être aidé : 09 74 75 13 13 (Joueurs Info Service, appel non surtaxé). En France, seuls les opérateurs agréés par l'ANJ sont autorisés.

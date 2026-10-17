@@ -307,6 +307,29 @@ td.num,th.num,.r.num{white-space:nowrap}
 .coach{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:8px}.coach li{padding:10px 12px;border-radius:10px;background:var(--panel2);border-left:3px solid var(--line2);font-size:13.5px;line-height:1.5}
 .coach li.good{border-left-color:var(--good)}.coach li.warn{border-left-color:var(--warn)}.coach li.bad{border-left-color:var(--bad)}
 @media (max-width:640px){.recap-ring svg{width:96px;height:96px}.recap{grid-template-columns:auto 1fr;gap:16px;padding:16px;align-items:start}.recap>div:last-child{grid-column:1/-1}.tp-row{grid-template-columns:34px 1fr auto;gap:10px}.tp-rank{font-size:28px}.tp-odds{grid-column:2;justify-items:start;grid-auto-flow:column;align-items:center;gap:8px}.tp-ring{grid-row:1;grid-column:3}.tp-act{grid-column:1/-1;grid-auto-flow:column}.sv-top{grid-template-columns:1fr;gap:10px}.hc-top{flex-direction:column}.hc-n{justify-content:flex-start}}
+.cmd-btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line2);background:var(--panel2);color:var(--ink2);border-radius:999px;padding:6px 12px;font-size:13px;margin-left:auto;margin-right:10px;white-space:nowrap}
+.cmd-btn kbd{font:500 11px var(--f-display);color:var(--ink3);border:1px solid var(--line2);border-radius:5px;padding:1px 5px}
+#cmdk{position:fixed;inset:0;z-index:80;background:rgba(4,7,13,.66);backdrop-filter:blur(4px);display:grid;place-items:start center;padding:12vh 16px 0}
+.cmd-p{width:min(640px,100%);background:var(--panel);border:1px solid var(--line2);border-radius:16px;box-shadow:0 24px 60px rgba(0,0,0,.5);overflow:hidden}
+.cmd-p input{width:100%;border:0;border-bottom:1px solid var(--line);background:transparent;color:var(--ink);font-size:17px;padding:16px 18px;outline:none}
+.cmd-p ul{list-style:none;margin:0;padding:6px;max-height:52vh;overflow:auto}.cmd-p li{display:flex;gap:12px;align-items:center;padding:10px 12px;border-radius:10px;cursor:pointer;font-size:14.5px}
+.cmd-p li .faint{min-width:84px;font-size:12px}.cmd-p li.on,.cmd-p li:hover{background:var(--panel2)}
+#slip{position:fixed;right:16px;bottom:16px;z-index:60}
+.slip-b{display:flex;align-items:center;gap:10px;background:var(--signal);color:var(--signal-ink);border:0;border-radius:999px;padding:12px 18px;font-weight:600;box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.slip-b b{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--signal-ink);color:var(--signal);font-size:13px}
+.slip-p{width:min(420px,calc(100vw - 32px));max-height:80vh;overflow:auto;background:var(--panel);border:1px solid var(--line2);border-radius:16px;padding:14px;box-shadow:0 24px 60px rgba(0,0,0,.55);display:grid;gap:10px}
+.slip-p header{display:flex;justify-content:space-between;align-items:center}.slip-p ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.slip-p li{display:flex;justify-content:space-between;gap:8px;align-items:center;background:var(--panel2);border-radius:10px;padding:8px 10px}.slip-p li div{display:grid}.slip-p li .faint{font-size:12px}
+.brief{border:1px solid var(--line);border-radius:16px;padding:14px 16px;background:linear-gradient(120deg,rgba(159,231,245,.07),transparent)}
+.brief ul{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:6px}.brief li{font-size:14px;color:var(--ink2)}.brief strong{color:var(--ink);margin-right:6px}
+.linkish{background:none;border:0;padding:0;color:inherit;text-align:left;cursor:pointer;font:inherit}.linkish:hover strong{color:var(--signal)}
+table.board tr.me td{background:rgba(159,231,245,.07)}
+.studio{display:grid;grid-template-columns:minmax(260px,360px) 1fr;gap:20px;align-items:start}
+.st-side h3{margin:0 0 8px}.st-stage{background:#05080f;border-radius:14px;overflow:hidden;max-height:76vh;margin:0 auto;width:100%;display:grid;place-items:center}
+.st-stage canvas{width:100%;height:100%;display:block;object-fit:contain}
+.st-txt{white-space:pre-wrap;font:13px/1.55 "IBM Plex Sans",sans-serif;color:var(--ink2);margin:0;max-height:260px;overflow:auto}
+@media (max-width:860px){.studio{grid-template-columns:1fr}.st-stage{max-height:none}}
+@media (max-width:760px){.cmd-btn span,.cmd-btn kbd{display:none}.cmd-btn{padding:8px;margin-right:6px}}
 </style>
 
 <header class="top">
@@ -322,9 +345,11 @@ td.num,th.num,.r.num{white-space:nowrap}
       <button class="tab quantonly" role="tab" data-tab="ladder">Objectif ×2</button>
       <button class="tab quantonly" role="tab" data-tab="survivor">Survivant</button>
       <button class="tab quantonly" role="tab" data-tab="tools">Outils</button>
+      <button class="tab" role="tab" data-tab="studio">Studio</button>
       <button class="tab quantonly" role="tab" data-tab="bank">Bankroll</button>
       <button class="tab" role="tab" data-tab="proof">Registre</button>
     </nav>
+    <button class="cmd-btn" data-cmd aria-label="Rechercher (Ctrl+K)" title="Rechercher (Ctrl+K)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg><span>Rechercher</span><kbd>Ctrl K</kbd></button>
     <div class="mode" role="group" aria-label="Mode d'affichage">
       <button data-mode="fan" aria-pressed="false">Fan</button>
       <button data-mode="quant" aria-pressed="true">Quant</button>
@@ -343,6 +368,7 @@ td.num,th.num,.r.num{white-space:nowrap}
   <section class="view" id="v-ladder" hidden></section>
   <section class="view" id="v-survivor" hidden></section>
   <section class="view" id="v-tools" hidden></section>
+  <section class="view" id="v-studio" hidden></section>
   <section class="view" id="v-bank" hidden></section>
   <section class="view" id="v-proof" hidden></section>
 </main>

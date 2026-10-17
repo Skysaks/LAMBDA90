@@ -44,7 +44,7 @@ async function resolveNames(ids) {
 const nameOf = uid => uid === UID ? "Toi" : (S.fan.names[uid] || "Joueur " + uid.slice(-4));
 async function saveMyLeagues() { await saveDoc("myleagues", { kind: "leagues", codes: S.fan.leagues }); }
 async function createLeague(name) {
-  if (!DB || !UID) return toast("Connecte-toi sur la plateforme d'hébergement pour créer une ligue");
+  if (!DB || !UID) return toast("Connecte-toi à ton compte pour créer une ligue");
   const code = Array.from({ length: 6 }, () => "ABCDEFGHJKLMNPQRSTUVWXYZ23456789"[Math.floor(Math.random() * 32)]).join("");
   try {
     await DB.doc("leagues/" + code).set({ name: name || "Ligue des potes", owner: UID, created: Date.now() });
@@ -55,7 +55,7 @@ async function createLeague(name) {
 }
 async function joinLeague(code) {
   code = (code || "").trim().toUpperCase(); if (!code) return;
-  if (!DB || !UID) return toast("Connecte-toi sur la plateforme d'hébergement pour rejoindre une ligue");
+  if (!DB || !UID) return toast("Connecte-toi à ton compte pour rejoindre une ligue");
   try {
     const s = await DB.doc("leagues/" + code).get(); if (!s.exists) { S.fan.msg = `Aucune ligue avec le code ${code}.`; render(); return; }
     await DB.collection("leagues/" + code + "/members").doc(UID).set({ ts: Date.now() });
@@ -101,7 +101,7 @@ function renderFan() {
   $("#v-fan").innerHTML = `
   <div class="stack">
     <div><h1>Défis</h1><p class="lede">Pronostique les matchs, crée une ligue avec tes amis et affronte-les, et le modèle avec. Bonne issue : 1 point. Score exact : 2 points de plus. Bonne issue que le modèle donnait sous 30 % : 1 point bonus.</p></div>
-    ${S.store !== "db" ? `<div class="empty">Mode solo : tes pronostics sont gardés dans ce navigateur. Ouvre la page connecté à la plateforme d'hébergement pour créer ou rejoindre une ligue.</div>` : ""}
+    ${S.store !== "db" ? `<div class="empty">Mode solo : tes pronostics sont gardés dans ce navigateur. Ouvre la page connecté à ton compte pour créer ou rejoindre une ligue.</div>` : ""}
     <div class="grid2">
       <div class="panel"><header><h2>Mes ligues</h2><span class="note">${F.leagues.length} ligue${F.leagues.length > 1 ? "s" : ""}</span></header>
         ${F.leagues.length ? `<div class="chips" style="margin-bottom:12px">${F.leagues.map(c => `<button class="chip" data-fanleague="${c}" aria-pressed="${c === code}">${esc(F.meta[c]?.name || c)}</button>`).join("")}</div>` : ""}

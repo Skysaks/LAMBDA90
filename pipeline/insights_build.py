@@ -57,7 +57,7 @@ def main():
         T = T.sort_values(["date", "p"], ascending=[True, False]).groupby("date").head(8)
         band = lambda lo, hi: T[(T.p >= lo) & (T.p < hi)]
         bt = dict(n=int(len(T)), jours=int(T.date.nunique()), hit=float(T.won.mean()), p_moy=float(T.p.mean()), cote_moy=float(T.o.mean()), roi=float((T.won * T.o).mean() - 1),
-                  roi_ic=float(1.96 * (T.won * T.o).std() / math.sqrt(len(T))), dc_hit=float(T.dcw.mean()), par_conf=[dict(lab=f"{int(lo*100)}–{int(hi*100)} %", n=int(len(b)), hit=float(b.won.mean()), p=float(b.p.mean()), roi=float((b.won * b.o).mean() - 1))
+                  roi_ic=float(1.96 * (T.won * T.o).std() / math.sqrt(len(T))), dc_hit=float(T.dcw.mean()), par_conf=[dict(lab=f"{int(lo*100)} % et plus" if hi > 1 else f"moins de {int(hi*100)} %" if lo == 0 else f"{int(lo*100)}–{int(hi*100)} %", n=int(len(b)), hit=float(b.won.mean()), p=float(b.p.mean()), roi=float((b.won * b.o).mean() - 1))
                                                      for lo, hi in ((0.7, 1.01), (0.6, 0.7), (0.5, 0.6), (0, 0.5)) for b in [band(lo, hi)] if len(b)])
     out = dict(twins=twins, patience=rows, backtest_top=bt)
     (ROOT / "out").mkdir(exist_ok=True); json.dump(out, open(ROOT / "out" / "insights.json", "w"), ensure_ascii=False, separators=(",", ":"))

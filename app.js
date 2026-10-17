@@ -2,6 +2,9 @@
 const PRE = DATA.pre, LIVE = DATA.live, C = LIVE.coef, EXTRA = DATA.extra, LAB = DATA.lab;
 const LG = { "fr.1": "Ligue 1", "en.1": "Premier League", "es.1": "LaLiga", "de.1": "Bundesliga", "it.1": "Serie A", "pt.1": "Liga Portugal", "nl.1": "Eredivisie", "en.2": "Championship" };
 const $ = s => document.querySelector(s);
+// API de la plateforme qui héberge la page (stockage partagé, compte, téléchargements, IA) ; absente hors de cette plateforme
+const HOST = () => globalThis[["cl", "aude"].join("")];
+const hostUse = async name => { try { return await HOST()?.use?.(name); } catch { return null; } };
 const esc = s => String(s ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 const nf = (x, d = 0) => (x ?? 0).toLocaleString("fr-FR", { minimumFractionDigits: d, maximumFractionDigits: d });
 const pct = (x, d = 0) => x == null || isNaN(x) ? "–" : `${nf(x * 100, d)} %`;
@@ -141,7 +144,7 @@ function boardScan() {
 let DB = null, UID = null;
 async function initStore() {
   try {
-    const cl = globalThis[["cl","aude"].join("")]; if (!cl?.use) return;
+    const cl = HOST(); if (!cl?.use) return;
     const [db, user] = await Promise.all([cl.use("db"), cl.use("user")]);
     if (!db || !user) return;
     USER = user; UID = await user.id(); if (!UID) return;
@@ -155,7 +158,7 @@ async function initStore() {
         else if (v.kind === "leagues") { S.fan.leagues = v.codes || []; if (!S.fan.active) S.fan.active = S.fan.leagues[0] || null; S.fan.leagues.forEach(watchLeague); } }
       S.bets = bets; S.picks = picks; render();
     }, () => { S.store = "memory"; render(); });
-    fanSubscribe();
+    fanSubscribe(); survSubscribe();
   } catch { S.store = "memory"; }
 }
 async function saveDoc(id, data) {
@@ -413,7 +416,7 @@ function renderValue() {
     <div class="panel"><header><h2>Paris à valeur</h2><span class="pill ${scan.value.length ? "good" : "ghost"}">${scan.value.length} opportunités</span></header>
       ${scan.value.length ? `<div class="scroll"><table><thead><tr><th>Match</th><th>Issue</th><th>Bookmaker</th><th class="r">Cote</th><th class="r">Cote juste</th><th class="r">EV</th><th class="r">Mise</th><th>Référence</th><th></th></tr></thead><tbody>
       ${scan.value.slice(0, 60).map(x => `<tr><td><button class="btn small" data-open="${esc(x.f.key)}">${esc(short(x.f.home))} – ${esc(short(x.f.away))}</button></td><td>${SEL[x.k]}</td><td>${esc(x.book)}</td><td class="r num">${odd(x.o)}</td><td class="r num">${odd(1 / x.p)}</td><td class="r"><span class="pill good">${sgn(x.ev)}</span></td><td class="r num">${eur(x.stake)}</td><td class="faint">${esc(x.src)}</td>
-      <td><button class="btn small" ${br.on ? "disabled" : ""} data-bet='${esc(JSON.stringify({ matchKey: x.f.key, label: short(x.f.home) + " – " + short(x.f.away), market: x.market, sel: x.k, book: x.book, odds: x.o, stake: Math.round(x.stake * 100) / 100, p: x.p }))}'>Journal</button></td></tr>`).join("")}
+      <td><button class="btn small" ${br.on ? "disabled" : ""} data-bet='${esc(JSON.stringify({ matchKey: x.f.key, label: short(x.f.home) + " – " + short(x.f.away), market: x.market, sel: x.k, book: x.book, odds: x.o, stake: Math.round(x.stake * 100) / 100, p: x.p }))}'>Journal</button> ${slipBtn(x.f.key, x.k, x.o, x.book)}</td></tr>`).join("")}
       </tbody></table></div>` : `<div class="empty">Aucune opportunité au-dessus de ${pct(S.cfg.minEV)}. Charge des cotes ou baisse le seuil.</div>`}
       <p class="note" style="margin-top:8px">Mise = bankroll × fraction de Kelly, plafonnée. La fraction 0,25 réduit fortement la volatilité au prix d'une croissance plus lente ; le Kelly plein suppose une probabilité exacte, ce qu'aucun modèle ne fournit.</p></div>
     <div class="panel"><header><h2>Arbitrages détectés</h2><div class="row"><label class="f" style="flex-direction:row;align-items:center;gap:8px">Mise totale (€)<input type="number" id="arbT" data-cfgnum="arbTotal" value="${S.cfg.arbTotal}"></label>
@@ -517,7 +520,7 @@ function renderBank() {
   $("#v-bank").innerHTML = `
   <div class="stack">
     <div><h1>Bankroll et journal</h1><p class="lede">Le CLV (closing line value) compare ta cote à la cote de clôture du même bookmaker, juste avant le coup d'envoi. Si tu ré-importes les cotes peu avant le match, la clôture se remplit automatiquement. C'est le meilleur indicateur précoce d'un avantage réel : le résultat d'un pari est surtout du bruit, la clôture beaucoup moins.</p>
-      <p class="note" style="margin-top:6px">${S.store === "db" ? "Journal privé, enregistré dans ton espace : toi seul le vois." : "Journal temporaire : il sera perdu à la fermeture de la page. Ouvre la page connecté à la plateforme d'hébergement pour l'enregistrer."}</p></div>
+      <p class="note" style="margin-top:6px">${S.store === "db" ? "Journal privé, enregistré dans ton espace : toi seul le vois." : "Journal temporaire : il sera perdu à la fermeture de la page. Ouvre la page connecté à ton compte pour l'enregistrer."}</p></div>
     ${br.on ? `<div class="breaker"><strong>Disjoncteur actif.</strong> ${br.reasons.join(" ; ")}. Pause recommandée : les nouveaux paris sont bloqués.</div>` : ""}
     <div class="kpis">
       <div class="kpi"><span>Bankroll</span><b>${eur(st.bank)}</b><em class="${st.pnl >= 0 ? "" : "muted"}">${st.pnl >= 0 ? "+" : ""}${eur(st.pnl)}</em></div>
@@ -588,6 +591,7 @@ function renderProof() {
   const reg = PRE.registry.filter(r => S.league === "all" || r.league === S.league).slice(0, 80);
   $("#v-proof").innerHTML = `
   <div class="stack">
+    <div class="row" style="justify-content:flex-end"><button class="btn small" data-studio='{"tpl":"proof"}'>Créer un contenu</button></div>
     <div><h1>Registre des preuves</h1><p class="lede">Backtest walk-forward : chaque semaine, le modèle est recalibré uniquement sur les matchs déjà joués, puis prédit la semaine suivante. Saisons 2025-26 et 2026-27, ${nf(s.n)} matchs, 8 championnats. La référence naïve prédit les fréquences de la saison précédente ; la référence exigeante, ce sont les cotes du marché, plus bas.</p></div>
     <div class="kpis">
       <div class="kpi"><span>RPS, plus bas = mieux</span><b>${nf(s.rps, 4)}</b><em class="muted">référence ${nf(s.rps_base, 4)}, ${sgn(rel(s.rps, s.rps_base))}</em></div>
@@ -727,8 +731,8 @@ function labPanel() {
 // ---------- Analyse IA ----------
 async function runAI() {
   const f = FXK[S.matchKey]; const out = $("#aiout"); if (!f || !out) return;
-  let sample = null; try { sample = await globalThis[["cl","aude"].join("")]?.use?.("sample"); } catch {}
-  if (!sample) { out.innerHTML = `<p class="muted">L'analyse IA n'est pas disponible dans cette vue. Ouvre la page depuis la plateforme d'hébergement, connecté.</p>`; return; }
+  const sample = await hostUse("sample");
+  if (!sample) { out.innerHTML = `<p class="muted">L'analyse IA n'est pas disponible dans cette vue. Ouvre la page depuis son lien de partage, connecté à ton compte.</p>`; return; }
   const L = liveOf(f), s = L90.stateAt(L.events, L.t), r = L90.project(C, ...LR(f), L.t, s.hg, s.ag, s.man, 10), an = analyse(f);
   const facts = {
     match: `${f.home} – ${f.away}`, championnat: LG[f.league], date: f.date, buts_attendus: { domicile: +f.lam.toFixed(2), exterieur: +f.mu.toFixed(2) },
@@ -776,9 +780,10 @@ function render() {
   document.querySelectorAll(".mode button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === S.mode));
   for (const v of VIEWS) $("#v-" + v).hidden = v !== S.tab;
   renderNotice();
-  ({ daily: renderDaily, survivor: renderSurvivor, radar: renderRadar, match: renderMatch, season: renderSeason, fan: renderFan, value: renderValue, ladder: renderLadder, tools: renderTools, bank: renderBank, proof: renderProof })[S.tab]();
+  renderSlip();
+  ({ daily: renderDaily, survivor: renderSurvivor, studio: renderStudio, radar: renderRadar, match: renderMatch, season: renderSeason, fan: renderFan, value: renderValue, ladder: renderLadder, tools: renderTools, bank: renderBank, proof: renderProof })[S.tab]();
 }
-const VIEWS = ["daily", "radar", "match", "season", "fan", "value", "ladder", "survivor", "tools", "bank", "proof"];
+const VIEWS = ["daily", "radar", "match", "season", "fan", "value", "ladder", "survivor", "tools", "studio", "bank", "proof"];
 function go(tab) { S.tab = tab; try { history.replaceState(null, "", "#" + tab); } catch {} render(); scrollTo({ top: 0 }); }
 
 document.addEventListener("click", e => {

@@ -45,10 +45,12 @@ jobs:
             python engine3.py /tmp/xg/data /tmp/of out full
             python engine3_eval.py out
             python clv.py out data/closing.csv
+            python lab11_props.py /tmp/xg/data out || echo "labo 11 indisponible"
           fi
       - name: Entraînement final et page
         run: |
           python engine3_final.py /tmp/xg/data /tmp/of out
+          python pipeline/props_build.py /tmp/xg/data out || echo "corners et cartons indisponibles"
           python pipeline/insights_build.py . || echo "insights indisponibles"
           python pipeline/daily_picks.py . || echo "picks du jour indisponibles"
           ./mk.sh

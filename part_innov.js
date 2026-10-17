@@ -47,3 +47,28 @@ function journalAutoSettle() {
   return n;
 }
 document.addEventListener("click", e => { if (!e.target.closest("[data-act=autosettle]")) return; const n = journalAutoSettle(); toast(n ? `${n} paris réglés avec les résultats` : "Aucun pari réglable pour l'instant"); });
+// ---------- Corners et cartons : forces d'équipe rapprochées de la moyenne du championnat (labo 11), loi binomiale négative ----------
+const PROPS = EXTRA.props;
+function propsOf(f) {
+  const L = PROPS?.leagues?.[f.league], P = PROPS?.params; if (!L || !P) return null;
+  const find = name => { if (!name) return null; if (L.teams[name]) return L.teams[name]; let best = null, bs = 0; for (const t in L.teams) { const s = L90.nameScore(name, t); if (s > bs) { bs = s; best = t; } } return bs >= 0.6 ? L.teams[best] : null; };
+  const th = find(f.xn?.[0] || f.home), ta = find(f.xn?.[1] || f.away), out = {};
+  for (const [k, i] of [["corners", 0], ["cartons", 2]]) {
+    const [Lh, La] = L[k], Lm = (Lh + La) / 2, w = P[k]?.w ?? 0, ok = !!(th && ta);
+    const rh = ok ? Math.pow((th[i] / Lm) * (ta[i + 1] / Lm), w) : 1, ra = ok ? Math.pow((ta[i] / Lm) * (th[i + 1] / Lm), w) : 1;
+    out[k] = { h: Lh * rh, a: La * ra, r: P[k]?.dist === "nb" ? P[k].r : null, known: ok };
+  }
+  return out;
+}
+function cornersBlock(f) {
+  const p = propsOf(f); if (!p) return "";
+  const lab = LAB.deep?.lab11, h = short(f.home), a = short(f.away), c = p.corners, k = p.cartons, tc = c.h + c.a, tk = k.h + k.a;
+  const rows = (lines, mu, r) => lines.map(L => `<tr><td>Plus de ${nf(L, 1)}</td><td class="r num">${pct(1 - nbCdf(Math.floor(L), mu, r))}</td><td class="r num">${odd(1 / (1 - nbCdf(Math.floor(L), mu, r)))}</td><td class="r num">${pct(nbCdf(Math.floor(L), mu, r))}</td></tr>`).join("");
+  const [mh, ml, ma] = moreOf(c.h, c.a);
+  return `<div class="panel"><header><h2>Corners et cartons</h2><span class="note">${c.known ? "Forces des deux équipes" : "Moyenne du championnat (équipe sans historique dans cette division)"}</span></header>
+    <div class="readouts"><div class="ro"><span>Corners attendus</span><b>${nf(tc, 1)}</b><span>${esc(h)} ${nf(c.h, 1)} · ${esc(a)} ${nf(c.a, 1)}</span></div><div class="ro"><span>Cartons attendus</span><b>${nf(tk, 1)}</b><span>${esc(h)} ${nf(k.h, 1)} · ${esc(a)} ${nf(k.a, 1)}</span></div></div>
+    <div class="sp-wide" style="margin-top:10px"><span>Plus de corners</span>${triBar(mh, ml, ma, h, "Égalité", a)}</div>
+    <div class="grid2" style="margin-top:10px"><div class="scroll"><table><thead><tr><th>Corners</th><th class="r">Proba</th><th class="r">Cote juste</th><th class="r">Moins</th></tr></thead><tbody>${rows([7.5, 8.5, 9.5, 10.5, 11.5], tc, c.r)}</tbody></table></div>
+      <div class="scroll"><table><thead><tr><th>Cartons</th><th class="r">Proba</th><th class="r">Cote juste</th><th class="r">Moins</th></tr></thead><tbody>${rows([2.5, 3.5, 4.5, 5.5], tk, k.r)}</tbody></table></div></div>
+    <p class="note" style="margin-top:8px">${lab?.corners ? `Validé sur ${nf(lab.corners.n_test)} matchs de 2025-26 : les moyennes d'équipe brutes font pire que la simple moyenne du championnat ; rapprochées à moitié de cette moyenne, avec une loi binomiale négative, elles font au moins aussi bien (gain non prouvé statistiquement). ` : ""}Pas de cotes de corners chez tes bookmakers dans nos données : compare la cote juste à celle de ton bookmaker avant de jouer.</p></div>`;
+}

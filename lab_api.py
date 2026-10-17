@@ -1,5 +1,5 @@
 """Labo API : la composition réellement alignée apporte-t-elle une information que les cotes n'ont pas ?
-Tourne dans GitHub Actions (le bac à sable de l'assistant n'atteint pas les API). Reprend là où il s'est arrêté (cache),
+Tourne dans GitHub Actions (l'environnement de développement n'atteint pas les API). Reprend là où il s'est arrêté (cache),
 s'arrête proprement au budget d'appels du jour.
 
 Données : API-Football v3 (secret API_FOOTBALL_KEY) — matchs terminés, onzes, minutes, notes, buts de chaque joueur.
