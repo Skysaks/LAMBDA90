@@ -137,6 +137,7 @@ function renderTools() {
     <div class="panel"><header><h2>${val ? "Relief de la valeur" : "Marges par championnat"}</h2><div class="chips"><button class="chip" data-toolv="v" data-v="value" aria-pressed="${val}">Valeur</button><button class="chip" data-toolv="v" data-v="margin" aria-pressed="${!val}">Marges</button></div></header>
       ${val ? `<p class="muted" style="margin:0 0 8px">Chaque barre : la meilleure cote de tes bookmakers sur une issue, comparée à la cote juste Pinnacle. Au-dessus du plan lumineux, le pari a une espérance positive ; en dessous, tu paies la marge. Couleur : le bookmaker qui offre cette cote.</p>` : ""}
       ${b3Panel("t3d")}${side}<p class="note">Glisse pour tourner ; survole ou touche une barre pour le détail.</p></div>
+    ${patienceBlock()}
     <div class="panel"><header><h2>Cote boostée : rentable ou pas ?</h2><span class="note">Winamax, Betclic, Unibet en publient chaque jour</span></header>${boostBlock()}</div>
     <div class="panel"><header><h2>Freebets et paris remboursés</h2><span class="note">Conversion en gain garanti avec tes bookmakers</span></header>${fbBlock()}</div>
     <div class="grid2">

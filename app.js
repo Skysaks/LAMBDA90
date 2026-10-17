@@ -8,7 +8,7 @@ const pct = (x, d = 0) => x == null || isNaN(x) ? "–" : `${nf(x * 100, d)} %`;
 const odd = x => x == null || !isFinite(x) || x <= 1 ? "–" : nf(x, 2);
 const eur = x => `${nf(x, 2)} €`;
 const sgn = (x, d = 1) => (x > 0 ? "+" : "") + nf(x * 100, d) + " %";
-const short = n => n === "Paris FC" ? n : n.replace(/\b(FC|AFC|CF|SC|AC|SSC|RC|OGC|CD|UD|RCD|SV|TSG|VfB|VfL|1\. ?|Club|de Fútbol|Football Club|Calcio|Alsace|1899|1901|1904|1909|04|05|29)\b\.?/g, "").replace(/\s+/g, " ").trim();
+const short = n => n === "Paris FC" ? n : n.replace(/\b(FC|AFC|CF|SC|AC|SSC|RC|OGC|CD|UD|RCD|SV|TSG|VfB|VfL|1\. ?|Club|de Fútbol|Football Club|Calcio|Alsace|1899|1901|1904|1909|04|05|07|29)\b\.?/g, "").replace(/\s+/g, " ").trim();
 const keyOf = f => `${f.league}|${f.date}|${f.home}|${f.away}`;
 const FX = EXTRA.fixtures.map(f => ({ ...f, key: keyOf(f), m: L90.full(f, LAB.half_share[0], LAB.half_share[1], DATA.v3.wtot) }))
   .sort((a, b) => (a.date + (a.time || "")).localeCompare(b.date + (b.time || "")));
@@ -25,7 +25,7 @@ const lastResult = PRE.last_result, V3 = DATA.v3;
 
 // ---------- État ----------
 const S = {
-  tab: "radar", mode: "quant", league: "all", matchKey: FX[0]?.key, odds: {}, oddsSource: "demo",
+  tab: "daily", mode: "quant", league: "all", matchKey: FX[0]?.key, odds: {}, oddsSource: "demo",
   cfg: { devig: "shin", ref: "auto", minEV: 0.02, kfrac: 0.25, cap: 0.02, offshore: false, myBooks: ["Bet365", "Winamax (FR)", "Betclic (FR)", "Unibet (FR)"], onlyMine: true, bank: 1000, ddMax: 0.2, dayLoss: 0.05, arbTotal: 100, arbRound: 0.5 },
   live: {}, bets: [], picks: {}, store: "memory", ai: {}, mtab: "apercu", day: "all", q: "", seasonLg: "fr.1", pred: {}, combo: {}
 };
@@ -527,7 +527,7 @@ function renderBank() {
       <div class="kpi"><span>Paris réglés</span><b>${st.settled}</b><em class="${st.settled < 30 ? "" : "faint"}" style="${st.settled < 30 ? "color:var(--warn)" : ""}">${st.settled < 30 ? "moins de 30 : trop peu pour conclure" : st.won + " gagnés"}</em></div>
     </div>
     <div class="panel"><header><h2>Courbe de bankroll</h2></header><div id="bankchart">${st.curve.length > 1 ? "" : `<div class="empty">La courbe apparaît après le premier pari réglé.</div>`}</div></div>
-    <div class="panel"><header><h2>Journal</h2><div class="row"><span class="note">${bets.length} paris</span>${bets.some(b => !b.close && closeFor(b)) ? `<button class="btn small" data-act="autoclose">Remplir les cotes de clôture</button>` : ""}</div></header>
+    <div class="panel"><header><h2>Journal</h2><div class="row"><span class="note">${bets.length} paris</span>${bets.some(b => b.result === "pending" && b.matchKey) ? `<button class="btn small" data-act="autosettle">Régler avec les résultats</button>` : ""}${bets.some(b => !b.close && closeFor(b)) ? `<button class="btn small" data-act="autoclose">Remplir les cotes de clôture</button>` : ""}</div></header>
       ${bets.length ? `<div class="scroll"><table><thead><tr><th>Date</th><th>Match</th><th>Issue</th><th>Bookmaker</th><th class="r">Cote</th><th class="r">Mise</th><th class="r">Clôture</th><th class="r">CLV</th><th>Résultat</th><th></th></tr></thead><tbody>
       ${bets.map(b => `<tr><td class="faint num">${new Date(b.ts).toLocaleDateString("fr-FR")}</td><td>${esc(b.label)}</td><td>${SEL[b.sel] || esc(b.sel)}</td><td>${esc(b.book)}</td><td class="r num">${odd(b.odds)}</td><td class="r num">${eur(b.stake)}</td>
         <td class="r"><input type="number" step="0.01" id="close-${b.id}" data-close="${b.id}" value="${b.close ?? ""}" aria-label="Cote de clôture"></td>
@@ -544,6 +544,7 @@ function renderBank() {
           <label class="f">Mise (€)<input type="number" step="1" id="mb-stake"></label>
           <button class="btn primary" data-act="manualbet" ${br.on ? "disabled" : ""}>Ajouter</button>
         </div></details></div>
+    ${coachBlock()}
     <div class="panel"><header><h2>Disjoncteur</h2><span class="note">Règles de discipline fixées à froid</span></header>
       <div class="row" style="align-items:flex-end">
         <label class="f">Capital de départ (€)<input type="number" id="bank2" step="50" data-cfgnum="bank" value="${S.cfg.bank}"></label>
@@ -769,15 +770,15 @@ function md(t) {
 // ---------- Rendu général et événements ----------
 function render() {
   document.body.classList.toggle("fan", S.mode === "fan");
-  if (S.mode === "fan" && ["value", "bank", "ladder", "tools"].includes(S.tab)) S.tab = "radar";
+  if (S.mode === "fan" && ["value", "bank", "ladder", "tools", "survivor"].includes(S.tab)) S.tab = "daily";
   if (S.tab === "fan") S.fan.joinCode = S.fan.joinCode || "";
   document.querySelectorAll(".tab").forEach(t => t.setAttribute("aria-selected", t.dataset.tab === S.tab));
   document.querySelectorAll(".mode button").forEach(b => b.setAttribute("aria-pressed", b.dataset.mode === S.mode));
   for (const v of VIEWS) $("#v-" + v).hidden = v !== S.tab;
   renderNotice();
-  ({ radar: renderRadar, match: renderMatch, season: renderSeason, fan: renderFan, value: renderValue, ladder: renderLadder, tools: renderTools, bank: renderBank, proof: renderProof })[S.tab]();
+  ({ daily: renderDaily, survivor: renderSurvivor, radar: renderRadar, match: renderMatch, season: renderSeason, fan: renderFan, value: renderValue, ladder: renderLadder, tools: renderTools, bank: renderBank, proof: renderProof })[S.tab]();
 }
-const VIEWS = ["radar", "match", "season", "fan", "value", "ladder", "tools", "bank", "proof"];
+const VIEWS = ["daily", "radar", "match", "season", "fan", "value", "ladder", "survivor", "tools", "bank", "proof"];
 function go(tab) { S.tab = tab; try { history.replaceState(null, "", "#" + tab); } catch {} render(); scrollTo({ top: 0 }); }
 
 document.addEventListener("click", e => {
@@ -861,7 +862,7 @@ document.addEventListener("paste", e => {
 document.addEventListener("mouseover", e => { const t = e.target.closest("[data-tip]"); if (t) showTip(e, t.dataset.tip); });
 document.addEventListener("mousemove", e => { const t = e.target.closest("[data-tip]"); if (t) showTip(e, t.dataset.tip); });
 document.addEventListener("mouseout", e => { if (e.target.closest("[data-tip]")) hideTip(); });
-let rz; addEventListener("resize", () => { clearTimeout(rz); rz = setTimeout(render, 200); });
+let rz, rzW = innerWidth; addEventListener("resize", () => { if (innerWidth === rzW) return; rzW = innerWidth; clearTimeout(rz); rz = setTimeout(render, 200); });  // la barre d'adresse mobile change la hauteur : on ne redessine que si la largeur change
 
 // ---------- Démarrage ----------
 const saved = ls.get("odds", undefined);

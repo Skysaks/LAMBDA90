@@ -49,6 +49,8 @@ jobs:
       - name: Entraînement final et page
         run: |
           python engine3_final.py /tmp/xg/data /tmp/of out
+          python pipeline/insights_build.py . || echo "insights indisponibles"
+          python pipeline/daily_picks.py . || echo "picks du jour indisponibles"
           ./mk.sh
       - name: Publier dans le dépôt
         run: |

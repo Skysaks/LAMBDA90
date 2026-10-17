@@ -5,7 +5,12 @@ Plateforme de probabilités football : moteur Dixon-Coles + tirs cadrés + pi-ra
 Onglet Outils (cotes réelles de Bet365, Winamax, Betclic, Unibet face au prix juste Pinnacle) : relief 3D de la valeur, marges 3D par championnat,
 cote boostée rentable ou pas, conversion de freebets et de paris remboursés en gain garanti, couverture et cash-out, dutching.
 Onglet Objectif ×2 : montante intégrale 5 à 10 paliers, enchaînée dans le temps, avec son escalier 3D (capital et chance d'y arriver).
-Onglet Match : créateur de paris avec matrice des scores recalée sur Pinnacle et marge du bookmaker.
+Onglet Match : créateur de paris avec matrice des scores recalée sur Pinnacle et marge du bookmaker ; jumeaux historiques (les 150 matchs passés aux cotes de clôture les plus proches).
+Onglet Jour (page d'accueil) : Top Picks 6 à 8, Hot Picks, Cold Games argumentés, figés chaque matin par pipeline/daily_picks.py dans data/daily_picks.json
+et réglés avec les résultats : registre public non modifiable, bilan de la veille, images à partager.
+Onglet Survivant : bankroll, objectif, durée, mise minimale ; 48 plans simulés (Monte Carlo), surface 3D, plan optimal selon le risque toléré, partie jouée sur les vrais matchs avec Game Over.
+Bankroll : coach anti-tilt (chasse aux pertes, glissement vers les grosses cotes, rafales, CLV) et règlement automatique du journal.
+Outils : prix de la patience (cotes d'ouverture et de clôture, biais favori-outsider) calculé par pipeline/insights_build.py.
 
 ## Mise à jour automatique (coût : 0 € au départ)
 

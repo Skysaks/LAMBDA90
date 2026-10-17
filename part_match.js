@@ -130,6 +130,7 @@ function renderMatch() {
         <div class="row" style="margin-top:14px"><span class="pill ghost">Ensemble Dixon-Coles, tirs cadrés et pi-ratings</span><span class="pill ghost">pi ${f.pi > 0 ? "+" : ""}${nf(f.pi, 2)} but d'écart attendu</span></div></div>
       <div class="panel"><header><h2>Scores exacts</h2><span class="note">Top 3 : ${f.m.scores.slice(0, 3).map(s => `${s.s} (${pct(s.p)})`).join(", ")}</span></header>${heatmap(f)}</div>
     </div>
+    ${twinsBlock(f)}
     <div class="panel"><header><h2>Indice de confiance</h2></header><div class="row">${confidence(f)}</div></div>
     <div class="grid2"><div class="panel"><header><h2>Forme et confrontations</h2></header>${formBlock(f)}</div>
     <div class="panel"><header><h2>Statistiques des deux équipes</h2><div class="legend"><span><i class="key h"></i>${esc(h)}</span><span><i class="key a"></i>${esc(a)}</span></div></header>${statsBlock(f)}</div></div>

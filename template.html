@@ -269,18 +269,58 @@ td.num,th.num,.r.num{white-space:nowrap}
 .b3-legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
 .b3-legend b{color:var(--ink);margin-left:4px}
 @media (max-width:520px){.b3-l{font-size:10px}.b3-l.col{font-size:11px}.b3-l.row{max-width:96px}}
+.eyebrow{display:block;font:600 12px var(--f-display);letter-spacing:.14em;text-transform:uppercase;color:var(--signal)}
+.ring{flex:none;display:block}.ring-t{font-family:var(--f-display);font-weight:500;fill:var(--ink)}
+.day-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap}
+.recap{display:grid;grid-template-columns:auto 1fr;gap:24px;align-items:center;padding:22px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(120deg,rgba(61,220,151,.10),rgba(159,231,245,.04) 60%,transparent)}
+.recap-t{font:600 clamp(24px,3.4vw,38px)/1.1 var(--f-display);margin:4px 0 0}
+.recap-list{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}.rc{font-size:12px;padding:3px 9px;border-radius:999px;border:1px solid var(--line2);color:var(--ink2);white-space:nowrap}
+.rc.ok{border-color:rgba(61,220,151,.5);color:var(--good)}.rc.ko{border-color:rgba(255,107,107,.45);color:var(--bad)}
+.tp{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+.tp-row{display:grid;grid-template-columns:56px 1fr auto auto auto;gap:14px;align-items:center;padding:12px 14px;border-radius:14px;background:var(--panel2);border:1px solid var(--line)}
+.tp-rank{font:500 40px/1 var(--f-display);color:transparent;-webkit-text-stroke:1.4px var(--good);text-align:center}
+.tp-main{min-width:0;display:grid;gap:2px}.tp-main strong{font-size:16px}.tp-main .faint{font-size:12.5px}
+.tp-why summary{cursor:pointer;font-size:12.5px;color:var(--signal);margin-top:4px}.tp-why ul,.hc-why{margin:6px 0 0;padding-left:18px;font-size:13px;line-height:1.5;color:var(--ink2)}
+.tp-odds{display:grid;justify-items:end;gap:2px}.tp-odds b{font-size:18px}.tp-odds .faint{font-size:11.5px}
+.tp-act{display:grid;gap:6px}
+.spot .sp-wide{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;margin-top:10px}
+.spot .sp-wide>span,.sp-card>span{font-size:13px;color:var(--ink2)}
+.sp-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin-top:10px}
+.sp-card{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:8px}
+.sp-ring{display:flex;align-items:center;gap:12px}.sp-ring b{font:500 17px var(--f-display)}.sp-card small{color:var(--ink3);font-size:12px}
+.tri{display:flex;height:12px;border-radius:999px;overflow:hidden;gap:2px;margin-top:10px}.tri i{display:block}
+.tri-l{display:grid;grid-template-columns:1fr 1fr 1fr;margin-top:8px;font-size:12.5px;color:var(--ink2)}.tri-l b{display:block;font:500 22px var(--f-display);color:var(--ink)}
+.hc,.cc{background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.hotp .hc{border-left:3px solid var(--warn)}.coldp .cc{border-left:3px solid #7FA3FF}
+.hc-top{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}.hc-top>div:first-child{display:grid;gap:2px;min-width:0}.hc-top .faint{font-size:12.5px}
+.hc-n{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:flex-end}.hc-n b{font-size:18px}.hc-n .faint{font-size:12px}
+.twins .tw-bar{display:flex;height:14px;border-radius:999px;overflow:hidden;gap:2px}.twins .tw-bar i{display:block}
+.tw-leg{display:flex;justify-content:space-between;margin-top:8px;font-size:12.5px;color:var(--ink2)}.tw-leg b{font:500 18px var(--f-display);color:var(--ink);margin-right:6px}
+.sv-top{display:grid;grid-template-columns:auto 1fr;gap:28px;align-items:center}
+.sv-bank{font:600 clamp(34px,5vw,56px)/1 var(--f-display);margin:4px 0}
+.sv-bar{position:relative;height:16px;border-radius:999px;background:var(--panel2);border:1px solid var(--line2);overflow:visible;margin-bottom:6px}
+.sv-bar i{display:block;height:100%;border-radius:999px;background:linear-gradient(90deg,var(--signal),var(--good))}
+.sv-bar b{position:absolute;top:-4px;width:2px;height:22px;background:var(--bad)}
+.sv-props{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.sv-end{text-align:center;padding:34px 20px}.sv-end.over{background:linear-gradient(180deg,rgba(255,107,107,.14),transparent)}.sv-end.won{background:linear-gradient(180deg,rgba(61,220,151,.16),transparent)}
+.sv-big{font:700 clamp(36px,7vw,72px)/1 var(--f-display);letter-spacing:-.02em;margin-bottom:12px}.sv-end.over .sv-big{color:var(--bad)}.sv-end.won .sv-big{color:var(--good)}
+.coach{list-style:none;padding:0;margin:14px 0 0;display:grid;gap:8px}.coach li{padding:10px 12px;border-radius:10px;background:var(--panel2);border-left:3px solid var(--line2);font-size:13.5px;line-height:1.5}
+.coach li.good{border-left-color:var(--good)}.coach li.warn{border-left-color:var(--warn)}.coach li.bad{border-left-color:var(--bad)}
+@media (max-width:640px){.recap{grid-template-columns:1fr;justify-items:start}.tp-row{grid-template-columns:34px 1fr auto;gap:10px}.tp-rank{font-size:28px}.tp-odds{grid-column:2;justify-items:start;grid-auto-flow:column;align-items:center;gap:8px}.tp-ring{grid-row:1;grid-column:3}.tp-act{grid-column:1/-1;grid-auto-flow:column}.sv-top{grid-template-columns:1fr;gap:10px}.hc-top{flex-direction:column}.hc-n{justify-content:flex-start}}
 </style>
 
 <header class="top">
   <div class="wrap">
-    <a class="brand" href="#radar" data-tab="radar"><span class="mark">λ</span><b>Lambda 90</b></a>
+    <a class="brand" href="#daily" data-tab="daily"><span class="mark">λ</span><b>Lambda 90</b></a>
     <nav class="tabs" role="tablist" aria-label="Sections">
+      <button class="tab" role="tab" data-tab="daily">Jour</button>
       <button class="tab" role="tab" data-tab="radar">Radar</button>
       <button class="tab" role="tab" data-tab="match">Match</button>
       <button class="tab" role="tab" data-tab="season">Saison</button>
       <button class="tab" role="tab" data-tab="fan">Défis</button>
       <button class="tab quantonly" role="tab" data-tab="value">Value et arbitrage</button>
       <button class="tab quantonly" role="tab" data-tab="ladder">Objectif ×2</button>
+      <button class="tab quantonly" role="tab" data-tab="survivor">Survivant</button>
       <button class="tab quantonly" role="tab" data-tab="tools">Outils</button>
       <button class="tab quantonly" role="tab" data-tab="bank">Bankroll</button>
       <button class="tab" role="tab" data-tab="proof">Registre</button>
@@ -294,12 +334,14 @@ td.num,th.num,.r.num{white-space:nowrap}
 <div class="notice quantonly" id="notice"><div class="wrap" id="noticeBody"></div></div>
 
 <main class="wrap">
-  <section class="view" id="v-radar"></section>
+  <section class="view" id="v-daily"></section>
+  <section class="view" id="v-radar" hidden></section>
   <section class="view" id="v-match" hidden></section>
   <section class="view" id="v-season" hidden></section>
   <section class="view" id="v-fan" hidden></section>
   <section class="view" id="v-value" hidden></section>
   <section class="view" id="v-ladder" hidden></section>
+  <section class="view" id="v-survivor" hidden></section>
   <section class="view" id="v-tools" hidden></section>
   <section class="view" id="v-bank" hidden></section>
   <section class="view" id="v-proof" hidden></section>
