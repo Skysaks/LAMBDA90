@@ -256,3 +256,86 @@ vu_le,event_id,sport_key,commence_time,home,away,market,point,outcome,book,fr,pr
 2026-10-16T19:52+00:00,7a8f8a079740c8d4b39c995cdd304e0c,soccer_efl_champ,2026-10-17T14:00:00Z,Norwich City,Portsmouth,h2h,,Portsmouth,leovegas_se,0,4.75,4.31,0.2194,0.04217
 2026-10-16T19:52+00:00,7a8f8a079740c8d4b39c995cdd304e0c,soccer_efl_champ,2026-10-17T14:00:00Z,Norwich City,Portsmouth,h2h,,Draw,leovegas_se,0,3.95,3.72,0.25581,0.01046
 2026-10-16T19:52+00:00,7a8f8a079740c8d4b39c995cdd304e0c,soccer_efl_champ,2026-10-17T14:00:00Z,Norwich City,Portsmouth,h2h,,Draw,gtbets,0,4.0,3.72,0.25581,0.02325
+2026-10-17T09:09+00:00,ad25a350c89b64715e15c59cde5653d3,soccer_france_ligue_one,2026-10-17T18:45:00Z,Lille,Brest,h2h,,Brest,onexbet,0,3.9,3.69,0.26153,0.01998
+2026-10-17T09:09+00:00,ad25a350c89b64715e15c59cde5653d3,soccer_france_ligue_one,2026-10-17T18:45:00Z,Lille,Brest,h2h,,Draw,leovegas_se,0,3.9,3.72,0.25936,0.01152
+2026-10-17T09:09+00:00,ad25a350c89b64715e15c59cde5653d3,soccer_france_ligue_one,2026-10-17T18:45:00Z,Lille,Brest,h2h,,Draw,unibet_se,0,3.9,3.72,0.25936,0.01152
+2026-10-17T09:09+00:00,ad25a350c89b64715e15c59cde5653d3,soccer_france_ligue_one,2026-10-17T18:45:00Z,Lille,Brest,h2h,,Brest,gtbets,0,3.99,3.69,0.26153,0.04352
+2026-10-17T09:09+00:00,ad25a350c89b64715e15c59cde5653d3,soccer_france_ligue_one,2026-10-17T18:45:00Z,Lille,Brest,h2h,,Brest,bet365,0,4.0,3.69,0.26153,0.04613
+2026-10-17T09:09+00:00,ad25a350c89b64715e15c59cde5653d3,soccer_france_ligue_one,2026-10-17T18:45:00Z,Lille,Brest,h2h,,Brest,market_avg,0,3.88,3.69,0.26153,0.01475
+2026-10-17T09:09+00:00,471f891b1f6516a864ad94c8eb649f5e,soccer_france_ligue_one,2026-10-18T18:45:00Z,Lyon,Nice,h2h,,Nice,unibet_se,0,5.2,4.81,0.19695,0.02415
+2026-10-17T09:09+00:00,471f891b1f6516a864ad94c8eb649f5e,soccer_france_ligue_one,2026-10-18T18:45:00Z,Lyon,Nice,h2h,,Nice,leovegas_se,0,5.2,4.81,0.19695,0.02415
+2026-10-17T09:09+00:00,0bbce95e5764e706e6c428bb52dc5536,soccer_france_ligue_one,2026-10-24T15:15:00Z,Toulouse,Troyes,h2h,,Toulouse,onexbet,0,1.75,1.65,0.58495,0.02367
+2026-10-17T09:09+00:00,0bbce95e5764e706e6c428bb52dc5536,soccer_france_ligue_one,2026-10-24T15:15:00Z,Toulouse,Troyes,h2h,,Toulouse,unibet_se,0,1.73,1.65,0.58495,0.01197
+2026-10-17T09:09+00:00,0bbce95e5764e706e6c428bb52dc5536,soccer_france_ligue_one,2026-10-24T15:15:00Z,Toulouse,Troyes,h2h,,Toulouse,leovegas_se,0,1.73,1.65,0.58495,0.01197
+2026-10-17T09:09+00:00,fcc34b753fc61a0cc0e11d7cb0a0c36b,soccer_france_ligue_one,2026-10-25T16:15:00Z,Marseille,Le Havre,h2h,,Le Havre,leovegas_se,0,5.3,4.77,0.19279,0.0218
+2026-10-17T09:09+00:00,fcc34b753fc61a0cc0e11d7cb0a0c36b,soccer_france_ligue_one,2026-10-25T16:15:00Z,Marseille,Le Havre,h2h,,Le Havre,unibet_se,0,5.3,4.77,0.19279,0.0218
+2026-10-17T09:09+00:00,764e6513cb3f348881503df70ccb90e0,soccer_epl,2026-10-17T11:30:00Z,Everton,Chelsea,h2h,,Draw,onexbet,0,3.84,3.64,0.26583,0.02077
+2026-10-17T09:09+00:00,764e6513cb3f348881503df70ccb90e0,soccer_epl,2026-10-17T11:30:00Z,Everton,Chelsea,h2h,,Draw,unibet_nl,0,3.85,3.64,0.26583,0.02343
+2026-10-17T09:09+00:00,764e6513cb3f348881503df70ccb90e0,soccer_epl,2026-10-17T11:30:00Z,Everton,Chelsea,h2h,,Draw,unibet_se,0,3.85,3.64,0.26583,0.02343
+2026-10-17T09:09+00:00,764e6513cb3f348881503df70ccb90e0,soccer_epl,2026-10-17T11:30:00Z,Everton,Chelsea,h2h,,Everton,bet365,0,3.2,3.05,0.31859,0.0195
+2026-10-17T09:09+00:00,764e6513cb3f348881503df70ccb90e0,soccer_epl,2026-10-17T11:30:00Z,Everton,Chelsea,h2h,,Draw,bet365,0,3.8,3.64,0.26583,0.01014
+2026-10-17T09:09+00:00,8f1945e7272bc7e89016439f5ab321c7,soccer_epl,2026-10-17T14:00:00Z,Brentford,Liverpool,h2h,,Brentford,onexbet,0,2.51,2.42,0.40329,0.01225
+2026-10-17T09:09+00:00,7895f97f2f9577f3b13287a3d086859d,soccer_epl,2026-10-17T14:00:00Z,Fulham,Hull City,h2h,,Fulham,onexbet,0,1.71,1.65,0.59328,0.01452
+2026-10-17T09:09+00:00,7895f97f2f9577f3b13287a3d086859d,soccer_epl,2026-10-17T14:00:00Z,Fulham,Hull City,h2h,,Fulham,gtbets,0,1.72,1.65,0.59328,0.02045
+2026-10-17T09:09+00:00,7895f97f2f9577f3b13287a3d086859d,soccer_epl,2026-10-17T14:00:00Z,Fulham,Hull City,h2h,,Fulham,bet365,0,1.73,1.65,0.59328,0.02638
+2026-10-17T09:09+00:00,bf2142d1ca76ba2fc9e61afce80f86c0,soccer_epl,2026-10-17T14:00:00Z,Manchester City,Ipswich Town,h2h,,Manchester City,onexbet,0,1.28,1.24,0.79104,0.01253
+2026-10-17T09:09+00:00,bf2142d1ca76ba2fc9e61afce80f86c0,soccer_epl,2026-10-17T14:00:00Z,Manchester City,Ipswich Town,h2h,,Draw,betfair_ex_eu,0,7.8,7.13,0.13041,0.0172
+2026-10-17T09:09+00:00,bf2142d1ca76ba2fc9e61afce80f86c0,soccer_epl,2026-10-17T14:00:00Z,Manchester City,Ipswich Town,h2h,,Draw,matchbook,0,7.8,7.13,0.13041,0.0172
+2026-10-17T09:09+00:00,bf2142d1ca76ba2fc9e61afce80f86c0,soccer_epl,2026-10-17T14:00:00Z,Manchester City,Ipswich Town,totals,3.5,Over,matchbook,0,1.92,1.84,0.52821,0.01415
+2026-10-17T09:09+00:00,d1bbbdcd3d430e70091b518369b559cf,soccer_epl,2026-10-17T16:30:00Z,Newcastle United,Aston Villa,h2h,,Aston Villa,onexbet,0,3.19,3.05,0.31882,0.01704
+2026-10-17T09:09+00:00,d1bbbdcd3d430e70091b518369b559cf,soccer_epl,2026-10-17T16:30:00Z,Newcastle United,Aston Villa,totals,3.0,Over,betanysports,0,2.0,1.93,0.50513,0.01026
+2026-10-17T09:09+00:00,dfd5d6648be46426e418801584d46a68,soccer_epl,2026-10-18T13:00:00Z,Bournemouth,Sunderland,h2h,,Sunderland,coolbet,0,3.7,3.51,0.27394,0.01359
+2026-10-17T09:09+00:00,f696a248965373d9071dc0662e5c58a8,soccer_epl,2026-10-18T15:30:00Z,Nottingham Forest,Arsenal,h2h,,Arsenal,onexbet,0,1.71,1.65,0.59217,0.01261
+2026-10-17T09:09+00:00,290ba8cd3f3a2e9252effca673bf5549,soccer_epl,2026-10-25T14:00:00Z,Liverpool,Brighton and Hove Albion,h2h,,Liverpool,onexbet,0,2.11,2.0,0.48072,0.01433
+2026-10-17T09:09+00:00,6436925dd15916d7041ba32b60000d48,soccer_spain_la_liga,2026-10-17T12:00:00Z,Espanyol,Atlético Madrid,h2h,,Espanyol,betfair_ex_eu,0,5.4,5.08,0.18738,0.01187
+2026-10-17T09:09+00:00,aef660734585649651415961a9d177c6,soccer_spain_la_liga,2026-10-17T14:15:00Z,Villarreal,Elche CF,h2h,,Elche CF,betfair_ex_eu,0,7.4,6.74,0.13892,0.02801
+2026-10-17T09:09+00:00,aef660734585649651415961a9d177c6,soccer_spain_la_liga,2026-10-17T14:15:00Z,Villarreal,Elche CF,h2h,,Elche CF,unibet_se,0,7.5,6.74,0.13892,0.0419
+2026-10-17T09:09+00:00,aef660734585649651415961a9d177c6,soccer_spain_la_liga,2026-10-17T14:15:00Z,Villarreal,Elche CF,h2h,,Elche CF,unibet_nl,0,7.5,6.74,0.13892,0.0419
+2026-10-17T09:09+00:00,aef660734585649651415961a9d177c6,soccer_spain_la_liga,2026-10-17T14:15:00Z,Villarreal,Elche CF,h2h,,Elche CF,matchbook,0,7.4,6.74,0.13892,0.02801
+2026-10-17T09:09+00:00,846e496fc232b2fc20214754836727d0,soccer_spain_la_liga,2026-10-17T16:30:00Z,Real Betis,Barcelona,h2h,,Real Betis,onexbet,0,6.29,5.87,0.16152,0.01593
+2026-10-17T09:09+00:00,846e496fc232b2fc20214754836727d0,soccer_spain_la_liga,2026-10-17T16:30:00Z,Real Betis,Barcelona,h2h,,Real Betis,betfair_ex_eu,0,6.4,5.87,0.16152,0.0337
+2026-10-17T09:09+00:00,846e496fc232b2fc20214754836727d0,soccer_spain_la_liga,2026-10-17T16:30:00Z,Real Betis,Barcelona,h2h,,Real Betis,unibet_nl,0,6.4,5.87,0.16152,0.0337
+2026-10-17T09:09+00:00,846e496fc232b2fc20214754836727d0,soccer_spain_la_liga,2026-10-17T16:30:00Z,Real Betis,Barcelona,h2h,,Real Betis,unibet_se,0,6.4,5.87,0.16152,0.0337
+2026-10-17T09:09+00:00,846e496fc232b2fc20214754836727d0,soccer_spain_la_liga,2026-10-17T16:30:00Z,Real Betis,Barcelona,h2h,,Real Betis,matchbook,0,6.4,5.87,0.16152,0.0337
+2026-10-17T09:09+00:00,f00cd1ea41fa39149729d14ebc07aa6c,soccer_spain_la_liga,2026-10-17T19:00:00Z,Valencia,Athletic Bilbao,h2h,,Athletic Bilbao,coolbet,0,2.4,2.31,0.42288,0.0149
+2026-10-17T09:09+00:00,f00cd1ea41fa39149729d14ebc07aa6c,soccer_spain_la_liga,2026-10-17T19:00:00Z,Valencia,Athletic Bilbao,h2h,,Athletic Bilbao,betfair_ex_eu,0,2.4,2.31,0.42288,0.0149
+2026-10-17T09:09+00:00,f00cd1ea41fa39149729d14ebc07aa6c,soccer_spain_la_liga,2026-10-17T19:00:00Z,Valencia,Athletic Bilbao,h2h,,Draw,unibet_se,0,3.5,3.33,0.2912,0.0192
+2026-10-17T09:09+00:00,f00cd1ea41fa39149729d14ebc07aa6c,soccer_spain_la_liga,2026-10-17T19:00:00Z,Valencia,Athletic Bilbao,h2h,,Draw,unibet_nl,0,3.5,3.33,0.2912,0.0192
+2026-10-17T09:09+00:00,f00cd1ea41fa39149729d14ebc07aa6c,soccer_spain_la_liga,2026-10-17T19:00:00Z,Valencia,Athletic Bilbao,h2h,,Athletic Bilbao,matchbook,0,2.4,2.31,0.42288,0.0149
+2026-10-17T09:09+00:00,1051298b4aca6f07113309bff598a5c1,soccer_spain_la_liga,2026-10-18T16:30:00Z,Málaga,Real Sociedad,h2h,,Draw,betfair_ex_eu,0,3.75,3.55,0.27083,0.01563
+2026-10-17T09:09+00:00,eccd63bf768e2f2a358b871d3f33a63d,soccer_spain_la_liga,2026-10-18T19:00:00Z,Real Madrid,Sevilla,h2h,,Sevilla,betfair_ex_eu,0,13.0,11.09,0.07808,0.0151
+2026-10-17T09:09+00:00,eccd63bf768e2f2a358b871d3f33a63d,soccer_spain_la_liga,2026-10-18T19:00:00Z,Real Madrid,Sevilla,h2h,,Sevilla,matchbook,0,13.0,11.09,0.07808,0.0151
+2026-10-17T09:09+00:00,4a88bc4de574d43ef34677fd8d78722f,soccer_spain_la_liga,2026-10-19T19:00:00Z,Getafe,Rayo Vallecano,h2h,,Draw,unibet_se,0,3.1,2.97,0.32611,0.01094
+2026-10-17T09:09+00:00,4a88bc4de574d43ef34677fd8d78722f,soccer_spain_la_liga,2026-10-19T19:00:00Z,Getafe,Rayo Vallecano,h2h,,Draw,unibet_nl,0,3.1,2.97,0.32611,0.01094
+2026-10-17T09:09+00:00,a362cccad837f1ffae61ff43a3536688,soccer_spain_la_liga,2026-10-21T18:00:00Z,Levante,Athletic Bilbao,h2h,,Draw,pmu_fr,1,3.3,3.09,0.30737,0.01431
+2026-10-17T09:09+00:00,d8eac776adb07b0e7f01d8736d097291,soccer_germany_bundesliga,2026-10-17T13:30:00Z,Union Berlin,Borussia Dortmund,h2h,,Borussia Dortmund,onexbet,0,1.63,1.57,0.62424,0.01751
+2026-10-17T09:09+00:00,606d65d57a9a6d8f9b53faee1ad10009,soccer_germany_bundesliga,2026-10-17T13:30:00Z,FC Schalke 04,FSV Mainz 05,h2h,,Draw,unibet_nl,0,3.75,3.56,0.27226,0.02096
+2026-10-17T09:09+00:00,606d65d57a9a6d8f9b53faee1ad10009,soccer_germany_bundesliga,2026-10-17T13:30:00Z,FC Schalke 04,FSV Mainz 05,h2h,,Draw,unibet_se,0,3.8,3.56,0.27226,0.03457
+2026-10-17T09:09+00:00,606d65d57a9a6d8f9b53faee1ad10009,soccer_germany_bundesliga,2026-10-17T13:30:00Z,FC Schalke 04,FSV Mainz 05,h2h,,Draw,bet365,0,3.75,3.56,0.27226,0.02096
+2026-10-17T09:09+00:00,221916b8b36706ec52aa655a64e5f1d2,soccer_germany_bundesliga,2026-10-17T13:30:00Z,Hamburger SV,VfB Stuttgart,h2h,,Hamburger SV,onexbet,0,4.45,4.14,0.23182,0.0316
+2026-10-17T09:09+00:00,f2bd909f25eea6b4ce42d2f52275e5c4,soccer_germany_bundesliga,2026-10-25T16:30:00Z,SC Freiburg,Bayern Munich,h2h,,SC Freiburg,betclic_fr,1,5.1,4.43,0.20865,0.06414
+2026-10-17T09:09+00:00,907639dade64cca45d1ab639195d201e,soccer_italy_serie_a,2026-10-17T13:00:00Z,Venezia,Napoli,h2h,,Draw,unibet_se,0,4.2,3.98,0.24121,0.01309
+2026-10-17T09:09+00:00,4c4026e2782f09d6f0ff2bde2a390513,soccer_italy_serie_a,2026-10-18T18:45:00Z,Juventus,Lazio,h2h,,Juventus,betfair_ex_eu,0,1.75,1.69,0.57734,0.01034
+2026-10-17T09:09+00:00,4c4026e2782f09d6f0ff2bde2a390513,soccer_italy_serie_a,2026-10-18T18:45:00Z,Juventus,Lazio,h2h,,Juventus,matchbook,0,1.75,1.69,0.57734,0.01034
+2026-10-17T09:09+00:00,4568ee08a32d34347100042cc7868839,soccer_netherlands_eredivisie,2026-10-18T10:15:00Z,FC Zwolle,Go Ahead Eagles,h2h,,Draw,betfair_ex_eu,0,4.0,3.71,0.25294,0.01176
+2026-10-17T09:09+00:00,1c871e0acb43e1baa366e05f9e8271c4,soccer_netherlands_eredivisie,2026-10-18T14:45:00Z,Groningen,Ajax,h2h,,Groningen,unibet_nl,0,3.75,3.44,0.27362,0.02606
+2026-10-17T09:09+00:00,49d62e8cae430b679acc50c2e26f391e,soccer_netherlands_eredivisie,2026-10-18T18:00:00Z,NEC Nijmegen,Fortuna Sittard,h2h,,Fortuna Sittard,bet365,0,5.0,4.56,0.20306,0.0153
+2026-10-17T09:09+00:00,fbbd46f088071f0f022dce6850bcfa80,soccer_efl_champ,2026-10-17T11:30:00Z,Middlesbrough,Cardiff City,h2h,,Cardiff City,betsson,0,6.3,5.74,0.16258,0.02425
+2026-10-17T09:09+00:00,fbbd46f088071f0f022dce6850bcfa80,soccer_efl_champ,2026-10-17T11:30:00Z,Middlesbrough,Cardiff City,h2h,,Cardiff City,nordicbet,0,6.32,5.74,0.16258,0.0275
+2026-10-17T09:09+00:00,4419c1c886cc6f3ad0c00f0d6cfe2b62,soccer_efl_champ,2026-10-17T11:30:00Z,Watford,Charlton Athletic,h2h,,Charlton Athletic,betfair_ex_eu,0,2.9,2.78,0.34871,0.01127
+2026-10-17T09:09+00:00,4419c1c886cc6f3ad0c00f0d6cfe2b62,soccer_efl_champ,2026-10-17T11:30:00Z,Watford,Charlton Athletic,h2h,,Charlton Athletic,matchbook,0,2.9,2.78,0.34871,0.01127
+2026-10-17T09:09+00:00,1d647c4a829133678cfb3a0425b1cd16,soccer_efl_champ,2026-10-17T11:30:00Z,Millwall,Lincoln City,h2h,,Lincoln City,gtbets,0,5.08,4.69,0.20236,0.02796
+2026-10-17T09:09+00:00,1d647c4a829133678cfb3a0425b1cd16,soccer_efl_champ,2026-10-17T11:30:00Z,Millwall,Lincoln City,h2h,,Lincoln City,bet365,0,5.0,4.69,0.20236,0.01178
+2026-10-17T09:09+00:00,1d647c4a829133678cfb3a0425b1cd16,soccer_efl_champ,2026-10-17T11:30:00Z,Millwall,Lincoln City,totals,2.5,Under,bet365,0,2.0,1.83,0.53077,0.06154
+2026-10-17T09:09+00:00,1d647c4a829133678cfb3a0425b1cd16,soccer_efl_champ,2026-10-17T11:30:00Z,Millwall,Lincoln City,totals,2.5,Under,market_avg,0,1.96,1.83,0.53077,0.04031
+2026-10-17T09:09+00:00,899f15da06998732d951a91ed8f5e32f,soccer_efl_champ,2026-10-17T14:00:00Z,Southampton,Bolton Wanderers,h2h,,Southampton,leovegas_se,0,1.48,1.42,0.68823,0.01858
+2026-10-17T09:09+00:00,899f15da06998732d951a91ed8f5e32f,soccer_efl_champ,2026-10-17T14:00:00Z,Southampton,Bolton Wanderers,h2h,,Southampton,gtbets,0,1.48,1.42,0.68823,0.01858
+2026-10-17T09:09+00:00,899f15da06998732d951a91ed8f5e32f,soccer_efl_champ,2026-10-17T14:00:00Z,Southampton,Bolton Wanderers,h2h,,Southampton,market_avg,0,1.47,1.42,0.68823,0.0117
+2026-10-17T09:09+00:00,7a8f8a079740c8d4b39c995cdd304e0c,soccer_efl_champ,2026-10-17T14:00:00Z,Norwich City,Portsmouth,h2h,,Draw,bet365,0,3.9,3.7,0.25949,0.01201
+2026-10-17T09:09+00:00,33ad80e4f2bfa519396049639fd4d31a,soccer_efl_champ,2026-10-17T14:00:00Z,Wrexham AFC,Preston North End,h2h,,Wrexham AFC,gtbets,0,1.69,1.58,0.61675,0.04231
+2026-10-17T09:09+00:00,33ad80e4f2bfa519396049639fd4d31a,soccer_efl_champ,2026-10-17T14:00:00Z,Wrexham AFC,Preston North End,totals,2.5,Under,bet365,0,1.98,1.87,0.52051,0.03062
+2026-10-17T09:09+00:00,33ad80e4f2bfa519396049639fd4d31a,soccer_efl_champ,2026-10-17T14:00:00Z,Wrexham AFC,Preston North End,h2h,,Wrexham AFC,market_avg,0,1.68,1.58,0.61675,0.03615
+2026-10-17T09:09+00:00,b6bf48e65d78b5615da5f3ab904fa5d4,soccer_efl_champ,2026-10-17T14:00:00Z,Swansea City,West Ham United,h2h,,West Ham United,unibet_se,0,2.17,2.09,0.46642,0.01214
+2026-10-17T09:09+00:00,b6bf48e65d78b5615da5f3ab904fa5d4,soccer_efl_champ,2026-10-17T14:00:00Z,Swansea City,West Ham United,h2h,,West Ham United,leovegas_se,0,2.23,2.09,0.46642,0.04012
+2026-10-17T09:09+00:00,b6bf48e65d78b5615da5f3ab904fa5d4,soccer_efl_champ,2026-10-17T14:00:00Z,Swansea City,West Ham United,h2h,,West Ham United,gtbets,0,2.24,2.09,0.46642,0.04479
+2026-10-17T09:09+00:00,b6bf48e65d78b5615da5f3ab904fa5d4,soccer_efl_champ,2026-10-17T14:00:00Z,Swansea City,West Ham United,h2h,,West Ham United,betfair_ex_eu,0,2.18,2.09,0.46642,0.0168
