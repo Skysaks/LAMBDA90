@@ -97,7 +97,7 @@ def candidates(now):
         marg = sum(sum(1 / b[x] for x in "HDA") - 1 for b in fr) / len(fr) if fr else None
         dc = {"1N": pr["H"] + pr["D"], "N2": pr["D"] + pr["A"], "12": pr["H"] + pr["A"]}
         band = f.get("band"); bw = max(b[1] - b[0] for b in band) if band else None
-        rows.append(dict(f=f, e=e, kick=kick, key=f"{f['league']}|{f['date']}|{f['home']}|{f['away']}", fair=fair, pmod=pmod, pr=pr, best=best, bestfr=bestfr, marg=marg, dc=dc, bw=bw))
+        rows.append(dict(f=f, e=e, B=B, kick=kick, key=f"{f['league']}|{f['date']}|{f['home']}|{f['away']}", fair=fair, pmod=pmod, pr=pr, best=best, bestfr=bestfr, marg=marg, dc=dc, bw=bw))
     return rows
 
 def pick_of(r):
@@ -105,6 +105,40 @@ def pick_of(r):
     if not opts: return None
     p, s = max(opts); o, bk = r["best"][s]; ofr, bfr = r["bestfr"].get(s, (None, None))
     return dict(sel=s, p=round(p, 4), pm=round(r["fair"][s], 4), pmod=round(r["pmod"][s], 4), o=o, book=bk, ev=round(r["fair"][s] * o - 1, 4), ofr=ofr, bookfr=bfr)
+
+def build_combos(top, rowmap):
+    """Combinés du jour à partir des Top Picks (matchs différents, supposés indépendants) : le plus probable dans chaque fourchette de cote,
+    au prix réel d'un seul bookmaker (cotes du jour d'abord, Bet365 seulement à défaut)."""
+    from itertools import combinations
+    legs = [l for l in top[:12] if l["key"] in rowmap]
+    def price(cmb):
+        for books in (FRESH, {"bet365": "Bet365"}):
+            best = None
+            for key, title in books.items():
+                o = 1.0
+                for l in cmb:
+                    v = rowmap[l["key"]]["B"].get(key, {}).get(l["sel"], 0)
+                    if not v or v <= 1: o = 0; break
+                    o *= v
+                if o > 1 and (best is None or o > best[0]): best = (o, title)
+            if best: return best
+        return None
+    out, used = [], set()
+    for sid, lab, sizes, lo, hi in (("sur", "Combiné sûr", (2,), 1.3, 2.3), ("x2", "Combiné cote 2", (2, 3), 1.85, 2.5), ("x3", "Combiné cote 3", (2, 3, 4), 2.6, 3.8), ("x5", "Combiné cote 5", (3, 4, 5), 4.2, 7.0)):
+        best = None
+        for n in sizes:
+            for cmb in combinations(legs, n):
+                ks = frozenset((l["key"], l["sel"]) for l in cmb)
+                if ks in used: continue
+                pr = price(cmb)
+                if not pr or not (lo <= pr[0] <= hi): continue
+                p = math.prod(l["p"] for l in cmb)
+                if best is None or p > best[0]: best = (p, cmb, pr, ks)
+        if best:
+            p, cmb, (o, bk), ks = best; used.add(ks); pm = math.prod(l["pm"] for l in cmb)
+            out.append(dict(id=sid, lab=lab, o=round(o, 3), book=bk, p=round(p, 4), pm=round(pm, 4), ev=round(pm * o - 1, 4),
+                            legs=[dict(key=l["key"], sel=l["sel"], home=l["home"], away=l["away"], league=l["league"], kick=l["kick"], p=l["p"]) for l in cmb]))
+    return out
 
 def build_day(now):
     rows = sorted(candidates(now), key=lambda r: r["kick"])
@@ -118,7 +152,8 @@ def build_day(now):
         res = max(("H", "D", "A"), key=lambda s: r["pr"][s]); dcs = max(r["dc"], key=r["dc"].get)
         top.append(dict(key=r["key"], kick=r["e"]["commence_time"], home=r["f"]["home"], away=r["f"]["away"], league=r["f"]["league"], **pk,
                         res=dict(sel=res, p=round(r["pr"][res], 4)), dc=dict(sel=dcs, p=round(r["dc"][dcs], 4))))
-    top.sort(key=lambda x: -x["p"]); top = top[:8]
+    top.sort(key=lambda x: -x["p"]); top = top[:15]
+    combos = build_combos(top, {r["key"]: r for r in win})
     # Hot : prix proche du juste chez mes bookmakers, modèle d'accord ; bonus si Pinnacle a bougé vers l'issue sans que mes cotes suivent
     hot = []  # fenêtre de 48 h : plus de choix pour trouver les prix proches du juste
     for r in [r for r in rows if r["kick"] <= now + timedelta(hours=48)]:
@@ -152,7 +187,7 @@ def build_day(now):
         if sc >= 1.5: cold.append(dict(key=r["key"], kick=r["e"]["commence_time"], home=r["f"]["home"], away=r["f"]["away"], league=r["f"]["league"], score=sc, why=why))
     cold.sort(key=lambda x: -x["score"]); cold = cold[:5]; ck = {c["key"] for c in cold}
     hot2 = [h for h in hot2 if h["key"] not in ck]
-    return dict(made=now.isoformat(timespec="minutes"), window=len(win), top=top, hot=hot2[:5], cold=cold)
+    return dict(made=now.isoformat(timespec="minutes"), window=len(win), top=top, combos=combos, hot=hot2[:5], cold=cold)
 
 def settle(L, now):
     try:
@@ -171,6 +206,12 @@ def settle(L, now):
             ok = lambda s: {"H": hg > ag, "D": hg == ag, "A": hg < ag, "O25": hg + ag > 2, "U25": hg + ag < 3, "1N": hg >= ag, "N2": hg <= ag, "12": hg != ag}[s]
             if "sel" in it: it["won"] = ok(it["sel"])
             if "res" in it: it["res"]["won"] = ok(it["res"]["sel"]); it["dc"]["won"] = ok(it["dc"]["sel"])
+        # un combiné est réglé quand toutes ses jambes le sont (elles figurent parmi les Top Picks du même jour)
+        tops = {(t["key"], t["sel"]): t for t in D.get("top", [])}
+        for c in D.get("combos", []):
+            if "won" in c: continue
+            st = [tops.get((l["key"], l["sel"])) for l in c["legs"]]
+            if all(t is not None and "won" in t for t in st): c["won"] = all(t["won"] for t in st)
     return n
 
 def main():
