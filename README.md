@@ -8,16 +8,16 @@ Principe : chaque chiffre affiché est mesuré hors échantillon, et la platefor
 
 | Onglet | Contenu |
 | --- | --- |
-| Jour (accueil) | Brief personnel ; Top Picks du jour, de 1 à 15 au choix, avec arguments chiffrés ; Top Picks Combinés (combiné sûr, cotes 2, 3 et 5, figés et réglés) et constructeur de combiné (nombre de matchs, plus sûrs ou cote visée, meilleur bookmaker commun) ; pick du jour (1N2, buts, les deux marquent, corners, cartons) ; Hot Picks ; Cold Games ; bilan de la veille et registre figé chaque matin, réglé avec les résultats officiels |
+| Jour (accueil) | Brief personnel ; Ma liste (tes matchs suivis, ajoutés à la main ou depuis une capture Winamax lue par l'IA : probabilités de tous les marchés, cote juste, valeur à tes cotes, recalcul en direct avec la minute et le score) ; Top Picks du jour, de 1 à 15 au choix, avec arguments chiffrés et version prudente (double chance, remboursé si nul) ; Paris du jour par marché (double chance, remboursé si nul, ±1,5, ±2,5, −3,5, les deux marquent), figés chaque matin et réglés ; Top Picks Combinés (combiné sûr, cotes 2, 3 et 5, sans match commun quand c'est possible, figés et réglés) et constructeur de combiné (nombre de matchs, plus sûrs ou cote visée, meilleur bookmaker commun) ; pick du jour (1N2, buts, les deux marquent, corners, cartons) ; Hot Picks ; Cold Games ; bilan de la veille et registre figé chaque matin, réglé avec les résultats officiels |
 | Radar | Les matchs à venir, probabilités, valeur et arbitrages repérés |
-| Match | Probabilités et fourchette à 80 %, scores exacts, jumeaux historiques (les 150 matchs passés aux cotes de clôture les plus proches), buts par tranche, scénarios « et si », tous les marchés, corners et cartons, créateur de paris recalé sur Pinnacle, compositions et absences, live minute par minute avec terrain 3D, mouvement des cotes, stories 3D |
+| Match | Probabilités et fourchette à 80 %, scores exacts, face-à-face depuis 2000 (bilan, buts, les deux marquent, même stade, mi-temps, corners, cartons), jumeaux historiques (les 150 matchs passés aux cotes de clôture les plus proches), buts par tranche, scénarios « et si », tous les marchés, corners et cartons, créateur de paris recalé sur Pinnacle, compositions et absences, live minute par minute avec terrain 3D, mouvement des cotes, stories 3D |
 | Saison | 10 000 saisons simulées par championnat : titre, places, relégation, Predictor, Power Index |
 | Défis | Pronostics entre amis, ligues privées, classement contre le modèle |
 | Value et arbitrage | Paris au-dessus du prix juste, arbitrages, calculateurs, mise de Kelly, mes bookmakers |
 | Objectif ×2 | Montante intégrale de 5 à 10 paliers enchaînés dans le temps, escalier 3D, sélections les plus probables |
 | Survivant | Faire grossir une bankroll sans jamais passer sous la mise minimale (Game Over) : 48 plans simulés (Monte Carlo) et surface 3D, plan optimal selon le risque toléré, partie réglée automatiquement ; parties classées et classements Monde, Amis et Ville |
 | Outils | Algorithmes des bookmakers (ce que chacun rend par type de pari, où jouer quoi, même marque en France et à l'étranger, qui copie qui, pièges) ; relief 3D de la valeur et des marges, prix de la patience (ouverture contre clôture, biais favori-outsider), cotes boostées, conversion de freebets et de paris remboursés, couverture et cash-out, dutching |
-| Studio | Atelier plein écran : 9 contenus (Top, combinés, bilan, avant-match, Hot et Cold, Survivant, saison, calibration, marges) en 4 formats (YouTube 16:9, Shorts/Reels/TikTok 9:16, post 1:1, carrousel 4:5) ; aperçu net ajusté à l'écran, frise des diapos, lecture et curseur ; accroche d'ouverture, @compte, 3 thèmes, durée par diapo ; export image, carrousel, vidéo et pack complet (images + textes) ; titre, légende, description avec chapitres et script modifiables |
+| Studio | Atelier plein écran : choix d'un match en particulier ; 10 contenus (Top, combinés, bilan, avant-match, face-à-face, Hot et Cold, Survivant, saison, calibration, marges) en 4 formats (YouTube 16:9, Shorts/Reels/TikTok 9:16, post 1:1, carrousel 4:5) ; aperçu net ajusté à l'écran, frise des diapos, lecture et curseur ; accroche d'ouverture, @compte, 3 thèmes, durée par diapo ; export image, carrousel, vidéo et pack complet (images + textes) ; titre, légende, description avec chapitres et script modifiables |
 | Bankroll | Journal avec CLV et règlement automatique, courbe de bankroll, disjoncteur, coach anti-tilt (chasse aux pertes, glissement vers les grosses cotes, rafales de paris) |
 | Registre | Calibration, RPS, laboratoire : chaque signal testé, adopté ou rejeté |
 
@@ -28,7 +28,7 @@ Navigation : Jour, Radar, Match, Saison, menus Paris (Value, Objectif ×2, Outil
 - Dixon-Coles pondéré dans le temps sur les buts et sur les tirs cadrés, pi-ratings, empilement logistique appris sur les seules saisons passées ; fourchette d'incertitude par match.
 - RPS hors échantillon 2025-26 : 0,2015 pour le moteur, 0,1981 pour le marché. La probabilité des picks est le marché Pinnacle sans marge (Shin) : y mêler du modèle dégrade la précision (labo 13).
 - Labo 13 : rétro-ingénierie des prix des bookmakers (structure et répartition des marges, surcoût français, qui copie qui, retard sur Pinnacle, piège des outsiders face aux clubs populaires).
-- Testés et rejetés, entre autres : xG, valeur du onze, enjeux, Elo, gradient boosting, ensemble multi-horizon, corners dans le moteur, constantes par championnat, moyennes brutes de corners. Détail et chiffres : [MOTEUR.md](MOTEUR.md).
+- Testés et rejetés, entre autres : xG, valeur du onze, enjeux, Elo, gradient boosting, ensemble multi-horizon, corners dans le moteur, constantes par championnat, moyennes brutes de corners, fatigue (repos court) et face-à-face au-delà du marché (labo 14). Détail et chiffres : [MOTEUR.md](MOTEUR.md).
 
 ## Chaîne de mise à jour (GitHub Actions)
 
@@ -40,6 +40,15 @@ Navigation : Jour, Radar, Match, Saison, menus Paris (Value, Objectif ×2, Outil
 | `lab_data.yml` « Labo données gratuites » | le lundi | xG Understat, valeur des effectifs |
 
 Les minutes gratuites de GitHub Actions pour un dépôt privé (2 000 par mois) couvrent l'ensemble.
+
+## Héberger sur Cloudflare Pages (mise à jour automatique)
+
+`mk.sh` copie la page dans `site/index.html` (avec `_headers` et `robots.txt` : page non indexée). Dans Cloudflare : *Workers & Pages → Create → Pages → Connect to Git*, dépôt LAMBDA90, aucune commande de build, dossier de sortie `site`. Chaque commit du robot (mise à jour quotidienne, compositions, cotes) redéploie la page. Pour la réserver à quelques personnes : Cloudflare Zero Trust → Access (gratuit jusqu'à 50 utilisateurs). Sur cet hébergement, le bouton Rafraîchir appelle directement The Odds API ; les fonctions qui demandent un compte (classements Survivant, ligues, lecture de captures par l'IA, cotes partagées) restent propres à la version hébergée avec comptes.
+
+## Offres payantes
+
+- The Odds API 20K (30 $/mois) : mettre la variable de dépôt `ODDS_HOURLY` à `on` active `odds_hourly.yml` (chaque heure de 10 h 15 à 21 h 15 UTC, championnats qui jouent dans les 6 h, réserve de 200 crédits).
+- API-Football Pro (19 $/mois) : remplacer la clé `API_FOOTBALL_KEY` ; `lineups.yml` récupère déjà les compositions toutes les heures.
 
 ## Installation
 

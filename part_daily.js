@@ -99,6 +99,7 @@ function renderDaily() {
   const spot = top[0] && FXK[top[0].key] ? top[0] : null;
   const tot = R.rows.reduce((a, r) => ({ n: a.n + r.n, w: a.w + r.w }), { n: 0, w: 0 });
   $("#v-daily").innerHTML = `<div class="stack">${briefBlock()}
+    ${watchBlock()}
     <div class="day-head"><div><span class="eyebrow">${new Date(today + "T12:00").toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" })}</span><h1>Le jour en un coup d'œil</h1>
       <p class="lede">Les sélections les plus solides, celles où le prix est intéressant, et les matchs à laisser passer. Tout est figé chaque matin à 7 h puis réglé avec les vrais résultats : le registre ne peut pas être retouché après coup.</p></div>
       <div class="row"><button class="btn small" data-studio='{"tpl":"top"}'>Studio</button><button class="btn small" data-share="top" ${top.length ? "" : "disabled"}>Image du Top</button>${L ? `<button class="btn small" data-share="recap">Image du bilan</button>` : ""}</div></div>
@@ -113,6 +114,7 @@ function renderDaily() {
       ${top.length ? `<ol class="tp">${top.map((x, i) => pickRowDaily(x, i)).join("")}</ol>` : `<div class="empty">Aucun match coté par Pinnacle aujourd'hui.</div>`}
       <p class="note" style="margin-top:8px">Probabilité : marché Pinnacle sans marge (Shin). Y ajouter 10 % de modèle dégrade la précision sur 2024-25 comme sur 2025-26 (labo 13). Une sélection par match, cote réelle d'au moins 1,25 chez tes bookmakers. Plus haut ne veut pas dire rentable : c'est le Hot qui parle du prix.</p></div>
     ${combosBlock(D, all15)}
+    ${marketsBlock(D)}
     ${spot ? spotlight(spot) : ""}
     <div class="grid2" style="align-items:start">
       <div class="panel hotp"><header><h2>Hot Picks</h2><span class="note">Prix intéressant au vu du marché</span></header>
@@ -130,7 +132,7 @@ function renderDaily() {
 }
 function pickRowDaily(x, i) {
   const f = fxOf(x), sel = SELF(f, x.sel), done = "won" in x;
-  return `<li class="tp-row"><div class="tp-rank">${i + 1}</div><div class="tp-main"><strong>${esc(sel)}</strong><span class="faint">${esc(short(f.home))} – ${esc(short(f.away))} · ${esc(LG[x.league] || "")} · ${esc(kickLab(x.kick))}</span>
+  return `<li class="tp-row"><div class="tp-rank">${i + 1}</div><div class="tp-main"><strong>${esc(sel)}</strong><span class="faint">${esc(short(f.home))} – ${esc(short(f.away))} · ${esc(LG[x.league] || "")} · ${esc(kickLab(x.kick))}</span>${done ? "" : prudentLine(x)}
       <details class="tp-why"><summary>Pourquoi</summary><ul>${argsFor(f._ghost ? { ...f, m: null } : f, x.sel, x).map(a => `<li>${esc(a)}</li>`).join("")}</ul></details></div>
     <div class="tp-odds"><b class="num">${odd(x.o)}</b><span class="faint">${esc((x.book || "").replace(" (FR)", ""))}${x.ofr && x.bookfr !== x.book ? ` · ${odd(x.ofr)} ${esc(x.bookfr.replace(" (FR)", ""))}` : ""}</span>${done ? `<span class="pill ${x.won ? "good" : "bad"}">${x.hg}-${x.ag}</span>` : ""}</div>
     <div class="tp-ring">${ring(x.p, 62, x.p >= 0.7 ? "var(--good)" : x.p >= 0.55 ? "var(--signal)" : "var(--warn)")}</div>

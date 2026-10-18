@@ -1,7 +1,7 @@
 // ---------- Studio : contenus prêts à publier (YouTube, Shorts, Reels, TikTok, posts, carrousels) depuis toutes les parties de la plateforme ----------
 const ST_FMT = { short: { w: 1080, h: 1920, lab: "Short · Reel · TikTok · Story", ratio: "9:16" }, yt: { w: 1920, h: 1080, lab: "YouTube", ratio: "16:9" },
   post: { w: 1080, h: 1080, lab: "Post carré", ratio: "1:1" }, portrait: { w: 1080, h: 1350, lab: "Post portrait · carrousel", ratio: "4:5" } };
-const ST_TPL = { top: "Top du jour", combos: "Combinés du jour", recap: "Bilan de la veille", match: "Avant-match", hotcold: "Hot & Cold", survivor: "Survivant", season: "Saison simulée", proof: "Nos probabilités tiennent", value: "Le prix des bookmakers" };
+const ST_TPL = { top: "Top du jour", combos: "Combinés du jour", recap: "Bilan de la veille", match: "Avant-match", h2h: "Face-à-face", hotcold: "Hot & Cold", survivor: "Survivant", season: "Saison simulée", proof: "Nos probabilités tiennent", value: "Le prix des bookmakers" };
 let ST_DUR = 3.8;
 S.studio = Object.assign({ tpl: "top", fmt: "short", match: null, lg: "fr.1", theme: "nuit", dur: 3.8, hook: "", handle: "" }, ls.get("studio", {}));
 ST_DUR = Math.max(2, Math.min(8, +S.studio.dur || 3.8));
@@ -92,13 +92,17 @@ function stTemplate(tpl) {
   if (tpl === "recap") {
     const L = dayRecap().last; if (!L) return { empty: "Pas encore de journée réglée : le premier bilan arrive avec les premiers résultats." };
     const dl = new Date(L.d + "T12:00").toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
-    const s1 = { name: "Bilan", draw(K, t) { const y0 = K.head(dl, "Le bilan", stA(t, 0)); const yE = K.foot(), cx = K.land ? K.pad + 260 * K.u : K.W / 2, cy = y0 + (K.land ? 260 : 300) * K.u;
-      K.ring(cx, cy, 220 * K.u, L.w / L.n, C_.good, stA(t, 1), `${Math.round(L.w * stA(t, 1))}/${L.n}`, 26); const tx = K.land ? cx + 320 * K.u : K.pad, ty = K.land ? cy - 40 * K.u : cy + 320 * K.u;
-      K.text("picks justes", tx, ty, K.F("600", 64), C_.ink, "left", 0, stA(t, 2)); K.text(`Résultat 1N2 : ${L.rw}/${L.rn} · Double chance : ${L.dw}/${L.rn}`, tx, ty + 60 * K.u, K.P("500", 34), C_.ink2, "left", K.W - tx - K.pad, stA(t, 2));
-      const ly = K.land ? cy + 260 * K.u : ty + 120 * K.u, n = Math.min(L.T.length, Math.floor((yE - ly) / (78 * K.u))), lw = K.W - 2 * K.pad;
-      L.T.slice(0, n).forEach((r, i) => { const a = stA(t, 3 + i * 0.5), y = ly + i * 78 * K.u; K.card(K.pad, y, lw, 64 * K.u, a); K.text(`${short(r.home)}  ${r.hg}-${r.ag}  ${short(r.away)}`, K.pad + 28 * K.u, y + 44 * K.u, K.P("600", 30), C_.ink, "left", lw - 120 * K.u, a);
-        K.x.globalAlpha = a; K.x.fillStyle = r.won ? C_.good : C_.bad; K.x.beginPath(); K.x.arc(K.pad + lw - 40 * K.u, y + 32 * K.u, 18 * K.u, 0, 7); K.x.fill(); K.x.globalAlpha = 1; }); } };
-    return { slides: [s1], subject: `Bilan du ${dl} : ${L.w}/${L.n}`, lines: L.T.map(r => `${short(r.home)} ${r.hg}-${r.ag} ${short(r.away)} : ${r.won ? "gagné" : "perdu"}`) };
+    const s1 = { name: "Bilan", draw(K, t) { const y0 = K.head(dl, "Le bilan", stA(t, 0)); const yE = K.foot(), u = K.u, side = K.land || K.H / K.W < 1.4, R = Math.min((side ? 200 : 230) * u, (yE - y0) / 2 - 60 * u);
+      const cx = side ? K.pad + R + 30 * u : K.W / 2, cy = side ? y0 + (yE - y0) / 2 : y0 + R + 60 * u;
+      K.ring(cx, cy, R, L.w / L.n, C_.good, stA(t, 1), `${Math.round(L.w * stA(t, 1))}/${L.n}`, 26); const tx = side ? cx + R + 70 * u : K.pad, ty = side ? cy - 30 * u : cy + R + 110 * u, tw = K.W - tx - K.pad;
+      K.text("picks justes", tx, ty, K.fitF("picks justes", "600", 64, 40, tw), C_.ink, "left", 0, stA(t, 2));
+      K.text(`Résultat 1N2 : ${L.rw}/${L.rn}`, tx, ty + 60 * u, K.P("500", 34), C_.ink2, "left", tw, stA(t, 2)); K.text(`Double chance : ${L.dw}/${L.rn}`, tx, ty + 106 * u, K.P("500", 34), C_.ink2, "left", tw, stA(t, 3));
+      const dr = L.T.filter(r => r.hg === r.ag).length; if (dr) K.text(`${dr} nul${dr > 1 ? "s" : ""} parmi les picks`, tx, ty + 152 * u, K.P("500", 30), C_.ink3, "left", tw, stA(t, 4)); } };
+    const s2 = { name: "Les résultats", draw(K, t) { const y0 = K.head(dl, "Les résultats", stA(t, 0), `${L.w} justes sur ${L.n}`); const yE = K.foot(), u = K.u, n = L.T.length, cols = K.land ? 3 : K.tall ? 1 : 2;
+      const rows = Math.ceil(n / cols), gap = 12 * u, cw = (K.W - 2 * K.pad - (cols - 1) * gap) / cols, rh = Math.min(96 * u, (yE - y0) / rows), fs = Math.min(30, rh / u * 0.4);
+      L.T.forEach((r, i) => { const c = Math.floor(i / rows), ro = i % rows, x = K.pad + c * (cw + gap), y = y0 + ro * rh, a = stA(t, 1 + i * 0.12); K.card(x, y + 4 * u, cw, rh - 10 * u, a, r.won ? C_.good : C_.bad);
+        K.text(`${short(r.home)} ${r.hg}-${r.ag} ${short(r.away)}`, x + 24 * u, y + rh / 2 + fs * 0.35 * u, K.P("600", fs), C_.ink, "left", cw - 48 * u, a); }); } };
+    return { slides: [s1, s2], subject: `Bilan du ${dl} : ${L.w}/${L.n}`, lines: L.T.map(r => `${short(r.home)} ${r.hg}-${r.ag} ${short(r.away)} : ${r.won ? "gagné" : "perdu"}`) };
   }
   if (tpl === "match") {
     const f = stMatch(); if (!f) return { empty: "Aucun match." };
@@ -136,6 +140,33 @@ function stTemplate(tpl) {
         ins.forEach(([tt, xx], i) => { const a_ = stA(t, 1 + i); K.text(tt, K.pad, y + 40 * K.u, K.F("500", 38), C_.sig, "left", w, a_); y += 60 * K.u; y += K.wrap(xx, K.pad, y + 30 * K.u, K.P("500", 31), w, 42 * K.u, C_.ink2, K.land ? 2 : 4, a_) + 40 * K.u; }); } }
     ];
     return { slides, subject: `${ttl} : probabilités et analyse`, lines: [`${h} ${pct(H)} · nul ${pct(D)} · ${a} ${pct(A)}`, `Plus de 2,5 buts ${pct(O)} · les deux marquent ${pct(BY)}`, `Score le plus probable : ${sc[0][0]} (${pct(sc[0][1], 1)})`, ...ins.map(([tt, xx]) => `${tt} : ${xx}`)] };
+  }
+  if (tpl === "h2h") {
+    const f = stMatch(), X = f && H2HX[f.key]; if (!X) return { empty: "Pas d'historique de confrontations pour ce match." };
+    const h = short(f.home), a = short(f.away), ttl = `${h} – ${a}`, P = mProbs(f), n3 = X.w + X.d + X.l;
+    const slides = [
+      { name: "Bilan", draw(K, t) { const y0 = K.head(ttl, "Face-à-face", stA(t, 0), `${X.n} matchs depuis ${X.since}`); K.foot(); const w = K.W - 2 * K.pad, u = K.u;
+        K.tri(K.pad, y0 + 60 * u, w, 36 * u, [X.w / n3, X.d / n3, X.l / n3], [`${h} : ${X.w}`, `Nuls : ${X.d}`, `${a} : ${X.l}`], stA(t, 1));
+        K.wrap(`Chez ${h} : ${X.venue.w} victoire${X.venue.w > 1 ? "s" : ""}, ${X.venue.d} nul${X.venue.d > 1 ? "s" : ""}, ${X.venue.l} défaite${X.venue.l > 1 ? "s" : ""} sur ${X.venue.n} matchs`, K.pad, y0 + 280 * u, K.P("600", 34), w, 46 * u, C_.ink, 2, stA(t, 2));
+        K.wrap(`${nf(X.gf, 2)} but${X.gf >= 2 ? "s" : ""} marqué${X.gf >= 2 ? "s" : ""} par ${h} et ${nf(X.ga, 2)} par ${a} en moyenne`, K.pad, y0 + 380 * u, K.P("500", 30), w, 42 * u, C_.ink2, 2, stA(t, 3)); } },
+      { name: "Les buts", draw(K, t) { const y0 = K.head(ttl, "Des matchs à buts ?", stA(t, 0), `${X.n} confrontations depuis ${X.since}`); K.foot(); const R = 150 * K.u, cy = y0 + 230 * K.u, xs = [K.W * 0.28, K.W * 0.72];
+        K.ring(xs[0], cy, R, X.btts, C_.warn, stA(t, 1)); K.text("Les deux marquent", xs[0], cy + R + 60 * K.u, K.P("600", 32), C_.ink, "center", 0, stA(t, 1));
+        K.ring(xs[1], cy, R, X.o25, C_.warn, stA(t, 2)); K.text("Plus de 2,5 buts", xs[1], cy + R + 60 * K.u, K.P("600", 32), C_.ink, "center", 0, stA(t, 2));
+        K.text(`${nf(X.goals, 2)} buts par match${X.corners ? ` · ${nf(X.corners, 1)} corners` : ""}${X.cards ? ` · ${nf(X.cards, 1)} cartons` : ""}`, K.W / 2, cy + R + 150 * K.u, K.F("500", 36), C_.sig, "center", K.W - 2 * K.pad, stA(t, 3)); } },
+      { name: "Derniers duels", draw(K, t) { const y0 = K.head(ttl, "Les derniers duels", stA(t, 0)); const yE = K.foot(), L = X.last.slice(0, K.land ? 5 : 6), w = K.W - 2 * K.pad, rh = Math.min(120 * K.u, (yE - y0) / L.length);
+        L.forEach(([d, hh, g1, g2, t1, t2], i) => { const al = stA(t, 1 + i * 0.5), y = y0 + i * rh, u = K.u; K.card(K.pad, y + 6 * u, w, rh - 16 * u, al);
+          K.text(new Date(d + "T12:00").toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" }), K.pad + 28 * u, y + rh / 2 + 10 * u, K.P("500", 26), C_.ink3, "left", 0, al);
+          K.text(`${hh ? h : a}  ${g1}-${g2}  ${hh ? a : h}`, K.pad + w / 2 + 40 * u, y + rh / 2 + 12 * u, K.P("600", 32), C_.ink, "center", w * 0.5, al);
+          if (t1 != null) K.text(`mi-t. ${t1}-${t2}`, K.pad + w - 28 * u, y + rh / 2 + 10 * u, K.P("500", 24), C_.ink3, "right", 0, al); }); } },
+      { name: "L'histoire contre le marché", draw(K, t) { const y0 = K.head(ttl, "L'histoire contre le marché", stA(t, 0), "Face-à-face depuis " + X.since + " · marché aujourd'hui"); const yE = K.foot(), w = K.W - 2 * K.pad, u = K.u;
+        const rows = [[`${h} gagne`, X.w / n3, P.H], ["Les deux marquent", X.btts, P.BY], ["Plus de 2,5 buts", X.o25, P.O25]], rh = Math.min(150 * u, (yE - y0 - 70 * u) / rows.length), lx = K.pad + 200 * u, bw = w - 200 * u - 110 * u;
+        rows.forEach(([lab, hv, mv], i) => { const al = stA(t, 1 + i * 0.6), y = y0 + i * rh; K.text(lab, K.pad, y + 34 * u, K.P("600", 32), C_.ink, "left", w, al);
+          [["Histoire", hv, C_.ink3], ["Marché", mv, C_.sig]].forEach(([l2, v, col], k) => { const yy = y + 52 * u + k * 36 * u; K.text(l2, K.pad, yy + 19 * u, K.P("500", 24), C_.ink2, "left", 0, al);
+            K.bar(lx, yy, bw, 22 * u, v, col, al); K.text(pct(v), K.pad + w, yy + 19 * u, K.F("500", 26), col, "right", 0, al); }); });
+        K.wrap("Le marché intègre déjà l'histoire : sur 4 318 matchs, le face-à-face n'a rien ajouté à son prix (labo 14).", K.pad, y0 + rows.length * rh + 24 * u, K.P("500", 26), w, 36 * u, C_.ink3, 2, stA(t, 4)); } }
+    ];
+    return { slides, subject: `${ttl} : le face-à-face depuis ${X.since}`, lines: [`${X.n} matchs : ${h} ${X.w} victoires, ${X.d} nuls, ${a} ${X.l} victoires`, `${nf(X.goals, 2)} buts par match · les deux marquent ${pct(X.btts)} · plus de 2,5 buts ${pct(X.o25)}`,
+      `Dernier duel : ${X.last[0][1] ? h : a} ${X.last[0][2]}-${X.last[0][3]} ${X.last[0][1] ? a : h} (${new Date(X.last[0][0] + "T12:00").toLocaleDateString("fr-FR")})`, `Aujourd'hui, le marché : ${h} ${pct(P.H)}, les deux marquent ${pct(P.BY)}, +2,5 buts ${pct(P.O25)}`] };
   }
   if (tpl === "hotcold") {
     const D = DAILY[today] || {}, hot = (D.hot || []).slice(0, 4), cold = (D.cold || []).slice(0, 4); if (!hot.length && !cold.length) return { empty: "Hot et Cold sont publiés avec le registre du matin." };
@@ -209,7 +240,7 @@ function nbCdf(k, mu, r) { if (!r) return poisCdf(k, mu); let p = Math.pow(r / (
 
 // ---------- Textes d'accompagnement ----------
 function stTexts(T, fmt) {
-  const tag = { combos: "#combine #pronostics #football", top: "#pronostics #football #paris", recap: "#bilan #pronostics #football", match: "#avantmatch #football #pronostic", hotcold: "#paris #cotes #football", survivor: "#survivant #challenge #football", season: "#football #simulation #classement", proof: "#data #football #probabilites", value: "#cotes #bookmakers #paris" }[S.studio.tpl];
+  const tag = { combos: "#combine #pronostics #football", top: "#pronostics #football #paris", recap: "#bilan #pronostics #football", match: "#avantmatch #football #pronostic", h2h: "#faceaface #football #historique", hotcold: "#paris #cotes #football", survivor: "#survivant #challenge #football", season: "#football #simulation #classement", proof: "#data #football #probabilites", value: "#cotes #bookmakers #paris" }[S.studio.tpl];
   let t = 0; const chap = T.slides.map(s => { const m = Math.floor(t / 60), sc = Math.floor(t % 60); t += ST_DUR; return `${m}:${String(sc).padStart(2, "0")} ${s.name}`; });
   const body = T.lines.join("\n");
   return {
@@ -226,7 +257,7 @@ const ST_THEMES = {
   ardoise: { glow: "255,200,87", markInk: "#1a1205", bg0: "#1b1d22", bg1: "#0e0f12", ink: "#F3F1EC", ink2: "#BDB8AC", ink3: "#8E8A80", sig: "#FFC857", good: "#7BE495", warn: "#FFC857", bad: "#FF7A6B", h: "#5AB0C8", a: "#E0894A", card: "rgba(36,38,44,.9)", line: "rgba(80,80,90,.7)" },
   clair: { glow: "14,116,144", markInk: "#FFFFFF", bg0: "#F7F9FC", bg1: "#E6EBF4", ink: "#0B1220", ink2: "#3D4A66", ink3: "#6B7690", sig: "#0E7490", good: "#0F9D6B", warn: "#B7791F", bad: "#D64545", h: "#1F7A93", a: "#B5651D", card: "rgba(255,255,255,.92)", line: "rgba(16,24,40,.14)" }
 };
-const ST_TPL_DESC = { top: "Les meilleures sélections du jour", combos: "Les combinés figés du matin", recap: "Le score de la veille, en toute transparence", match: "Probabilités, buts, scores, jumeaux", hotcold: "Les bons prix et les pièges du jour",
+const ST_TPL_DESC = { top: "Les meilleures sélections du jour", combos: "Les combinés figés du matin", recap: "Le score de la veille, en toute transparence", match: "Probabilités, buts, scores, jumeaux", h2h: "Toutes les confrontations depuis 2000", hotcold: "Les bons prix et les pièges du jour",
   survivor: "Ta partie et le classement", season: "Titre et relégation, 10 000 saisons", proof: "Annoncé contre réalisé", value: "Ce que chaque bookmaker prélève" };
 // Accroche facultative en ouverture (les 2 premières secondes décident d'un Short)
 function stWithHook(T) {
@@ -270,8 +301,8 @@ function renderStudio() {
   $("#v-studio").innerHTML = `<div class="studio-app">
     <aside class="st-lib" aria-label="Contenus">
       <div class="st-h"><span class="eyebrow">Studio</span><strong>Contenus</strong></div>
+      <label class="f">Un match en particulier<select data-stsel="match">${up.slice(0, 120).map(m => `<option value="${esc(m.key)}" ${stMatch()?.key === m.key ? "selected" : ""}>${esc(short(m.home))} – ${esc(short(m.away))} · ${esc(m.date.slice(8))}/${esc(m.date.slice(5, 7))}</option>`).join("")}</select></label>
       <div class="st-cards">${Object.entries(ST_TPL).map(([k, v]) => `<button class="st-card" data-sttpl="${k}" aria-pressed="${s.tpl === k}" ${avail[k] ? "" : 'data-off="1"'}><b>${v}</b><span>${avail[k] ? ST_TPL_DESC[k] : "Pas encore disponible"}</span></button>`).join("")}</div>
-      ${s.tpl === "match" ? `<label class="f">Match<select data-stsel="match">${up.slice(0, 80).map(m => `<option value="${esc(m.key)}" ${stMatch()?.key === m.key ? "selected" : ""}>${esc(short(m.home))} – ${esc(short(m.away))} · ${esc(m.date.slice(8))}/${esc(m.date.slice(5, 7))}</option>`).join("")}</select></label>` : ""}
       ${s.tpl === "season" ? `<label class="f">Championnat<select data-stsel="lg">${Object.entries(LG).map(([k, v]) => `<option value="${k}" ${s.lg === k ? "selected" : ""}>${v}</option>`).join("")}</select></label>` : ""}
       <div class="st-h" style="margin-top:6px"><strong>Personnaliser</strong></div>
       <label class="f">Accroche d'ouverture<input type="text" id="st-hook" maxlength="90" data-stin="hook" value="${esc(s.hook)}" placeholder="ex. 3 matchs à ne pas jouer ce soir"></label>
@@ -372,4 +403,4 @@ document.addEventListener("input", e => { const d = e.target.dataset;
   if (d.stin) { S.studio[d.stin] = d.stin === "dur" ? +e.target.value : e.target.value; ls.set("studio", S.studio);
     if (d.stin === "dur") { ST_DUR = +e.target.value; const v = $("#st-durv"); if (v) v.textContent = nf(ST_DUR, 1) + " s"; }
     clearTimeout(window._stin); window._stin = setTimeout(() => deferRender(e.target), d.stin === "dur" ? 250 : 400); } });
-document.addEventListener("change", e => { const d = e.target.dataset; if (d.stsel == null) return; S.studio[d.stsel] = e.target.value; ls.set("studio", S.studio); STX.slide = 0; STX.time = ST_DUR - 0.01; render(); });
+document.addEventListener("change", e => { const d = e.target.dataset; if (d.stsel == null) return; S.studio[d.stsel] = e.target.value; if (d.stsel === "match" && !["match", "h2h"].includes(S.studio.tpl)) S.studio.tpl = "match"; ls.set("studio", S.studio); STX.slide = 0; STX.time = ST_DUR - 0.01; render(); });

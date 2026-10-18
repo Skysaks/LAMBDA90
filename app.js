@@ -743,6 +743,10 @@ function deepRows() {
       out.push(["Pinnacle et Bet365 empilés", "1N2", `${nf(bb.gain_pm, 2)} ‰ (IC ${nf(bb.ic_pm[0], 2)} à ${nf(bb.ic_pm[1], 2)} ‰)`, "Rejeté"]); }
     const m = (l13.test_argent_bet365 || []).find(x => x.moment === "ouverture" && x.seuil === 0); if (m) out.push(["Jouer Bet365 au-dessus du prix Pinnacle", "1N2", `${nf(m.paris)} paris, ROI ${sgn(m.roi)} (IC ${sgn(m.roi_ic[0])} à ${sgn(m.roi_ic[1])})`, m.roi_ic[0] > 0 ? "Prouvé" : "Non prouvé"]);
     const pp = (l13.clubs_populaires || []).find(x => x.profil.startsWith("outsider") && x.cas === "contre le club populaire"); if (pp) out.push(["Outsider face à un club populaire (Bet365)", "1N2", `${sgn(pp.ev_attendu)} attendu, ${sgn(pp.roi_reel)} réalisé sur ${nf(pp.n)} paris (IC ${sgn(pp.roi_ic[0])} à ${sgn(pp.roi_ic[1])})`, pp.roi_ic[1] < 0 ? "Piège prouvé : signalé" : "Non prouvé"]); }
+  const l14 = d.lab14;
+  if (l14?.groupes) { for (const g of l14.groupes.filter(g => /^[ABCD]\./.test(g.groupe))) { const x = g.btts.residu, o = g.o25.residu;
+      out.push([`Contexte : ${g.groupe.slice(3)}`, "buts", `+2,5 buts ${sgn(o)} (IC ${sgn(g.o25.ic[0])} à ${sgn(g.o25.ic[1])}), les deux marquent ${sgn(x)} face au marché ; ${nf(g.n)} matchs`, g.o25.prouve ? "Effet à creuser" : "Rejeté : déjà dans le prix"]); }
+    const r = l14.btts_recalage; if (r) out.push(["« Les deux marquent » recalé", "buts", `matrice ${pct(r.moyenne_annoncee_test, 1)} annoncé contre ${pct(r.reel_test, 1)} réel ; recalé ${pct(r.moyenne_recalee_test, 1)} ; Brier ${nf(r.gain_pm, 2)} ‰ (IC ${nf(r.ic_pm[0], 2)} à ${nf(r.ic_pm[1], 2)})`, "Adopté, biais prouvé"]); }
   const c = d.clv, cv = c && c["clv_seuil_1.05"];
   out.push(c ? ["Modèle face à la clôture Pinnacle", "1N2", `RPS ${nf(c.rps_modele, 4)} contre ${nf(c.rps_pinnacle_cloture, 4)} (clôture) ; CLV ${cv?.clv_moy != null ? `${sgn(cv.clv_moy)} sur ${nf(cv.n)} paris, IC ${sgn(cv.ic95[0])} à ${sgn(cv.ic95[1])}` : "trop peu de paris"}`,
     cv?.ic95 && cv.ic95[0] > 0 ? "Avantage prouvé" : "Pas d'avantage prouvé"] : ["Modèle face à la clôture Pinnacle (CLV)", "1N2", "calculé chaque lundi par la mise à jour automatique, dès que le dépôt GitHub tourne", "En attente"]);
@@ -940,3 +944,4 @@ if (DATA.feed?.events?.length && (S.oddsSource !== "import" || (ls.get("feedTs",
 const h0 = (location.hash || "").slice(1); if (VIEWS.includes(h0)) S.tab = h0; if (/^join-[A-Za-z0-9]{6}$/.test(h0)) { S.tab = "fan"; S.fan.joinCode = h0.slice(5).toUpperCase(); }
 render();
 initStore();
+watchCaps();

@@ -83,14 +83,14 @@ const L90 = (() => {
       P.set(N);
     }
     if (horizon && pGoalH === null) pGoalH = 1 - Q;
-    let H = 0, D = 0, A = 0; const tot = {};
+    let H = 0, D = 0, A = 0, BY = 0; const tot = {};
     for (let h = 0; h < K; h++) for (let a = 0; a < K; a++) {
       const p = P[h * K + a]; if (!p) continue;
-      if (h > a) H += p; else if (h === a) D += p; else A += p;
+      if (h > a) H += p; else if (h === a) D += p; else A += p; if (h > 0 && a > 0) BY += p;
       tot[h + a] = (tot[h + a] || 0) + p;
     }
     const over = L => Object.entries(tot).reduce((s, [g, p]) => s + (g > L ? p : 0), 0);
-    return { H, D, A, nextH, nextA, nextNone: Q, pGoalH, xH, xA, O25: over(2.5), O15: over(1.5), O35: over(3.5) };
+    return { H, D, A, nextH, nextA, nextNone: Q, pGoalH, xH, xA, O25: over(2.5), O15: over(1.5), O35: over(3.5), BY };
   }
   function timeline(C, lam, mu, events, upTo, step = 1) {
     const out = [];

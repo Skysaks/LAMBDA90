@@ -129,22 +129,69 @@ def build_combos(top, rowmap):
                 if o > 1 and (best is None or o > best[0]): best = (o, title)
             if best: return best
         return None
-    out, used = [], set()
+    out, used, used_keys = [], set(), set()
+    # Diversification : un même match ne sert qu'à un combiné quand c'est possible (le 17 octobre, PSV était dans les 4 combinés)
     for sid, lab, sizes, lo, hi in (("sur", "Combiné sûr", (2,), 1.3, 2.3), ("x2", "Combiné cote 2", (2, 3), 1.85, 2.5), ("x3", "Combiné cote 3", (2, 3, 4), 2.6, 3.8), ("x5", "Combiné cote 5", (3, 4, 5), 4.2, 7.0)):
         best = None
-        for n in sizes:
-            for cmb in combinations(legs, n):
-                ks = frozenset((l["key"], l["sel"]) for l in cmb)
-                if ks in used: continue
-                pr = price(cmb)
-                if not pr or not (lo <= pr[0] <= hi): continue
-                p = math.prod(l["p"] for l in cmb)
-                if best is None or p > best[0]: best = (p, cmb, pr, ks)
+        for strict in (True, False):
+            for n in sizes:
+                for cmb in combinations(legs, n):
+                    ks = frozenset((l["key"], l["sel"]) for l in cmb)
+                    if ks in used or (strict and any(l["key"] in used_keys for l in cmb)): continue
+                    pr = price(cmb)
+                    if not pr or not (lo <= pr[0] <= hi): continue
+                    p = math.prod(l["p"] for l in cmb)
+                    if best is None or p > best[0]: best = (p, cmb, pr, ks)
+            if best: break
         if best:
-            p, cmb, (o, bk), ks = best; used.add(ks); pm = math.prod(l["pm"] for l in cmb)
+            p, cmb, (o, bk), ks = best; used.add(ks); used_keys.update(l["key"] for l in cmb); pm = math.prod(l["pm"] for l in cmb)
             out.append(dict(id=sid, lab=lab, o=round(o, 3), book=bk, p=round(p, 4), pm=round(pm, 4), ev=round(pm * o - 1, 4),
                             legs=[dict(key=l["key"], sel=l["sel"], home=l["home"], away=l["away"], league=l["league"], kick=l["kick"], p=l["p"]) for l in cmb]))
     return out
+
+# ---------- Paris du jour par marché ----------
+# Matrice des scores du moteur (Dixon-Coles) recalée sur Pinnacle 1N2 et plus/moins de 2,5, comme dans la page ;
+# « les deux marquent » recalé (labo 14 : la matrice sous-estimait de 2 points, biais prouvé).
+BTTS_CAL = (0.0965, 0.7415)
+def score_matrix(f, fair, pO=None, n=11):
+    lam, mu, rho = f["lam"], f["mu"], f.get("rho", 0.0)
+    fac = [math.factorial(k) for k in range(n)]
+    M = [[math.exp(-lam) * lam ** i / fac[i] * math.exp(-mu) * mu ** j / fac[j] for j in range(n)] for i in range(n)]
+    M[0][0] *= 1 - lam * mu * rho; M[0][1] *= 1 + lam * rho; M[1][0] *= 1 + mu * rho; M[1][1] *= 1 - rho
+    for _ in range(40):
+        for g, t in ((lambda i, j: i > j, fair["H"]), (lambda i, j: i == j, fair["D"]), (lambda i, j: i < j, fair["A"])):
+            sm = sum(M[i][j] for i in range(n) for j in range(n) if g(i, j))
+            for i in range(n):
+                for j in range(n):
+                    if g(i, j): M[i][j] *= t / sm
+        if pO:
+            o = sum(M[i][j] for i in range(n) for j in range(n) if i + j > 2)
+            for i in range(n):
+                for j in range(n): M[i][j] *= pO / o if i + j > 2 else (1 - pO) / (1 - o)
+    return M
+CAT_SELS = {"dc": ("1N", "N2"), "dnb": ("DNBH", "DNBA"), "o15": ("O15",), "o25": ("O25",), "u25": ("U25",), "u35": ("U35",), "by": ("BY",), "bn": ("BN",)}
+SELFN = {"1N": lambda i, j: i >= j, "N2": lambda i, j: i <= j, "O15": lambda i, j: i + j > 1, "O25": lambda i, j: i + j > 2, "U25": lambda i, j: i + j < 3,
+         "U35": lambda i, j: i + j < 4, "BY": lambda i, j: i > 0 and j > 0, "BN": lambda i, j: i == 0 or j == 0}
+def market_probs(r):
+    pin = r["B"].get("pinnacle", {}); pO = None
+    if pin.get("O25", 0) > 1 and pin.get("U25", 0) > 1: pO = shin([pin["O25"], pin["U25"]])[0]
+    M = score_matrix(r["f"], r["fair"], pO); n = len(M)
+    P = {s: sum(M[i][j] for i in range(n) for j in range(n) if fn(i, j)) for s, fn in SELFN.items()}
+    lg = math.log(P["BY"] / (1 - P["BY"])); P["BY"] = 1 / (1 + math.exp(-(BTTS_CAL[0] + BTTS_CAL[1] * lg))); P["BN"] = 1 - P["BY"]
+    pH, pD, pA = r["fair"]["H"], r["fair"]["D"], r["fair"]["A"]; P["DNBH"] = pH / (1 - pD); P["DNBA"] = pA / (1 - pD)
+    return P
+def build_cats(win):
+    out = {c: [] for c in CAT_SELS}
+    for r in win:
+        try: P = market_probs(r)
+        except (ValueError, ZeroDivisionError, OverflowError): continue
+        for c, sels in CAT_SELS.items():
+            s = max(sels, key=lambda x: P[x]); p = P[s]
+            if not (0.5 <= p <= 0.8): continue
+            o, bk = r["best"].get(s, (None, None)) if s in ("O25", "U25") else (None, None)
+            out[c].append(dict(key=r["key"], kick=r["e"]["commence_time"], home=r["f"]["home"], away=r["f"]["away"], league=r["f"]["league"], sel=s, p=round(p, 4),
+                               fo=round(1 / p, 2), o=o, book=bk, ev=round(p * o - 1, 4) if o else None))
+    return {c: sorted(v, key=lambda x: -x["p"])[:6] for c, v in out.items()}
 
 def build_day(now):
     rows = sorted(candidates(now), key=lambda r: r["kick"])
@@ -193,7 +240,7 @@ def build_day(now):
         if sc >= 1.5: cold.append(dict(key=r["key"], kick=r["e"]["commence_time"], home=r["f"]["home"], away=r["f"]["away"], league=r["f"]["league"], score=sc, why=why))
     cold.sort(key=lambda x: -x["score"]); cold = cold[:5]; ck = {c["key"] for c in cold}
     hot2 = [h for h in hot2 if h["key"] not in ck]
-    return dict(made=now.isoformat(timespec="minutes"), window=len(win), top=top, combos=combos, hot=hot2[:5], cold=cold)
+    return dict(made=now.isoformat(timespec="minutes"), window=len(win), top=top, combos=combos, hot=hot2[:5], cold=cold, cats=build_cats(win))
 
 def settle(L, now):
     try:
@@ -201,7 +248,7 @@ def settle(L, now):
     except FileNotFoundError: return 0
     n = 0
     for day, D in L.items():
-        for it in D.get("top", []) + D.get("hot", []) + D.get("cold", []):
+        for it in D.get("top", []) + D.get("hot", []) + D.get("cold", []) + [x for v in D.get("cats", {}).values() for x in v]:
             if "hg" in it: continue
             kick = datetime.fromisoformat(it["kick"].replace("Z", "+00:00"))
             if kick > now - timedelta(hours=2, minutes=30): continue
@@ -209,7 +256,8 @@ def settle(L, now):
             k = best_pair(it["home"], it["away"], cands)
             if k is None: continue
             hg, ag = int(R[k]["hg"]), int(R[k]["ag"]); it["hg"], it["ag"] = hg, ag; n += 1
-            ok = lambda s: {"H": hg > ag, "D": hg == ag, "A": hg < ag, "O25": hg + ag > 2, "U25": hg + ag < 3, "1N": hg >= ag, "N2": hg <= ag, "12": hg != ag}[s]
+            ok = lambda s: {"H": hg > ag, "D": hg == ag, "A": hg < ag, "O15": hg + ag > 1, "O25": hg + ag > 2, "U25": hg + ag < 3, "U35": hg + ag < 4, "1N": hg >= ag, "N2": hg <= ag, "12": hg != ag,
+                            "BY": hg > 0 and ag > 0, "BN": hg == 0 or ag == 0, "DNBH": None if hg == ag else hg > ag, "DNBA": None if hg == ag else ag > hg}[s]  # None : remboursé
             if "sel" in it: it["won"] = ok(it["sel"])
             if "res" in it: it["res"]["won"] = ok(it["res"]["sel"]); it["dc"]["won"] = ok(it["dc"]["sel"])
         # un combiné est réglé quand toutes ses jambes le sont (elles figurent parmi les Top Picks du même jour)

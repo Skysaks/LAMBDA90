@@ -52,17 +52,19 @@ jobs:
             python clv.py out data/closing.csv
             python lab11_props.py /tmp/xg/data out || echo "labo 11 indisponible"
             python lab13_books.py . || echo "labo 13 indisponible"
+            python lab14_contexte.py /tmp/xg/data . || echo "labo 14 indisponible"
           fi
       - name: Entraînement final et page
         run: |
           python engine3_final.py /tmp/xg/data /tmp/of out
           python pipeline/props_build.py /tmp/xg/data out || echo "corners et cartons indisponibles"
+          python pipeline/h2h_build.py /tmp/xg/data . || echo "face-à-face indisponibles"
           python pipeline/insights_build.py . || echo "insights indisponibles"
           python pipeline/daily_picks.py . || echo "picks du jour indisponibles"
           ./mk.sh
       - name: Publier dans le dépôt
         run: |
           git config user.name "lambda90-bot"; git config user.email "bot@users.noreply.github.com"
-          git add lambda-90.html out data
+          git add lambda-90.html site out data
           git commit -m "Mise à jour quotidienne $(date -u +%F)" || echo "rien à publier"
           git pull --rebase --autostash && git push

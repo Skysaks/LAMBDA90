@@ -147,7 +147,7 @@ function formBlock(f) {
   return `<div class="stack" style="gap:10px">
     <div class="frow"><span>${esc(h)}</span><span class="fchips">${formChips(fh) || '<span class="note">–</span>'}</span></div>
     <div class="frow"><span>${esc(a)}</span><span class="fchips">${formChips(fa) || '<span class="note">–</span>'}</span></div>
-    <div><h3 style="margin:6px 0">Confrontations directes</h3>${h2h.length ? `<div class="scroll"><table><tbody>${h2h.map(([d, hHome, g1, g2]) => `<tr><td class="faint">${new Date(d + "T12:00").toLocaleDateString("fr-FR")}</td><td>${esc(hHome ? h : a)} ${g1}-${g2} ${esc(hHome ? a : h)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="note">Aucune depuis 2018 dans nos données.</p>`}</div>
+    ${H2HX[f.key] ? h2hBlock(f) : `<div><h3 style="margin:6px 0">Confrontations directes</h3>${h2h.length ? `<div class="scroll"><table><tbody>${h2h.map(([d, hHome, g1, g2]) => `<tr><td class="faint">${new Date(d + "T12:00").toLocaleDateString("fr-FR")}</td><td>${esc(hHome ? h : a)} ${g1}-${g2} ${esc(hHome ? a : h)}</td></tr>`).join("")}</tbody></table></div>` : `<p class="note">Aucune depuis 2018 dans nos données.</p>`}</div>`}
     <p class="note">Contexte seulement : la forme sur 5 matchs a été testée et n'améliore pas la prévision une fois la force des équipes connue.</p></div>`;
 }
 // Combiné même match : probabilité jointe exacte

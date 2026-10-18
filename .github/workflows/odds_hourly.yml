@@ -1,0 +1,33 @@
+name: Cotes horaires (offre payante)
+# Inactif tant que la variable de dépôt ODDS_HOURLY ne vaut pas « on » (Settings → Secrets and variables → Actions → Variables).
+# À activer avec l'offre The Odds API 20K (30 $/mois) : chaque heure de 10 h 15 à 21 h 15 UTC, seuls les championnats qui jouent
+# dans les 6 heures sont interrogés (2 crédits chacun). Mesure le retard des bookmakers français sur Pinnacle et la durée de vie des Hot Picks.
+on:
+  schedule: [{ cron: "15 10-21 * * *" }]
+  workflow_dispatch:
+permissions: { contents: write }
+concurrency: { group: lambda90-data, cancel-in-progress: false }
+jobs:
+  cotes:
+    if: ${{ vars.ODDS_HOURLY == 'on' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - run: pip install numpy pandas scipy
+      - name: Cotes des matchs des 6 prochaines heures
+        env: { ODDS_API_KEY: "${{ secrets.ODDS_API_KEY }}", ODDS_HORIZON_H: "6", ODDS_RESERVE: "200" }
+        run: |
+          python pipeline/fetch_odds.py
+          python pipeline/odds_history.py .
+          python pipeline/value_log.py .
+          python pipeline/daily_picks.py . || echo "registre inchangé"
+      - name: Page
+        run: ./mk.sh
+      - name: Publier dans le dépôt
+        run: |
+          git config user.name "lambda90-bot"; git config user.email "bot@users.noreply.github.com"
+          git add lambda-90.html site out data
+          git commit -m "Cotes $(date -u +%FT%H:%M)" || echo "rien à publier"
+          git pull --rebase --autostash && git push

@@ -86,3 +86,16 @@ Données : 4 369 matchs avec Pinnacle et Bet365 à l'ouverture et à la clôture
 | 6 | Mises à jour horaires des cotes les jours de match | The Odds API 20K, 30 $/mois | Suivre le mouvement du marché, alerter avant la clôture |
 
 À ne pas faire : ajouter des signaux sans test hors échantillon. Le laboratoire montre que la forme, le repos, les enjeux et l'empilement de tout réunis dégradent la prévision.
+
+## Labo 14 : fatigue, face-à-face et « les deux marquent » (`lab14_contexte.py`)
+
+Juge : résultat réel moins probabilité de clôture Pinnacle (4 318 matchs, 2024-26). Un résidu nul signifie que le marché intègre déjà l'effet.
+
+| Hypothèse | Résidu (réel − marché) | Décision |
+| --- | --- | --- |
+| Repos court (≤ 4 jours, l'une des deux équipes) : plus de buts | +2,5 buts −1,0 pt (IC −4,6 à +2,4) ; les deux marquent +3,2 pts, comme les autres matchs | Rejeté : aucun effet propre |
+| Grosse équipe (top 4 Elo) en repos court | +2,5 buts −3,2 pts (IC −10,3 à +3,4) | Rejeté |
+| Face-à-face riche en buts ou dominé | résidus entre −2,2 et +1,9 pts, IC à cheval sur 0 | Rejeté : contexte affiché, pas un signal |
+| « Les deux marquent » de la matrice recalée | sous-estimé de 2,0 pts (IC +0,5 à +3,5), surtout entre 40 et 50 % | Recalage logistique adopté (moyenne exacte ; gain de Brier non prouvé) |
+
+Limite : les matchs de Coupe d'Europe et de coupes nationales ne sont pas dans nos données, donc la fatigue des clubs européens est sous-estimée.
