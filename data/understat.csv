@@ -2798,6 +2798,15 @@ de.1,2026,2026-10-10,Union Berlin,Elversberg,1,0,1.23712,0.27986
 de.1,2026,2026-10-10,RasenBallsport Leipzig,Eintracht Frankfurt,6,0,4.73579,1.96147
 de.1,2026,2026-10-11,FC Cologne,Borussia M.Gladbach,2,1,1.54123,1.03662
 de.1,2026,2026-10-11,Freiburg,Schalke 04,2,1,1.6207,0.376083
+de.1,2026,2026-10-16,Eintracht Frankfurt,FC Cologne,1,0,1.27021,1.02313
+de.1,2026,2026-10-17,Hamburger SV,VfB Stuttgart,1,0,1.66747,2.6356
+de.1,2026,2026-10-17,Schalke 04,Mainz 05,0,1,0.405596,1.53249
+de.1,2026,2026-10-17,Union Berlin,Borussia Dortmund,0,0,0.935854,0.99128
+de.1,2026,2026-10-17,Werder Bremen,Paderborn,2,2,2.66715,1.36822
+de.1,2026,2026-10-17,Elversberg,Augsburg,4,3,4.00267,3.73641
+de.1,2026,2026-10-17,Bayern Munich,RasenBallsport Leipzig,6,1,4.90402,0.70378
+de.1,2026,2026-10-18,Bayer Leverkusen,Freiburg,2,1,1.84745,1.20682
+de.1,2026,2026-10-18,Borussia M.Gladbach,Hoffenheim,1,2,0.75801,2.17097
 en.1,2017,2017-08-11,Arsenal,Leicester,4,3,2.54329,1.46495
 en.1,2017,2017-08-12,Watford,Liverpool,3,3,2.17647,2.61549
 en.1,2017,2017-08-12,West Bromwich Albion,Bournemouth,1,0,1.18399,0.378659
@@ -6278,6 +6287,15 @@ en.1,2026,2026-10-11,Crystal Palace,Nottingham Forest,3,1,2.24807,3.76379
 en.1,2026,2026-10-11,Hull,Everton,2,2,1.53245,2.79588
 en.1,2026,2026-10-11,Liverpool,Manchester City,0,3,0.75917,1.58703
 en.1,2026,2026-10-12,Coventry,Newcastle United,4,1,1.66422,2.21865
+en.1,2026,2026-10-17,Everton,Chelsea,0,2,0.570749,1.602
+en.1,2026,2026-10-17,Fulham,Hull,1,0,2.27426,0.130919
+en.1,2026,2026-10-17,Brentford,Liverpool,1,2,0.858733,1.54933
+en.1,2026,2026-10-17,Manchester City,Ipswich,3,2,4.00772,1.37153
+en.1,2026,2026-10-17,Newcastle United,Aston Villa,0,1,0.920183,2.0822
+en.1,2026,2026-10-18,Brighton,Crystal Palace,5,0,2.2522,0.627519
+en.1,2026,2026-10-18,Bournemouth,Sunderland,2,0,4.386,0.0943414
+en.1,2026,2026-10-18,Leeds,Manchester United,1,1,1.41034,1.08135
+en.1,2026,2026-10-18,Nottingham Forest,Arsenal,0,1,0.74721,0.9151
 es.1,2017,2017-08-18,Leganes,Alaves,1,0,1.32428,0.993213
 es.1,2017,2017-08-18,Valencia,Las Palmas,1,0,1.60532,0.219158
 es.1,2017,2017-08-19,Celta Vigo,Real Sociedad,2,3,1.82363,1.97071
@@ -9776,6 +9794,15 @@ es.1,2026,2026-10-11,Real Sociedad,Deportivo La Coruna,3,2,1.32961,2.33695
 es.1,2026,2026-10-11,Real Betis,Osasuna,5,2,2.65567,1.14555
 es.1,2026,2026-10-11,Racing Santander,Valencia,2,2,1.39797,1.75004
 es.1,2026,2026-10-12,Levante,Sevilla,3,3,2.00633,3.19601
+es.1,2026,2026-10-16,Deportivo La Coruna,Levante,1,1,1.45617,0.56336
+es.1,2026,2026-10-17,Espanyol,Atletico Madrid,0,1,0.485489,1.77823
+es.1,2026,2026-10-17,Villarreal,Elche,0,0,2.29594,0.220117
+es.1,2026,2026-10-17,Real Betis,Barcelona,2,5,1.35349,3.18908
+es.1,2026,2026-10-17,Valencia,Athletic Club,0,0,2.24386,0.515779
+es.1,2026,2026-10-18,Osasuna,Racing Santander,2,0,3.08218,0.220354
+es.1,2026,2026-10-18,Celta Vigo,Alaves,2,1,0.757627,1.18059
+es.1,2026,2026-10-18,Malaga,Real Sociedad,2,5,1.92319,2.5719
+es.1,2026,2026-10-18,Real Madrid,Sevilla,4,1,2.125,1.3217
 fr.1,2017,2017-08-04,Monaco,Toulouse,3,2,2.14636,0.248798
 fr.1,2017,2017-08-05,Paris Saint Germain,Amiens,2,0,2.25264,0.190301
 fr.1,2017,2017-08-05,Lyon,Strasbourg,4,0,1.72783,0.292445
@@ -12927,6 +12954,15 @@ fr.1,2026,2026-10-10,Paris Saint Germain,Le Mans,3,1,4.22625,2.22766
 fr.1,2026,2026-10-11,Nice,Strasbourg,2,1,1.54619,0.438924
 fr.1,2026,2026-10-11,Rennes,Auxerre,4,1,1.99675,1.20652
 fr.1,2026,2026-10-11,Troyes,Marseille,0,2,1.25108,1.27073
+fr.1,2026,2026-10-16,Le Mans,Toulouse,0,3,0.609329,2.06038
+fr.1,2026,2026-10-17,Strasbourg,Paris Saint Germain,1,3,1.3142,2.36389
+fr.1,2026,2026-10-17,Lille,Brest,1,1,2.04977,0.787317
+fr.1,2026,2026-10-17,Troyes,Lens,1,3,1.47144,1.84645
+fr.1,2026,2026-10-18,Angers,Marseille,2,5,1.80257,3.10595
+fr.1,2026,2026-10-18,Le Havre,Auxerre,1,3,1.59124,1.95755
+fr.1,2026,2026-10-18,Lorient,Monaco,1,0,1.75158,0.487209
+fr.1,2026,2026-10-18,Paris FC,Rennes,4,3,3.06202,3.01013
+fr.1,2026,2026-10-18,Lyon,Nice,2,1,1.70483,1.19372
 it.1,2017,2017-08-19,Juventus,Cagliari,3,0,1.27155,1.39829
 it.1,2017,2017-08-19,Verona,Napoli,1,3,1.39528,2.62234
 it.1,2017,2017-08-20,Atalanta,Roma,0,1,1.48324,0.362356
@@ -16407,3 +16443,11 @@ it.1,2026,2026-10-11,Sassuolo,AC Milan,1,1,1.33739,1.86874
 it.1,2026,2026-10-11,Cagliari,Juventus,1,1,0.80989,2.37875
 it.1,2026,2026-10-12,Atalanta,Venezia,3,1,2.92429,2.68886
 it.1,2026,2026-10-12,Torino,Udinese,2,1,2.38092,0.57404
+it.1,2026,2026-10-16,Frosinone,Sassuolo,4,2,2.94443,1.82074
+it.1,2026,2026-10-17,Venezia,Napoli,1,0,0.683408,2.55507
+it.1,2026,2026-10-17,Bologna,Inter,1,3,1.76523,3.59562
+it.1,2026,2026-10-17,Roma,Genoa,2,0,1.41424,0.509044
+it.1,2026,2026-10-18,Udinese,Lecce,0,3,0.59344,4.36159
+it.1,2026,2026-10-18,Fiorentina,Como,1,3,2.75743,2.11186
+it.1,2026,2026-10-18,AC Milan,Atalanta,3,2,2.61604,1.91891
+it.1,2026,2026-10-18,Juventus,Lazio,0,3,0.600011,0.81761
