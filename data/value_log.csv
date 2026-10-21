@@ -382,3 +382,5 @@ vu_le,event_id,sport_key,commence_time,home,away,market,point,outcome,book,fr,pr
 2026-10-17T11:13+00:00,24970eb98cc5999cf3187abfc3a74a27,soccer_efl_champ,2026-10-17T14:00:00Z,Derby County,Stoke City,h2h,,Derby County,betfair_ex_eu,0,3.15,3.01,0.32136,0.01229
 2026-10-17T11:13+00:00,24970eb98cc5999cf3187abfc3a74a27,soccer_efl_champ,2026-10-17T14:00:00Z,Derby County,Stoke City,h2h,,Stoke City,matchbook,0,2.52,2.41,0.4034,0.01658
 2026-10-17T11:13+00:00,b6bf48e65d78b5615da5f3ab904fa5d4,soccer_efl_champ,2026-10-17T14:00:00Z,Swansea City,West Ham United,h2h,,West Ham United,betonlineag,0,2.16,2.08,0.46852,0.01201
+2026-10-21T09:59+00:00,a362cccad837f1ffae61ff43a3536688,soccer_spain_la_liga,2026-10-21T18:00:00Z,Levante,Athletic Bilbao,h2h,,Draw,bet365,0,3.5,3.09,0.30737,0.07578
+2026-10-21T09:59+00:00,a362cccad837f1ffae61ff43a3536688,soccer_spain_la_liga,2026-10-21T18:00:00Z,Levante,Athletic Bilbao,h2h,,Draw,market_avg,0,3.29,3.09,0.30737,0.01124
