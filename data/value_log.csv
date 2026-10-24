@@ -384,3 +384,48 @@ vu_le,event_id,sport_key,commence_time,home,away,market,point,outcome,book,fr,pr
 2026-10-17T11:13+00:00,b6bf48e65d78b5615da5f3ab904fa5d4,soccer_efl_champ,2026-10-17T14:00:00Z,Swansea City,West Ham United,h2h,,West Ham United,betonlineag,0,2.16,2.08,0.46852,0.01201
 2026-10-21T09:59+00:00,a362cccad837f1ffae61ff43a3536688,soccer_spain_la_liga,2026-10-21T18:00:00Z,Levante,Athletic Bilbao,h2h,,Draw,bet365,0,3.5,3.09,0.30737,0.07578
 2026-10-21T09:59+00:00,a362cccad837f1ffae61ff43a3536688,soccer_spain_la_liga,2026-10-21T18:00:00Z,Levante,Athletic Bilbao,h2h,,Draw,market_avg,0,3.29,3.09,0.30737,0.01124
+2026-10-24T09:24+00:00,0bbce95e5764e706e6c428bb52dc5536,soccer_france_ligue_one,2026-10-24T15:15:00Z,Toulouse,Troyes,h2h,,Troyes,bet365,0,5.5,4.86,0.18989,0.04437
+2026-10-24T09:24+00:00,fc6c50376190b578cfeb38c029db8487,soccer_france_ligue_one,2026-10-24T18:45:00Z,RC Lens,Paris FC,h2h,,RC Lens,bet365,0,2.45,2.08,0.46192,0.13171
+2026-10-24T09:24+00:00,fc6c50376190b578cfeb38c029db8487,soccer_france_ligue_one,2026-10-24T18:45:00Z,RC Lens,Paris FC,h2h,,RC Lens,market_avg,0,2.39,2.08,0.46192,0.10399
+2026-10-24T09:24+00:00,1a83b5ebabe7cb572ae6e029b3149c42,soccer_france_ligue_one,2026-10-25T16:15:00Z,Angers,Lorient,h2h,,Angers,bet365,0,3.1,2.61,0.36653,0.13626
+2026-10-24T09:24+00:00,1a83b5ebabe7cb572ae6e029b3149c42,soccer_france_ligue_one,2026-10-25T16:15:00Z,Angers,Lorient,h2h,,Angers,market_avg,0,2.86,2.61,0.36653,0.04829
+2026-10-24T09:24+00:00,31dcb6d13ed240fc4a5c7a696149967e,soccer_france_ligue_one,2026-10-25T16:15:00Z,Rennes,Strasbourg,h2h,,Rennes,bet365,0,1.8,1.63,0.59184,0.06532
+2026-10-24T09:24+00:00,31dcb6d13ed240fc4a5c7a696149967e,soccer_france_ligue_one,2026-10-25T16:15:00Z,Rennes,Strasbourg,h2h,,Rennes,market_avg,0,1.75,1.63,0.59184,0.03573
+2026-10-24T09:24+00:00,aca5dd297dbee71f576f7641569fe578,soccer_epl,2026-10-24T11:30:00Z,Aston Villa,Manchester City,h2h,,Aston Villa,bet365,0,5.0,4.37,0.21241,0.06207
+2026-10-24T09:24+00:00,0fbb2626ed9534b9dcf21d16925f9bd7,soccer_epl,2026-10-24T14:00:00Z,Coventry City,Fulham,h2h,,Coventry City,bet365,0,3.2,2.94,0.32385,0.03633
+2026-10-24T09:24+00:00,0382a9faef0bb8df1bcc436536cffb05,soccer_epl,2026-10-24T16:30:00Z,Chelsea,Tottenham Hotspur,h2h,,Tottenham Hotspur,bet365,0,4.5,3.87,0.24193,0.08869
+2026-10-24T09:24+00:00,0382a9faef0bb8df1bcc436536cffb05,soccer_epl,2026-10-24T16:30:00Z,Chelsea,Tottenham Hotspur,h2h,,Tottenham Hotspur,market_avg,0,4.35,3.87,0.24193,0.0524
+2026-10-24T09:24+00:00,33fb7467b23c91d57dc976d9ab05ea97,soccer_epl,2026-10-25T14:00:00Z,Manchester United,Bournemouth,h2h,,Manchester United,bet365,0,2.15,1.82,0.52933,0.13806
+2026-10-24T09:24+00:00,33fb7467b23c91d57dc976d9ab05ea97,soccer_epl,2026-10-25T14:00:00Z,Manchester United,Bournemouth,h2h,,Manchester United,market_avg,0,2.1,1.82,0.52933,0.1116
+2026-10-24T09:24+00:00,fe235b26408c477368c40672a4488694,soccer_epl,2026-10-25T14:00:00Z,Crystal Palace,Newcastle United,h2h,,Crystal Palace,bet365,0,2.9,2.68,0.35615,0.03285
+2026-10-24T09:24+00:00,fe235b26408c477368c40672a4488694,soccer_epl,2026-10-25T14:00:00Z,Crystal Palace,Newcastle United,h2h,,Crystal Palace,market_avg,0,2.86,2.68,0.35615,0.0186
+2026-10-24T09:24+00:00,e82f6b60fa41b82c8510f5b67ce61849,soccer_epl,2026-10-25T16:30:00Z,Sunderland,Leeds United,h2h,,Sunderland,bet365,0,3.1,2.75,0.34726,0.07652
+2026-10-24T09:24+00:00,e82f6b60fa41b82c8510f5b67ce61849,soccer_epl,2026-10-25T16:30:00Z,Sunderland,Leeds United,h2h,,Sunderland,market_avg,0,3.04,2.75,0.34726,0.05568
+2026-10-24T09:24+00:00,5960b1b6c20acfd78e78764fed47d505,soccer_spain_la_liga,2026-10-24T14:15:00Z,Real Racing Club de Santander,Espanyol,h2h,,Espanyol,bet365,0,2.88,2.68,0.35639,0.02639
+2026-10-24T09:24+00:00,0dae715cc56fe201f9e667917c126691,soccer_spain_la_liga,2026-10-24T16:30:00Z,Valencia,Villarreal,h2h,,Valencia,bet365,0,3.3,3.09,0.30714,0.01356
+2026-10-24T09:24+00:00,9c4254cba9944a839b421db27260504d,soccer_spain_la_liga,2026-10-25T13:00:00Z,Athletic Bilbao,Getafe,h2h,,Getafe,bet365,0,6.0,4.72,0.19529,0.17172
+2026-10-24T09:24+00:00,9c4254cba9944a839b421db27260504d,soccer_spain_la_liga,2026-10-25T13:00:00Z,Athletic Bilbao,Getafe,h2h,,Getafe,market_avg,0,6.11,4.72,0.19529,0.1932
+2026-10-24T09:24+00:00,2013e3955186ebe5258e85eb741a7553,soccer_spain_la_liga,2026-10-25T15:15:00Z,Celta Vigo,Real Betis,h2h,,Celta Vigo,bet365,0,3.0,2.66,0.35877,0.07632
+2026-10-24T09:24+00:00,2013e3955186ebe5258e85eb741a7553,soccer_spain_la_liga,2026-10-25T15:15:00Z,Celta Vigo,Real Betis,h2h,,Celta Vigo,market_avg,0,2.89,2.66,0.35877,0.03685
+2026-10-24T09:24+00:00,3cb8660cd2375b60e81144a7572cfb89,soccer_spain_la_liga,2026-10-25T17:30:00Z,Real Sociedad,Levante,h2h,,Levante,bet365,0,5.25,4.32,0.21515,0.12955
+2026-10-24T09:24+00:00,3cb8660cd2375b60e81144a7572cfb89,soccer_spain_la_liga,2026-10-25T17:30:00Z,Real Sociedad,Levante,h2h,,Levante,market_avg,0,4.74,4.32,0.21515,0.01982
+2026-10-24T09:24+00:00,72089d103a5fe6a922c35e17efba6ffc,soccer_spain_la_liga,2026-10-25T20:00:00Z,Barcelona,Real Madrid,h2h,,Barcelona,bet365,0,1.62,1.53,0.62982,0.02031
+2026-10-24T09:24+00:00,04dac5e98ab5fc5564980542ca3fc746,soccer_germany_bundesliga,2026-10-24T13:30:00Z,RB Leipzig,Elversberg,h2h,,RB Leipzig,bet365,0,1.44,1.33,0.72686,0.04667
+2026-10-24T09:24+00:00,04dac5e98ab5fc5564980542ca3fc746,soccer_germany_bundesliga,2026-10-24T13:30:00Z,RB Leipzig,Elversberg,h2h,,RB Leipzig,market_avg,0,1.41,1.33,0.72686,0.02487
+2026-10-24T09:24+00:00,7630f897583f3acc0f483fa2d17d1ac5,soccer_germany_bundesliga,2026-10-24T13:30:00Z,SC Paderborn,Hamburger SV,h2h,,Hamburger SV,bet365,0,3.0,2.8,0.34062,0.02185
+2026-10-24T09:24+00:00,f2bd909f25eea6b4ce42d2f52275e5c4,soccer_germany_bundesliga,2026-10-25T16:30:00Z,SC Freiburg,Bayern Munich,h2h,,SC Freiburg,bet365,0,6.5,4.67,0.19754,0.28404
+2026-10-24T09:24+00:00,f2bd909f25eea6b4ce42d2f52275e5c4,soccer_germany_bundesliga,2026-10-25T16:30:00Z,SC Freiburg,Bayern Munich,h2h,,SC Freiburg,market_avg,0,6.43,4.67,0.19754,0.27021
+2026-10-24T09:24+00:00,0b4894e9fb123ef3045269f97e339eba,soccer_italy_serie_a,2026-10-24T16:00:00Z,Napoli,AS Roma,h2h,,AS Roma,bet365,0,2.6,2.38,0.40267,0.04695
+2026-10-24T09:24+00:00,0b4894e9fb123ef3045269f97e339eba,soccer_italy_serie_a,2026-10-24T16:00:00Z,Napoli,AS Roma,h2h,,AS Roma,market_avg,0,2.51,2.38,0.40267,0.01071
+2026-10-24T09:24+00:00,b27cb3ea731fa3f18d05e6a627bdf984,soccer_italy_serie_a,2026-10-24T18:45:00Z,Lazio,Parma,h2h,,Parma,bet365,0,9.0,6.43,0.13958,0.25625
+2026-10-24T09:24+00:00,b27cb3ea731fa3f18d05e6a627bdf984,soccer_italy_serie_a,2026-10-24T18:45:00Z,Lazio,Parma,h2h,,Draw,bet365,0,4.75,4.12,0.22542,0.07073
+2026-10-24T09:24+00:00,b27cb3ea731fa3f18d05e6a627bdf984,soccer_italy_serie_a,2026-10-24T18:45:00Z,Lazio,Parma,h2h,,Parma,market_avg,0,8.18,6.43,0.13958,0.1418
+2026-10-24T09:24+00:00,b27cb3ea731fa3f18d05e6a627bdf984,soccer_italy_serie_a,2026-10-24T18:45:00Z,Lazio,Parma,h2h,,Draw,market_avg,0,4.56,4.12,0.22542,0.0279
+2026-10-24T09:24+00:00,63aa6e3f679ee4c68de5b4bd8d3361bb,soccer_italy_serie_a,2026-10-25T14:00:00Z,Atalanta BC,Frosinone,h2h,,Atalanta BC,bet365,0,1.8,1.62,0.59439,0.0699
+2026-10-24T09:24+00:00,63aa6e3f679ee4c68de5b4bd8d3361bb,soccer_italy_serie_a,2026-10-25T14:00:00Z,Atalanta BC,Frosinone,h2h,,Atalanta BC,market_avg,0,1.79,1.62,0.59439,0.06396
+2026-10-24T09:24+00:00,95cfaecfe96bb7ced1fb6af974a4110b,soccer_italy_serie_a,2026-10-25T14:00:00Z,Genoa,Venezia,h2h,,Draw,bet365,0,3.4,3.19,0.29715,0.01032
+2026-10-24T09:24+00:00,3564688383b255192409c9deb8e526ed,soccer_italy_serie_a,2026-10-25T19:45:00Z,Udinese,AC Milan,h2h,,Udinese,bet365,0,5.5,4.36,0.21311,0.1721
+2026-10-24T09:24+00:00,3564688383b255192409c9deb8e526ed,soccer_italy_serie_a,2026-10-25T19:45:00Z,Udinese,AC Milan,h2h,,Udinese,market_avg,0,5.02,4.36,0.21311,0.06981
+2026-10-24T09:24+00:00,5361a46399319e5c40d77e1b1e1c5933,soccer_portugal_primeira_liga,2026-10-24T14:30:00Z,CF Estrela,Casa Pia,h2h,,CF Estrela,bet365,0,1.76,1.67,0.57725,0.01596
+2026-10-24T09:24+00:00,5361a46399319e5c40d77e1b1e1c5933,soccer_portugal_primeira_liga,2026-10-24T14:30:00Z,CF Estrela,Casa Pia,h2h,,CF Estrela,market_avg,0,1.75,1.67,0.57725,0.01018
+2026-10-24T09:24+00:00,399511b408ef714458e62100cac3fb16,soccer_portugal_primeira_liga,2026-10-25T15:30:00Z,Estoril,Moreirense FC,h2h,,Estoril,market_avg,0,1.93,1.83,0.52702,0.01716
