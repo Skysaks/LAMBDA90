@@ -14,62 +14,79 @@
 2526 I1 380
 2526 P1 306
 2526 N1 306
-2627 F1 63
-2627 E0 70
-2627 E1 132
-2627 SP1 89
-2627 D1 54
-2627 I1 70
-2627 P1 72
-2627 N1 81
+2627 F1 80
+2627 E0 89
+2627 E1 156
+2627 SP1 108
+2627 D1 72
+2627 I1 98
+2627 P1 88
+2627 N1 99
 écrit data/closing.csv
-en.1 2026 (80, 'https://understat.com/getLeagueData/EPL/2026')
-es.1 2026 (98, 'https://understat.com/getLeagueData/La_liga/2026')
-de.1 2026 (63, 'https://understat.com/getLeagueData/Bundesliga/2026')
-it.1 2026 (80, 'https://understat.com/getLeagueData/Serie_A/2026')
-fr.1 2026 (71, 'https://understat.com/getLeagueData/Ligue_1/2026')
+échec page <urlopen error [Errno -3] Temporary failure in name resolution>
+échec https://understat.com/getLeagueData/EPL/2026 <urlopen error [Errno -3] Temporary failure in name resolution>
+échec https://understat.com/league/EPL/2026 <urlopen error [Errno -3] Temporary failure in name resolution>
+échec page <urlopen error [Errno -3] Temporary failure in name resolution>
+échec https://understat.com/getLeagueData/La_liga/2026 <urlopen error [Errno -3] Temporary failure in name resolution>
+échec https://understat.com/league/La_liga/2026 <urlopen error [Errno -3] Temporary failure in name resolution>
+échec page <urlopen error [Errno -3] Temporary failure in name resolution>
+échec https://understat.com/getLeagueData/Bundesliga/2026 <urlopen error [Errno -3] Temporary failure in name resolution>
+échec https://understat.com/league/Bundesliga/2026 <urlopen error [Errno -3] Temporary failure in name resolution>
+échec page <urlopen error [Errno -3] Temporary failure in name resolution>
+échec https://understat.com/getLeagueData/Serie_A/2026 <urlopen error [Errno -3] Temporary failure in name resolution>
+échec https://understat.com/league/Serie_A/2026 <urlopen error [Errno -3] Temporary failure in name resolution>
+échec page <urlopen error [Errno -3] Temporary failure in name resolution>
+échec https://understat.com/getLeagueData/Ligue_1/2026 <urlopen error [Errno -3] Temporary failure in name resolution>
+échec https://understat.com/league/Ligue_1/2026 <urlopen error [Errno -3] Temporary failure in name resolution>
+en.1 2026 (0, None)
+es.1 2026 (0, None)
+de.1 2026 (0, None)
+it.1 2026 (0, None)
+fr.1 2026 (0, None)
 DIAGNOSTIC :
-  200 https://understat.com/league/EPL/2026 | 18698 car. | début : '<!DOCTYPE html>\n<html lang="en">\n    <head>\n\t\t<base href="https://understat.com/">\n\t\t<title>EPL xG Table and Scorers for the 2026/2027 season | Understat.com</title>\n        <meta charset="UTF-8" />\n\t'
-  200 https://understat.com/getLeagueData/EPL/2026 | 296425 car. | début : '{"teams":{"71":{"id":"71","title":"Aston Villa","history":[{"h_a":"a","xG":0.275249,"xGA":4.00327,"npxG":0.275249,"npxGA":4.00327,"ppda":{"att":355,"def":11},"ppda_allowed":{"att":127,"def":34},"deep"'
-  200 https://understat.com/getLeagueData/La_liga/2026 | 321996 car. | début : '{"teams":{"137":{"id":"137","title":"Malaga","history":[{"h_a":"a","xG":0.229576,"xGA":1.34391,"npxG":0.229576,"npxGA":1.34391,"ppda":{"att":274,"def":19},"ppda_allowed":{"att":249,"def":33},"deep":3,'
-  200 https://understat.com/getLeagueData/Bundesliga/2026 | 255481 car. | début : '{"teams":{"117":{"id":"117","title":"Bayern Munich","history":[{"h_a":"h","xG":4.07897,"xGA":1.24951,"npxG":4.07897,"npxGA":1.24951,"ppda":{"att":174,"def":12},"ppda_allowed":{"att":258,"def":32},"dee'
+  ERREUR https://understat.com/getLeagueData/EPL/2026 : <urlopen error [Errno -3] Temporary failure in name resolution>
+  ERREUR https://understat.com/league/EPL/2026 : <urlopen error [Errno -3] Temporary failure in name resolution>
+  ERREUR https://understat.com/getLeagueData/La_liga/2026 : <urlopen error [Errno -3] Temporary failure in name resolution>
+  ERREUR https://understat.com/league/La_liga/2026 : <urlopen error [Errno -3] Temporary failure in name resolution>
+  ERREUR https://understat.com/getLeagueData/Bundesliga/2026 : <urlopen error [Errno -3] Temporary failure in name resolution>
+  ERREUR https://understat.com/league/Bundesliga/2026 : <urlopen error [Errno -3] Temporary failure in name resolution>
 matchs avec xG : 16503
  "equipes_rapprochees": 156,
- "couverture_de.1": 0.9735038830516217,
- "couverture_en.1": 0.9754668619553277,
- "couverture_es.1": 1.0,
- "couverture_fr.1": 0.9987505206164098,
- "couverture_it.1": 0.9996338337605273,
+ "couverture_de.1": 0.9717925386715196,
+ "couverture_en.1": 0.972707423580786,
+ "couverture_es.1": 0.9978292329956585,
+ "couverture_fr.1": 0.9966832504145937,
+ "couverture_it.1": 0.9949146385760989,
  "matchs_testables": 3602,
  "n_test": 1851,
  "rps": {
-  "actuel": 0.20119038590747074,
-  "plus_xg": 0.2016091069502515,
-  "xg_au_lieu_tirs": 0.20194669468885387,
-  "marche": 0.19785413475505712,
-  "marche_plus_xg": 0.19874642274093715
+  "actuel": 0.20119043037927697,
+  "plus_xg": 0.20160794562425938,
+  "xg_au_lieu_tirs": 0.20194599535279867,
+  "marche": 0.19785413475505714,
+  "marche_plus_xg": 0.19874661168585267
  },
  "xg_en_plus": {
-  "gain": -0.0004187210427807772,
+  "gain": -0.0004175152449823854,
   "ic95": [
-   -0.0019134297665832163,
-   0.0010981642918733911
+   -0.0019605334517755917,
+   0.001018271674791424
   ],
   "prouve": false
  },
  "xg_au_lieu_tirs": {
-  "gain": -0.000756308781383123,
+  "gain": -0.0007555649735217075,
   "ic95": [
-   -0.0025839992784531312,
-   0.0009381453303551618
+   -0.002623327593797485,
+   0.0009884959377075508
   ],
   "prouve": false
  },
  "au_dela_marche": {
-  "gain": -0.0008922879858800208,
+  "gain": -0.0008924769307955383,
   "ic95": [
-   -0.0024265886438689897,
-   0.000642606348991245
+   -0.002405268508755646,
+   0.0006738745321180643
   ],
   "prouve": false
  }
@@ -87,23 +104,23 @@ matchs avec xG : 16503
  ],
  "valeur_au_dela_modele": {
   "n_test": 2341,
-  "rps_sans": 0.19704286351841835,
-  "rps_avec": 0.19673140107169826,
-  "gain": 0.0003114624467200694,
+  "rps_sans": 0.19704300355227544,
+  "rps_avec": 0.1967316537070671,
+  "gain": 0.00031134984520833376,
   "ic95": [
-   -0.000722080168767696,
-   0.0013428380926370968
+   -0.0006734458191647334,
+   0.0013063248356762708
   ],
   "prouve": false
  },
  "rotation_au_dela_modele": {
   "n_test": 2341,
-  "rps_sans": 0.19704286351841835,
-  "rps_avec": 0.19732051768069547,
-  "gain": -0.00027765416227711856,
+  "rps_sans": 0.19704300355227544,
+  "rps_avec": 0.19732072340796106,
+  "gain": -0.0002777198556856099,
   "ic95": [
-   -0.0011342236675413204,
-   0.0005679773668461577
+   -0.0011656872040552617,
+   0.0005881192206150845
   ],
   "prouve": false
  },
@@ -111,10 +128,10 @@ matchs avec xG : 16503
   "n_test": 2341,
   "rps_sans": 0.19464261838618735,
   "rps_avec": 0.19481619702432204,
-  "gain": -0.00017357863813469967,
+  "gain": -0.00017357863813469485,
   "ic95": [
-   -0.000778474797441842,
-   0.00045146732540193185
+   -0.0007776705609793036,
+   0.00046571411666868756
   ],
   "prouve": false
  },
@@ -122,10 +139,10 @@ matchs avec xG : 16503
   "n_test": 1172,
   "rps_sans": 0.1891932928965546,
   "rps_avec": 0.18950849498712843,
-  "gain": -0.0003152020905738302,
+  "gain": -0.0003152020905738581,
   "ic95": [
-   -0.0007579001710600869,
-   0.0001341297783773388
+   -0.0007613623654682792,
+   0.00013239401321628625
   ],
   "prouve": false
  }
