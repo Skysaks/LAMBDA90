@@ -79,6 +79,7 @@ F1,2026-11-01,RC Strasbourg Alsace,AJ Auxerre,5,1,1,0
 F1,2026-11-01,Olympique Lyonnais,Angers SCO,2,0,1,0
 F1,2026-11-01,Paris FC,AS Monaco FC,3,1,2,0
 F1,2026-11-01,Olympique de Marseille,Toulouse FC,2,0,2,0
+F1,2026-11-02,FC Lorient,Stade Brestois 29,0,2,0,0
 E0,2026-08-21,Arsenal FC,Coventry City FC,3,0,2,0
 E0,2026-08-22,Hull City AFC,Manchester United FC,2,0,2,0
 E0,2026-08-22,Ipswich Town FC,Sunderland AFC,2,1,1,1
@@ -168,6 +169,7 @@ E0,2026-10-31,Brentford FC,Nottingham Forest FC,2,0,1,0
 E0,2026-10-31,Tottenham Hotspur FC,Crystal Palace FC,2,0,1,0
 E0,2026-10-31,Aston Villa FC,Fulham FC,1,1,1,0
 E0,2026-11-01,Liverpool FC,Arsenal FC,0,1,0,1
+E0,2026-11-02,Newcastle United FC,Everton FC,0,1,0,0
 SP1,2026-08-15,Deportivo Alavés,Getafe CF,3,0,0,0
 SP1,2026-08-15,Sevilla FC,Rayo Vallecano de Madrid,2,1,0,1
 SP1,2026-08-16,Real Racing Club de Santander,Villarreal CF,2,2,2,2
@@ -276,6 +278,7 @@ SP1,2026-11-01,Getafe CF,Sevilla FC,3,1,0,1
 SP1,2026-11-01,Real Racing Club de Santander,Real Madrid CF,0,3,0,3
 SP1,2026-11-01,Elche CF,Valencia CF,0,1,0,0
 SP1,2026-11-01,Athletic Club,Real Sociedad de Fútbol,2,1,2,1
+SP1,2026-11-02,RC Deportivo La Coruña,CA Osasuna,2,1,0,1
 D1,2026-08-28,FC Bayern München,VfB Stuttgart,5,1,1,0
 D1,2026-08-29,RB Leipzig,Borussia Mönchengladbach,3,0,1,0
 D1,2026-08-29,1. FSV Mainz 05,SC Paderborn 07,0,0,0,0
@@ -446,6 +449,8 @@ I1,2026-11-01,Frosinone Calcio,Torino FC,2,0,0,0
 I1,2026-11-01,SS Lazio,Cagliari Calcio,2,1,1,1
 I1,2026-11-01,US Lecce,Genoa CFC,1,2,1,2
 I1,2026-11-01,Juventus FC,SSC Napoli,2,0,0,0
+I1,2026-11-02,US Sassuolo Calcio,ACF Fiorentina,2,4,1,1
+I1,2026-11-02,Atalanta BC,Parma Calcio 1913,0,3,0,1
 P1,2026-08-07,GD Estoril Praia,FC Famalicão,1,1,0,1
 P1,2026-08-08,CS Marítimo,Casa Pia AC,1,0,0,0
 P1,2026-08-08,Vitória SC,FC Arouca,0,1,0,0
@@ -534,6 +539,8 @@ P1,2026-11-01,FC Arouca,CD Nacional,1,0,0,0
 P1,2026-11-01,CS Marítimo,CD Santa Clara,0,2,0,1
 P1,2026-11-01,Académico de Viseu FC,Rio Ave FC,2,1,0,1
 P1,2026-11-01,Sporting Clube de Braga,FC Famalicão,3,0,0,0
+P1,2026-11-02,Sport Lisboa e Benfica,FC Alverca,1,0,0,0
+P1,2026-11-02,Gil Vicente FC,Vitória SC,0,0,0,0
 N1,2026-08-07,SC Cambuur-Leeuwarden,SBV Excelsior,0,4,0,3
 N1,2026-08-08,NEC,Telstar 1963,1,2,0,2
 N1,2026-08-08,Go Ahead Eagles,Willem II Tilburg,4,1,1,1
