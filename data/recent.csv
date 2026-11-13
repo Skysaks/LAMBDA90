@@ -499,7 +499,6 @@ I1,2026-11-08,Genoa CFC,AC Milan,1,2,0,2
 I1,2026-11-08,AC Monza,Atalanta BC,0,1,0,0
 I1,2026-11-08,FC Internazionale Milano,Como 1907,2,0,2,0
 I1,2026-11-08,ACF Fiorentina,Juventus FC,2,2,1,1
-P1,2026-08-14,Sporting Clube de Portugal,Vitória SC,3,2,3,0
 P1,2026-08-15,FC Alverca,CF Estrela da Amadora,2,2,0,0
 P1,2026-08-15,Académico de Viseu FC,CD Santa Clara,0,1,0,1
 P1,2026-08-15,Rio Ave FC,FC Porto,0,2,0,1
@@ -588,7 +587,6 @@ P1,2026-11-08,CD Nacional,Académico de Viseu FC,1,0,0,0
 P1,2026-11-08,Vitória SC,FC Porto,1,2,0,1
 P1,2026-11-08,Rio Ave FC,Sporting Clube de Braga,0,1,0,0
 P1,2026-11-08,CF Estrela da Amadora,Sport Lisboa e Benfica,2,3,0,1
-N1,2026-08-14,Telstar 1963,Sparta Rotterdam,1,3,0,1
 N1,2026-08-15,Willem II Tilburg,NEC,1,4,0,1
 N1,2026-08-15,FC Utrecht,AZ,1,4,0,1
 N1,2026-08-15,SBV Excelsior,PSV,1,2,0,1
@@ -687,7 +685,6 @@ N1,2026-11-08,FC Twente '65,AFC Ajax,2,2,0,1
 N1,2026-11-08,AZ,FC Groningen,4,3,1,1
 N1,2026-11-08,SC Cambuur-Leeuwarden,PSV,2,5,1,3
 N1,2026-11-08,FC Utrecht,NEC,2,3,0,2
-E1,2026-08-14,Wolverhampton Wanderers FC,Blackburn Rovers FC,2,2,1,1
 E1,2026-08-15,Bolton Wanderers FC,Preston North End FC,2,1,2,0
 E1,2026-08-15,Norwich City FC,West Bromwich Albion FC,1,2,0,0
 E1,2026-08-15,Bristol City FC,Millwall FC,0,2,0,1
