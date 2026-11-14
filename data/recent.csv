@@ -189,8 +189,6 @@ E0,2026-11-08,Sunderland AFC,Chelsea FC,1,0,1,0
 E0,2026-11-08,Ipswich Town FC,AFC Bournemouth,1,2,0,1
 E0,2026-11-08,Brighton & Hove Albion FC,Brentford FC,2,0,2,0
 E0,2026-11-08,Manchester United FC,Aston Villa FC,4,4,2,2
-SP1,2026-08-15,Deportivo Alavés,Getafe CF,3,0,0,0
-SP1,2026-08-15,Sevilla FC,Rayo Vallecano de Madrid,2,1,0,1
 SP1,2026-08-16,Real Racing Club de Santander,Villarreal CF,2,2,2,2
 SP1,2026-08-16,RCD Espanyol de Barcelona,Levante UD,3,0,2,0
 SP1,2026-08-17,RC Deportivo La Coruña,Elche CF,1,1,1,0
@@ -499,9 +497,6 @@ I1,2026-11-08,Genoa CFC,AC Milan,1,2,0,2
 I1,2026-11-08,AC Monza,Atalanta BC,0,1,0,0
 I1,2026-11-08,FC Internazionale Milano,Como 1907,2,0,2,0
 I1,2026-11-08,ACF Fiorentina,Juventus FC,2,2,1,1
-P1,2026-08-15,FC Alverca,CF Estrela da Amadora,2,2,0,0
-P1,2026-08-15,Académico de Viseu FC,CD Santa Clara,0,1,0,1
-P1,2026-08-15,Rio Ave FC,FC Porto,0,2,0,1
 P1,2026-08-16,CD Nacional,GD Estoril Praia,2,0,0,0
 P1,2026-08-16,FC Arouca,Moreirense FC,4,0,3,0
 P1,2026-08-16,FC Famalicão,CS Marítimo,1,2,1,1
@@ -587,10 +582,6 @@ P1,2026-11-08,CD Nacional,Académico de Viseu FC,1,0,0,0
 P1,2026-11-08,Vitória SC,FC Porto,1,2,0,1
 P1,2026-11-08,Rio Ave FC,Sporting Clube de Braga,0,1,0,0
 P1,2026-11-08,CF Estrela da Amadora,Sport Lisboa e Benfica,2,3,0,1
-N1,2026-08-15,Willem II Tilburg,NEC,1,4,0,1
-N1,2026-08-15,FC Utrecht,AZ,1,4,0,1
-N1,2026-08-15,SBV Excelsior,PSV,1,2,0,1
-N1,2026-08-15,Fortuna Sittard,SC Cambuur-Leeuwarden,3,1,2,1
 N1,2026-08-16,ADO Den Haag,FC Groningen,1,4,0,3
 N1,2026-08-16,Feyenoord Rotterdam,Go Ahead Eagles,2,2,2,0
 N1,2026-08-16,FC Twente '65,PEC Zwolle,3,1,1,1
@@ -685,182 +676,3 @@ N1,2026-11-08,FC Twente '65,AFC Ajax,2,2,0,1
 N1,2026-11-08,AZ,FC Groningen,4,3,1,1
 N1,2026-11-08,SC Cambuur-Leeuwarden,PSV,2,5,1,3
 N1,2026-11-08,FC Utrecht,NEC,2,3,0,2
-E1,2026-08-15,Bolton Wanderers FC,Preston North End FC,2,1,2,0
-E1,2026-08-15,Norwich City FC,West Bromwich Albion FC,1,2,0,0
-E1,2026-08-15,Bristol City FC,Millwall FC,0,2,0,1
-E1,2026-08-15,Middlesbrough FC,Lincoln City FC,2,1,0,1
-E1,2026-08-15,Stoke City FC,Swansea City AFC,1,2,1,1
-E1,2026-08-15,Charlton Athletic FC,Derby County FC,2,1,0,1
-E1,2026-08-15,Portsmouth FC,Queens Park Rangers FC,1,3,1,3
-E1,2026-08-15,Sheffield United FC,Birmingham City FC,0,0,0,0
-E1,2026-08-16,Watford FC,Southampton FC,2,1,2,0
-E1,2026-08-16,Burnley FC,West Ham United FC,2,2,0,1
-E1,2026-08-17,Cardiff City FC,Wrexham AFC,1,1,0,1
-E1,2026-08-22,Birmingham City FC,Bristol City FC,2,2,1,1
-E1,2026-08-22,Lincoln City FC,Portsmouth FC,1,3,1,2
-E1,2026-08-22,Millwall FC,Norwich City FC,3,0,1,0
-E1,2026-08-22,Swansea City AFC,Sheffield United FC,0,0,0,0
-E1,2026-08-22,West Ham United FC,Charlton Athletic FC,1,2,0,1
-E1,2026-08-22,Derby County FC,Cardiff City FC,2,2,1,2
-E1,2026-08-22,Preston North End FC,Wolverhampton Wanderers FC,1,3,0,1
-E1,2026-08-22,Wrexham AFC,Watford FC,1,1,1,1
-E1,2026-08-22,Blackburn Rovers FC,Middlesbrough FC,2,1,0,1
-E1,2026-08-22,Southampton FC,Stoke City FC,3,1,1,1
-E1,2026-08-22,Queens Park Rangers FC,Bolton Wanderers FC,0,0,0,0
-E1,2026-08-23,West Bromwich Albion FC,Burnley FC,3,1,1,1
-E1,2026-08-28,Wrexham AFC,Birmingham City FC,1,2,0,1
-E1,2026-08-29,Wolverhampton Wanderers FC,Stoke City FC,4,1,2,1
-E1,2026-08-29,Derby County FC,Swansea City AFC,0,3,0,2
-E1,2026-08-29,Middlesbrough FC,West Bromwich Albion FC,3,1,0,0
-E1,2026-08-29,Norwich City FC,Burnley FC,4,1,3,1
-E1,2026-08-29,Bolton Wanderers FC,Lincoln City FC,0,1,0,0
-E1,2026-08-29,Bristol City FC,Portsmouth FC,2,1,1,0
-E1,2026-08-29,Southampton FC,Millwall FC,5,1,2,1
-E1,2026-08-29,Charlton Athletic FC,Preston North End FC,1,0,0,0
-E1,2026-08-29,Blackburn Rovers FC,Queens Park Rangers FC,1,2,0,0
-E1,2026-08-29,Cardiff City FC,Sheffield United FC,2,2,2,2
-E1,2026-08-29,Watford FC,West Ham United FC,1,1,1,1
-E1,2026-09-01,Preston North End FC,Bristol City FC,1,3,0,1
-E1,2026-09-01,West Ham United FC,Wolverhampton Wanderers FC,4,2,2,1
-E1,2026-09-01,Lincoln City FC,Blackburn Rovers FC,0,0,0,0
-E1,2026-09-01,Sheffield United FC,Bolton Wanderers FC,3,2,1,1
-E1,2026-09-01,Portsmouth FC,Derby County FC,0,2,0,1
-E1,2026-09-01,Swansea City AFC,Watford FC,2,0,2,0
-E1,2026-09-01,Stoke City FC,Norwich City FC,1,0,1,0
-E1,2026-09-01,Birmingham City FC,Southampton FC,1,1,0,1
-E1,2026-09-02,Millwall FC,Wrexham AFC,0,3,0,1
-E1,2026-09-02,Queens Park Rangers FC,Cardiff City FC,2,1,1,0
-E1,2026-09-02,West Bromwich Albion FC,Charlton Athletic FC,1,1,0,0
-E1,2026-09-02,Burnley FC,Middlesbrough FC,1,1,0,1
-E1,2026-09-05,Preston North End FC,Blackburn Rovers FC,2,1,2,0
-E1,2026-09-05,Stoke City FC,Charlton Athletic FC,4,0,4,0
-E1,2026-09-05,Lincoln City FC,Southampton FC,1,1,0,1
-E1,2026-09-05,Queens Park Rangers FC,Middlesbrough FC,0,1,0,1
-E1,2026-09-05,Sheffield United FC,Norwich City FC,1,3,1,2
-E1,2026-09-05,Portsmouth FC,Cardiff City FC,2,0,1,0
-E1,2026-09-05,West Bromwich Albion FC,Watford FC,1,0,1,0
-E1,2026-09-05,West Ham United FC,Derby County FC,3,0,1,0
-E1,2026-09-05,Burnley FC,Bristol City FC,1,2,0,0
-E1,2026-09-05,Millwall FC,Bolton Wanderers FC,4,0,1,0
-E1,2026-09-05,Swansea City AFC,Wrexham AFC,0,0,0,0
-E1,2026-09-06,Birmingham City FC,Wolverhampton Wanderers FC,2,2,2,2
-E1,2026-09-08,Blackburn Rovers FC,Sheffield United FC,1,2,1,2
-E1,2026-09-08,Southampton FC,Swansea City AFC,3,1,2,0
-E1,2026-09-08,Watford FC,Preston North End FC,2,1,0,1
-E1,2026-09-08,Cardiff City FC,Stoke City FC,1,1,0,1
-E1,2026-09-08,Wrexham AFC,Burnley FC,1,1,0,1
-E1,2026-09-08,Bolton Wanderers FC,West Ham United FC,2,3,2,2
-E1,2026-09-09,Derby County FC,West Bromwich Albion FC,0,1,0,1
-E1,2026-09-09,Norwich City FC,Birmingham City FC,2,1,2,0
-E1,2026-09-09,Charlton Athletic FC,Queens Park Rangers FC,0,0,0,0
-E1,2026-09-11,West Ham United FC,Wrexham AFC,6,0,2,0
-E1,2026-09-12,Derby County FC,Birmingham City FC,1,2,1,1
-E1,2026-09-12,Bolton Wanderers FC,Cardiff City FC,1,0,0,0
-E1,2026-09-12,West Bromwich Albion FC,Queens Park Rangers FC,1,1,1,1
-E1,2026-09-12,Southampton FC,Bristol City FC,4,1,1,0
-E1,2026-09-12,Preston North End FC,Lincoln City FC,0,1,0,0
-E1,2026-09-12,Blackburn Rovers FC,Millwall FC,3,1,1,0
-E1,2026-09-12,Charlton Athletic FC,Portsmouth FC,0,0,0,0
-E1,2026-09-12,Watford FC,Stoke City FC,1,2,0,1
-E1,2026-09-12,Swansea City AFC,Burnley FC,3,1,2,0
-E1,2026-09-12,Middlesbrough FC,Norwich City FC,4,3,3,1
-E1,2026-09-13,Sheffield United FC,Wolverhampton Wanderers FC,0,1,0,0
-E1,2026-09-15,Middlesbrough FC,Millwall FC,2,2,0,2
-E1,2026-09-15,Bristol City FC,Lincoln City FC,0,1,0,0
-E1,2026-09-18,Bristol City FC,Watford FC,1,0,1,0
-E1,2026-09-19,Stoke City FC,Sheffield United FC,2,1,0,0
-E1,2026-09-19,Millwall FC,West Ham United FC,2,2,2,0
-E1,2026-09-19,Cardiff City FC,Charlton Athletic FC,3,1,2,1
-E1,2026-09-19,Wrexham AFC,Southampton FC,2,1,1,0
-E1,2026-09-19,Burnley FC,Derby County FC,1,1,1,0
-E1,2026-09-19,Queens Park Rangers FC,Preston North End FC,2,2,0,2
-E1,2026-09-19,Portsmouth FC,Blackburn Rovers FC,2,2,1,1
-E1,2026-09-19,Birmingham City FC,Middlesbrough FC,2,2,0,1
-E1,2026-09-19,Lincoln City FC,Swansea City AFC,1,2,1,0
-E1,2026-09-20,Wolverhampton Wanderers FC,West Bromwich Albion FC,1,0,0,0
-E1,2026-09-20,Norwich City FC,Bolton Wanderers FC,3,4,2,2
-E1,2026-10-09,West Ham United FC,Queens Park Rangers FC,1,1,0,1
-E1,2026-10-10,West Bromwich Albion FC,Birmingham City FC,0,1,0,1
-E1,2026-10-10,Swansea City AFC,Norwich City FC,2,1,0,1
-E1,2026-10-10,Charlton Athletic FC,Bristol City FC,1,1,1,1
-E1,2026-10-10,Sheffield United FC,Lincoln City FC,3,0,1,0
-E1,2026-10-10,Watford FC,Burnley FC,0,4,0,3
-E1,2026-10-10,Derby County FC,Wrexham AFC,1,1,1,0
-E1,2026-10-10,Blackburn Rovers FC,Cardiff City FC,2,1,2,0
-E1,2026-10-10,Bolton Wanderers FC,Stoke City FC,1,2,0,1
-E1,2026-10-10,Preston North End FC,Millwall FC,0,1,0,0
-E1,2026-10-10,Middlesbrough FC,Wolverhampton Wanderers FC,1,0,0,0
-E1,2026-10-11,Southampton FC,Portsmouth FC,1,0,1,0
-E1,2026-10-13,Wolverhampton Wanderers FC,Bolton Wanderers FC,1,3,0,1
-E1,2026-10-13,Wrexham AFC,West Bromwich Albion FC,1,2,0,0
-E1,2026-10-13,Millwall FC,Swansea City AFC,0,1,0,0
-E1,2026-10-13,Cardiff City FC,Watford FC,5,1,4,0
-E1,2026-10-13,Burnley FC,Charlton Athletic FC,2,2,1,0
-E1,2026-10-13,Bristol City FC,Blackburn Rovers FC,0,1,0,1
-E1,2026-10-13,Birmingham City FC,Preston North End FC,4,0,3,0
-E1,2026-10-13,Stoke City FC,Middlesbrough FC,2,3,0,0
-E1,2026-10-14,Portsmouth FC,Sheffield United FC,3,2,1,0
-E1,2026-10-14,Norwich City FC,Southampton FC,0,1,0,0
-E1,2026-10-14,Queens Park Rangers FC,Derby County FC,4,1,3,0
-E1,2026-10-14,Lincoln City FC,West Ham United FC,0,6,0,1
-E1,2026-10-16,Burnley FC,Wolverhampton Wanderers FC,1,2,1,1
-E1,2026-10-17,Millwall FC,Lincoln City FC,2,2,0,2
-E1,2026-10-17,Middlesbrough FC,Cardiff City FC,2,2,0,2
-E1,2026-10-17,Watford FC,Charlton Athletic FC,2,0,0,0
-E1,2026-10-17,Norwich City FC,Portsmouth FC,0,1,0,0
-E1,2026-10-17,Southampton FC,Bolton Wanderers FC,0,0,0,0
-E1,2026-10-17,Bristol City FC,Sheffield United FC,0,1,0,1
-E1,2026-10-17,Birmingham City FC,Queens Park Rangers FC,3,0,1,0
-E1,2026-10-17,Derby County FC,Stoke City FC,0,1,0,0
-E1,2026-10-17,Swansea City AFC,West Ham United FC,0,1,0,1
-E1,2026-10-17,West Bromwich Albion FC,Blackburn Rovers FC,3,2,1,2
-E1,2026-10-17,Wrexham AFC,Preston North End FC,4,1,2,1
-E1,2026-10-20,Wolverhampton Wanderers FC,Portsmouth FC,1,1,0,0
-E1,2026-10-23,Bolton Wanderers FC,Middlesbrough FC,1,5,1,2
-E1,2026-10-24,Sheffield United FC,Derby County FC,1,1,0,1
-E1,2026-10-24,Charlton Athletic FC,Norwich City FC,1,3,1,1
-E1,2026-10-24,Portsmouth FC,Millwall FC,2,1,1,1
-E1,2026-10-24,Cardiff City FC,Birmingham City FC,1,0,1,0
-E1,2026-10-24,Queens Park Rangers FC,Swansea City AFC,5,0,4,0
-E1,2026-10-24,Stoke City FC,Bristol City FC,0,0,0,0
-E1,2026-10-24,Preston North End FC,West Bromwich Albion FC,1,1,0,0
-E1,2026-10-24,Lincoln City FC,Burnley FC,4,1,1,1
-E1,2026-10-24,West Ham United FC,Southampton FC,2,3,1,3
-E1,2026-10-24,Blackburn Rovers FC,Wrexham AFC,2,0,1,0
-E1,2026-10-24,Wolverhampton Wanderers FC,Watford FC,1,0,1,0
-E1,2026-10-30,Sheffield United FC,Wrexham AFC,1,0,1,0
-E1,2026-10-31,Stoke City FC,Preston North End FC,2,0,1,0
-E1,2026-10-31,Norwich City FC,Watford FC,3,2,0,2
-E1,2026-10-31,Lincoln City FC,Birmingham City FC,1,3,0,1
-E1,2026-10-31,Wolverhampton Wanderers FC,Cardiff City FC,3,0,2,0
-E1,2026-10-31,West Ham United FC,West Bromwich Albion FC,1,3,1,1
-E1,2026-10-31,Swansea City AFC,Blackburn Rovers FC,4,0,3,0
-E1,2026-10-31,Bolton Wanderers FC,Bristol City FC,2,3,1,1
-E1,2026-10-31,Middlesbrough FC,Charlton Athletic FC,3,0,2,0
-E1,2026-10-31,Burnley FC,Portsmouth FC,0,0,0,0
-E1,2026-10-31,Millwall FC,Derby County FC,4,1,3,0
-E1,2026-10-31,Southampton FC,Queens Park Rangers FC,4,1,1,0
-E1,2026-11-03,Queens Park Rangers FC,Burnley FC,1,1,0,1
-E1,2026-11-03,Derby County FC,Norwich City FC,0,4,0,3
-E1,2026-11-03,Blackburn Rovers FC,Stoke City FC,1,2,0,1
-E1,2026-11-03,Watford FC,Lincoln City FC,1,0,0,0
-E1,2026-11-03,Charlton Athletic FC,Bolton Wanderers FC,0,1,0,1
-E1,2026-11-03,Portsmouth FC,Swansea City AFC,3,1,1,0
-E1,2026-11-03,Preston North End FC,Sheffield United FC,2,3,1,3
-E1,2026-11-03,West Bromwich Albion FC,Southampton FC,1,1,1,0
-E1,2026-11-03,Birmingham City FC,Millwall FC,3,0,3,0
-E1,2026-11-04,Cardiff City FC,West Ham United FC,3,3,3,0
-E1,2026-11-04,Wrexham AFC,Middlesbrough FC,2,0,0,0
-E1,2026-11-04,Bristol City FC,Wolverhampton Wanderers FC,1,2,1,0
-E1,2026-11-06,Derby County FC,Bolton Wanderers FC,3,1,0,1
-E1,2026-11-07,Wrexham AFC,Wolverhampton Wanderers FC,1,1,1,1
-E1,2026-11-07,Portsmouth FC,Stoke City FC,1,2,1,0
-E1,2026-11-07,Bristol City FC,Norwich City FC,0,5,0,1
-E1,2026-11-07,Queens Park Rangers FC,Lincoln City FC,2,1,1,1
-E1,2026-11-07,Cardiff City FC,Burnley FC,5,4,1,2
-E1,2026-11-07,Charlton Athletic FC,Sheffield United FC,2,1,1,1
-E1,2026-11-07,Watford FC,Middlesbrough FC,0,0,0,0
-E1,2026-11-07,Blackburn Rovers FC,West Ham United FC,2,1,0,0
-E1,2026-11-07,West Bromwich Albion FC,Millwall FC,3,0,0,0
-E1,2026-11-07,Preston North End FC,Southampton FC,1,0,1,0
-E1,2026-11-07,Birmingham City FC,Swansea City AFC,2,1,1,0
