@@ -1,5 +1,4 @@
 Division,date,home,away,hg,ag,hth,hta
-F1,2026-08-21,Olympique de Marseille,RC Strasbourg Alsace,4,0,0,0
 F1,2026-08-22,Racing Club de Lens,AJ Auxerre,5,2,1,0
 F1,2026-08-22,Le Mans FC,Stade Brestois 29,2,2,1,1
 F1,2026-08-22,ES Troyes AC,Paris FC,0,0,0,0
@@ -89,7 +88,6 @@ F1,2026-11-08,Stade Brestois 29,Olympique Lyonnais,2,0,1,0
 F1,2026-11-08,Le Havre AC,FC Lorient,0,2,0,1
 F1,2026-11-08,Angers SCO,OGC Nice,0,2,0,1
 F1,2026-11-08,Racing Club de Lens,Olympique de Marseille,1,2,1,1
-E0,2026-08-21,Arsenal FC,Coventry City FC,3,0,2,0
 E0,2026-08-22,Hull City AFC,Manchester United FC,2,0,2,0
 E0,2026-08-22,Ipswich Town FC,Sunderland AFC,2,1,1,1
 E0,2026-08-22,Nottingham Forest FC,Leeds United FC,0,1,0,0
@@ -189,7 +187,6 @@ E0,2026-11-08,Sunderland AFC,Chelsea FC,1,0,1,0
 E0,2026-11-08,Ipswich Town FC,AFC Bournemouth,1,2,0,1
 E0,2026-11-08,Brighton & Hove Albion FC,Brentford FC,2,0,2,0
 E0,2026-11-08,Manchester United FC,Aston Villa FC,4,4,2,2
-SP1,2026-08-21,Real Betis Balompié,Real Sociedad de Fútbol,1,0,0,0
 SP1,2026-08-22,Athletic Club,Sevilla FC,1,3,0,1
 SP1,2026-08-22,Valencia CF,RC Celta de Vigo,0,0,0,0
 SP1,2026-08-22,RCD Espanyol de Barcelona,Real Madrid CF,1,2,1,1
