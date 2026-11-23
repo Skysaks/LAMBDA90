@@ -86,7 +86,9 @@ F1,2026-11-21,AS Monaco FC,AJ Auxerre,1,1,0,1
 F1,2026-11-21,Racing Club de Lens,Toulouse FC,1,1,0,1
 F1,2026-11-21,Lille OSC,Olympique Lyonnais,0,1,0,1
 F1,2026-11-21,RC Strasbourg Alsace,Stade Brestois 29,0,1,0,1
-E0,2026-08-24,Fulham FC,Chelsea FC,2,3,1,2
+F1,2026-11-22,Paris FC,Angers SCO,4,0,0,0
+F1,2026-11-22,FC Lorient,Stade Rennais FC 1901,1,1,1,1
+F1,2026-11-22,Olympique de Marseille,Le Mans FC,2,3,2,0
 E0,2026-08-28,Crystal Palace FC,Manchester City FC,1,4,0,1
 E0,2026-08-29,Liverpool FC,Nottingham Forest FC,2,2,0,1
 E0,2026-08-29,AFC Bournemouth,Everton FC,1,1,1,0
@@ -184,8 +186,8 @@ E0,2026-11-21,AFC Bournemouth,Nottingham Forest FC,2,0,2,0
 E0,2026-11-21,Tottenham Hotspur FC,Ipswich Town FC,2,0,1,0
 E0,2026-11-21,Coventry City FC,Crystal Palace FC,3,2,2,2
 E0,2026-11-21,Newcastle United FC,Arsenal FC,2,2,0,1
-SP1,2026-08-24,CA Osasuna,Levante UD,0,0,0,0
-SP1,2026-08-24,Málaga CF,RC Deportivo La Coruña,1,1,1,1
+E0,2026-11-22,Hull City AFC,Brighton & Hove Albion FC,2,0,0,0
+E0,2026-11-22,Liverpool FC,Manchester United FC,4,0,2,0
 SP1,2026-08-25,Valencia CF,Real Betis Balompié,0,1,0,0
 SP1,2026-08-26,Real Madrid CF,Real Sociedad de Fútbol,4,1,1,1
 SP1,2026-08-27,RC Celta de Vigo,CA Osasuna,1,2,1,0
@@ -294,6 +296,10 @@ SP1,2026-11-21,Deportivo Alavés,RC Deportivo La Coruña,3,1,1,1
 SP1,2026-11-21,Rayo Vallecano de Madrid,Valencia CF,0,1,0,1
 SP1,2026-11-21,Sevilla FC,Real Betis Balompié,1,1,0,0
 SP1,2026-11-21,Real Madrid CF,RC Celta de Vigo,2,1,0,1
+SP1,2026-11-22,FC Barcelona,Villarreal CF,3,2,0,2
+SP1,2026-11-22,Real Racing Club de Santander,Real Sociedad de Fútbol,3,2,2,1
+SP1,2026-11-22,CA Osasuna,Málaga CF,1,0,1,0
+SP1,2026-11-22,Getafe CF,Club Atlético de Madrid,0,3,0,2
 D1,2026-08-28,FC Bayern München,VfB Stuttgart,5,1,1,0
 D1,2026-08-29,RB Leipzig,Borussia Mönchengladbach,3,0,1,0
 D1,2026-08-29,1. FSV Mainz 05,SC Paderborn 07,0,0,0,0
@@ -382,8 +388,8 @@ D1,2026-11-21,SV 07 Elversberg,SC Freiburg,0,1,0,0
 D1,2026-11-21,Borussia Mönchengladbach,Borussia Dortmund,0,1,0,0
 D1,2026-11-21,Eintracht Frankfurt,TSG 1899 Hoffenheim,1,0,1,0
 D1,2026-11-21,FC Schalke 04,VfB Stuttgart,0,0,0,0
-I1,2026-08-24,Bologna FC 1909,SS Lazio,0,1,0,0
-I1,2026-08-24,AS Roma,ACF Fiorentina,4,0,1,0
+D1,2026-11-22,FC Augsburg,1. FSV Mainz 05,3,1,2,0
+D1,2026-11-22,SV Werder Bremen,Hamburger SV,4,0,0,0
 I1,2026-08-28,AC Milan,Venezia FC,2,0,0,0
 I1,2026-08-29,US Sassuolo Calcio,Torino FC,2,1,1,1
 I1,2026-08-29,AC Monza,Udinese Calcio,2,3,1,3
@@ -488,7 +494,11 @@ I1,2026-11-21,Como 1907,Cagliari Calcio,2,0,1,0
 I1,2026-11-21,SS Lazio,US Lecce,3,0,1,0
 I1,2026-11-21,Parma Calcio 1913,AS Roma,1,5,0,1
 I1,2026-11-21,SSC Napoli,Torino FC,1,0,0,0
-P1,2026-08-24,Gil Vicente FC,Casa Pia AC,2,0,2,0
+I1,2026-11-22,Juventus FC,Venezia FC,4,0,0,0
+I1,2026-11-22,Bologna FC 1909,Udinese Calcio,1,1,1,0
+I1,2026-11-22,US Sassuolo Calcio,Genoa CFC,0,2,0,2
+I1,2026-11-22,AC Milan,Frosinone Calcio,5,1,2,1
+I1,2026-11-22,Atalanta BC,FC Internazionale Milano,4,4,1,2
 P1,2026-08-28,Rio Ave FC,Sporting Clube de Portugal,0,4,0,4
 P1,2026-08-29,FC Alverca,CD Santa Clara,1,1,0,0
 P1,2026-08-29,FC Arouca,CS Marítimo,2,1,1,1
@@ -652,6 +662,10 @@ N1,2026-11-21,Feyenoord Rotterdam,SBV Excelsior,2,3,1,2
 N1,2026-11-21,FC Utrecht,SC Cambuur-Leeuwarden,2,3,0,1
 N1,2026-11-21,Telstar 1963,PEC Zwolle,1,3,1,2
 N1,2026-11-21,FC Groningen,SC Heerenveen,1,3,0,1
+N1,2026-11-22,FC Twente '65,Willem II Tilburg,2,1,0,0
+N1,2026-11-22,Sparta Rotterdam,AZ,1,5,1,1
+N1,2026-11-22,AFC Ajax,ADO Den Haag,3,0,3,0
+N1,2026-11-22,Go Ahead Eagles,Fortuna Sittard,0,1,0,0
 E1,2026-09-19,Burnley FC,Derby County FC,1,1,1,0
 E1,2026-10-10,Swansea City AFC,Norwich City FC,2,1,0,1
 E1,2026-10-13,Millwall FC,Swansea City AFC,0,1,0,0
@@ -712,5 +726,7 @@ E1,2026-11-21,Swansea City AFC,West Bromwich Albion FC,2,2,2,2
 E1,2026-11-21,Middlesbrough FC,Bristol City FC,2,0,1,0
 E1,2026-11-21,Bolton Wanderers FC,Portsmouth FC,1,1,1,1
 E1,2026-11-21,Stoke City FC,Birmingham City FC,1,0,0,0
+E1,2026-11-21,Lincoln City FC,Wrexham AFC,0,1,0,0
 E1,2026-11-21,West Ham United FC,Preston North End FC,1,1,0,1
 E1,2026-11-21,Wolverhampton Wanderers FC,Charlton Athletic FC,2,1,0,0
+E1,2026-11-22,Burnley FC,Blackburn Rovers FC,2,2,1,1
