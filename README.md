@@ -2,6 +2,8 @@
 
 Plateforme indépendante de probabilités football pour les fans et les parieurs : prévisions avant-match et live, prix justes face aux cotes réelles des bookmakers, outils de paris, jeux entre amis et création de contenu. Huit championnats : Ligue 1, Premier League, LaLiga, Bundesliga, Serie A, Liga Portugal, Eredivisie, Championship.
 
+> © 2026 Florian Iglesias — Tous droits réservés. Dépôt public à titre de portfolio : aucune licence n'est concédée. Voir [LICENSE](LICENSE).
+
 Principe : chaque chiffre affiché est mesuré hors échantillon, et la plateforme dit quand le marché a raison contre elle. Le moteur, ses tests et leurs résultats sont détaillés dans [MOTEUR.md](MOTEUR.md).
 
 ## Ce que contient la page
@@ -52,7 +54,7 @@ Les minutes gratuites de GitHub Actions pour un dépôt privé (2 000 par mois) 
 
 ## Installation
 
-1. Dépôt privé sur GitHub contenant ce dossier.
+1. Dépôt GitHub contenant ce dossier.
 2. *Settings → Secrets and variables → Actions*, trois secrets :
    - `ODDS_API_KEY` : The Odds API (offre gratuite : 500 crédits par mois) ;
    - `FOOTBALL_DATA_TOKEN` : football-data.org (gratuit, résultats différés) ;
@@ -87,7 +89,6 @@ Vérifie les conditions d'usage commercial de chaque source avant un lancement p
 | `core.js`, `app.js`, `part_*.js`, `template.html` | la page (noyau quant, onglets, 3D, Studio) |
 | `build.py`, `mk.sh` | assemblage de `lambda-90.html` |
 | `data/`, `out/` | données collectées, sorties du moteur, registre des picks (`data/daily_picks.json`) |
-| `founder/` | dossier de lancement |
 
 ## Construire à la main
 
@@ -104,3 +105,7 @@ bash mk.sh         # assemble app_full.js et écrit lambda-90.html
 ## Jeu responsable
 
 Lambda 90 publie des probabilités et des calculs, pas des certitudes ; elle ne prend aucun pari. Le jeu est interdit aux mineurs. Jouer comporte des risques : endettement, isolement, dépendance. Pour être aidé : 09 74 75 13 13 (Joueurs Info Service, appel non surtaxé). En France, seuls les opérateurs agréés par l'ANJ sont autorisés.
+
+## Licence et sécurité
+
+© 2026 Florian Iglesias — Tous droits réservés ([LICENSE](LICENSE)). Signalement des failles : [SECURITY.md](SECURITY.md). Contributions : [CONTRIBUTING.md](CONTRIBUTING.md).
