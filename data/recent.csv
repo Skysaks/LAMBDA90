@@ -1,9 +1,4 @@
 Division,date,home,away,hg,ag,hth,hta
-F1,2026-08-29,RC Strasbourg Alsace,Racing Club de Lens,2,1,0,1
-F1,2026-08-29,FC Lorient,ES Troyes AC,1,2,0,2
-F1,2026-08-29,Olympique Lyonnais,Le Havre AC,1,1,0,0
-F1,2026-08-29,AJ Auxerre,Angers SCO,1,3,1,1
-F1,2026-08-29,Stade Brestois 29,Toulouse FC,2,2,1,1
 F1,2026-08-30,Paris FC,OGC Nice,3,0,1,0
 F1,2026-08-30,Stade Rennais FC 1901,Le Mans FC,3,2,2,1
 F1,2026-08-30,AS Monaco FC,Olympique de Marseille,2,0,1,0
@@ -88,10 +83,7 @@ F1,2026-11-21,RC Strasbourg Alsace,Stade Brestois 29,0,1,0,1
 F1,2026-11-22,Paris FC,Angers SCO,4,0,0,0
 F1,2026-11-22,FC Lorient,Stade Rennais FC 1901,1,1,1,1
 F1,2026-11-22,Olympique de Marseille,Le Mans FC,2,3,2,0
-E0,2026-08-29,Liverpool FC,Nottingham Forest FC,2,2,0,1
-E0,2026-08-29,AFC Bournemouth,Everton FC,1,1,1,0
-E0,2026-08-29,Coventry City FC,Hull City AFC,0,1,0,0
-E0,2026-08-29,Tottenham Hotspur FC,Newcastle United FC,0,2,0,0
+F1,2026-11-27,Stade Brestois 29,Paris FC,1,0,1,0
 E0,2026-08-30,Sunderland AFC,Fulham FC,1,0,0,0
 E0,2026-08-30,Chelsea FC,Brighton & Hove Albion FC,4,3,3,1
 E0,2026-08-30,Leeds United FC,Brentford FC,1,1,0,1
@@ -187,9 +179,7 @@ E0,2026-11-21,Newcastle United FC,Arsenal FC,2,2,0,1
 E0,2026-11-22,Hull City AFC,Brighton & Hove Albion FC,2,0,0,0
 E0,2026-11-22,Liverpool FC,Manchester United FC,4,0,2,0
 E0,2026-11-23,Brentford FC,Everton FC,4,0,2,0
-SP1,2026-08-29,Levante UD,Real Betis Balompié,5,2,2,2
-SP1,2026-08-29,Real Sociedad de Fútbol,RCD Espanyol de Barcelona,2,1,1,1
-SP1,2026-08-29,Sevilla FC,Club Atlético de Madrid,1,3,0,3
+E0,2026-11-27,Nottingham Forest FC,Chelsea FC,3,2,1,0
 SP1,2026-08-30,Real Madrid CF,Málaga CF,4,0,3,0
 SP1,2026-08-30,RC Deportivo La Coruña,Valencia CF,3,1,2,1
 SP1,2026-08-30,RC Celta de Vigo,Athletic Club,0,2,0,2
@@ -294,12 +284,7 @@ SP1,2026-11-22,Real Racing Club de Santander,Real Sociedad de Fútbol,3,2,2,1
 SP1,2026-11-22,CA Osasuna,Málaga CF,1,0,1,0
 SP1,2026-11-22,Getafe CF,Club Atlético de Madrid,0,3,0,2
 SP1,2026-11-23,Levante UD,Elche CF,1,1,0,0
-D1,2026-08-29,RB Leipzig,Borussia Mönchengladbach,3,0,1,0
-D1,2026-08-29,1. FSV Mainz 05,SC Paderborn 07,0,0,0,0
-D1,2026-08-29,1. FC Union Berlin,Eintracht Frankfurt,3,3,1,2
-D1,2026-08-29,SV 07 Elversberg,Bayer 04 Leverkusen,3,2,2,0
-D1,2026-08-29,1. FC Köln,TSG 1899 Hoffenheim,3,2,0,1
-D1,2026-08-29,Borussia Dortmund,Hamburger SV,2,0,2,0
+SP1,2026-11-27,Levante UD,Real Racing Club de Santander,1,3,1,0
 D1,2026-08-30,SC Freiburg,SV Werder Bremen,4,1,2,0
 D1,2026-08-30,FC Augsburg,FC Schalke 04,3,0,1,0
 D1,2026-09-04,VfB Stuttgart,1. FC Köln,4,1,1,0
@@ -383,10 +368,7 @@ D1,2026-11-21,Eintracht Frankfurt,TSG 1899 Hoffenheim,1,0,1,0
 D1,2026-11-21,FC Schalke 04,VfB Stuttgart,0,0,0,0
 D1,2026-11-22,FC Augsburg,1. FSV Mainz 05,3,1,2,0
 D1,2026-11-22,SV Werder Bremen,Hamburger SV,4,0,0,0
-I1,2026-08-29,US Sassuolo Calcio,Torino FC,2,1,1,1
-I1,2026-08-29,AC Monza,Udinese Calcio,2,3,1,3
-I1,2026-08-29,ACF Fiorentina,Frosinone Calcio,0,3,0,2
-I1,2026-08-29,Juventus FC,Parma Calcio 1913,2,0,0,0
+D1,2026-11-27,SV Werder Bremen,Borussia Mönchengladbach,3,3,1,1
 I1,2026-08-30,SSC Napoli,Como 1907,1,2,1,2
 I1,2026-08-30,SS Lazio,Genoa CFC,1,0,1,0
 I1,2026-08-30,Cagliari Calcio,FC Internazionale Milano,0,1,0,1
@@ -492,9 +474,7 @@ I1,2026-11-22,US Sassuolo Calcio,Genoa CFC,0,2,0,2
 I1,2026-11-22,AC Milan,Frosinone Calcio,5,1,2,1
 I1,2026-11-22,Atalanta BC,FC Internazionale Milano,4,4,1,2
 I1,2026-11-23,AC Monza,ACF Fiorentina,3,0,1,0
-P1,2026-08-29,FC Alverca,CD Santa Clara,1,1,0,0
-P1,2026-08-29,FC Arouca,CS Marítimo,2,1,1,1
-P1,2026-08-29,Académico de Viseu FC,FC Porto,0,3,0,3
+I1,2026-11-27,Venezia FC,Bologna FC 1909,0,0,0,0
 P1,2026-08-30,CD Nacional,CF Estrela da Amadora,2,3,1,1
 P1,2026-08-30,Casa Pia AC,Moreirense FC,0,1,0,1
 P1,2026-08-30,FC Famalicão,Gil Vicente FC,0,0,0,0
@@ -565,9 +545,7 @@ P1,2026-11-08,CD Nacional,Académico de Viseu FC,1,0,0,0
 P1,2026-11-08,Vitória SC,FC Porto,1,2,0,1
 P1,2026-11-08,Rio Ave FC,Sporting Clube de Braga,0,1,0,0
 P1,2026-11-08,CF Estrela da Amadora,Sport Lisboa e Benfica,2,3,0,1
-N1,2026-08-29,SBV Excelsior,Sparta Rotterdam,2,1,1,0
-N1,2026-08-29,AZ,Go Ahead Eagles,5,2,2,1
-N1,2026-08-29,PEC Zwolle,NEC,1,3,1,2
+P1,2026-11-27,CS Marítimo,CD Nacional,1,2,0,1
 N1,2026-08-30,FC Utrecht,PSV,1,6,1,2
 N1,2026-08-30,Willem II Tilburg,SC Heerenveen,2,2,0,0
 N1,2026-08-30,Feyenoord Rotterdam,ADO Den Haag,2,2,0,1
@@ -657,6 +635,7 @@ N1,2026-11-22,FC Twente '65,Willem II Tilburg,2,1,0,0
 N1,2026-11-22,Sparta Rotterdam,AZ,1,5,1,1
 N1,2026-11-22,AFC Ajax,ADO Den Haag,3,0,3,0
 N1,2026-11-22,Go Ahead Eagles,Fortuna Sittard,0,1,0,0
+N1,2026-11-27,FC Groningen,Willem II Tilburg,1,1,0,1
 E1,2026-09-01,Birmingham City FC,Southampton FC,1,1,0,1
 E1,2026-09-19,Burnley FC,Derby County FC,1,1,1,0
 E1,2026-10-10,Swansea City AFC,Norwich City FC,2,1,0,1
@@ -734,3 +713,4 @@ E1,2026-11-25,Watford FC,Blackburn Rovers FC,0,1,0,0
 E1,2026-11-25,Bolton Wanderers FC,West Bromwich Albion FC,1,3,0,1
 E1,2026-11-25,Burnley FC,Birmingham City FC,0,2,0,1
 E1,2026-11-25,Stoke City FC,Millwall FC,2,1,2,0
+E1,2026-11-27,Southampton FC,Middlesbrough FC,2,0,0,0
